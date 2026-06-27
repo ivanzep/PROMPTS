@@ -8,25 +8,31 @@
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --bg: #0c0c10;
-    --surface: #16161e;
-    --surface2: #1e1e28;
-    --surface3: #242430;
-    --border: #2a2a38;
-    --accent: #e85d2f;       /* Chaos orange */
-    --accent2: #ff7a4d;
-    --accent-dim: rgba(232,93,47,0.18);
-    --accent-glow: rgba(232,93,47,0.3);
-    --text: #ededf5;
-    --text-dim: #9898b8;
-    --text-muted: #4e4e68;
-    --green: #4ade80;
-    --yellow: #fbbf24;
-    --blue: #60a5fa;
-    --tag-bg: #1e1e32;
-    --tag-text: #a0a0d0;
+    --bg: #f4f4f6;
+    --surface: #ffffff;
+    --surface2: #f0f0f4;
+    --surface3: #e8e8ee;
+    --border: #d8d8e4;
+    --border2: #c8c8d8;
+    --accent: #d04a1a;
+    --accent2: #e8612e;
+    --accent-dim: rgba(208,74,26,0.10);
+    --accent-glow: rgba(208,74,26,0.20);
+    --text: #1a1a2e;
+    --text-dim: #4a4a6a;
+    --text-muted: #9090b0;
+    --green: #16a34a;
+    --yellow: #d97706;
+    --blue: #2563eb;
+    --red: #dc2626;
+    --tag-bg: #ede9ff;
+    --tag-text: #5b3fd4;
+    --star-on: #f59e0b;
+    --star-off: #d1d1e0;
     --radius: 10px;
     --radius-sm: 6px;
+    --shadow: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.06);
+    --shadow-md: 0 4px 12px rgba(0,0,0,.10);
   }
 
   body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; }
@@ -36,174 +42,128 @@
     background: var(--surface);
     border-bottom: 1px solid var(--border);
     padding: 0 20px;
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    height: 54px;
-    position: sticky;
-    top: 0;
-    z-index: 100;
+    display: flex; align-items: center; gap: 14px;
+    height: 54px; position: sticky; top: 0; z-index: 100;
+    box-shadow: var(--shadow);
   }
-  .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
-  .logo-mark {
-    width: 28px; height: 28px;
-    background: var(--accent);
-    border-radius: 6px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 14px; font-weight: 900; color: #fff; letter-spacing: -1px;
-  }
+  .logo { display: flex; align-items: center; gap: 10px; }
+  .logo-mark { width: 28px; height: 28px; background: var(--accent); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 900; color: #fff; }
   .logo-text { font-size: 14px; font-weight: 700; color: var(--text); }
   .logo-text span { color: var(--accent); }
   .header-sep { width: 1px; height: 24px; background: var(--border); }
-  .platform-badge {
-    font-size: 10px; font-weight: 700; letter-spacing: 0.08em;
-    text-transform: uppercase; color: var(--text-muted);
-    padding: 3px 8px; border: 1px solid var(--border);
-    border-radius: 4px;
-  }
+  .platform-badge { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); padding: 3px 8px; border: 1px solid var(--border); border-radius: 4px; background: var(--surface2); }
   .nav-tabs { display: flex; gap: 2px; margin-left: auto; }
-  .nav-tab {
-    padding: 6px 16px; border-radius: var(--radius-sm);
-    border: none; background: transparent;
-    color: var(--text-muted); font-size: 13px; cursor: pointer;
-    transition: all .15s; font-weight: 500;
-  }
+  .nav-tab { padding: 6px 16px; border-radius: var(--radius-sm); border: none; background: transparent; color: var(--text-dim); font-size: 13px; cursor: pointer; transition: all .15s; font-weight: 500; }
   .nav-tab:hover { background: var(--surface2); color: var(--text); }
   .nav-tab.active { background: var(--accent); color: #fff; }
 
   /* ── Layout ── */
   .app { display: flex; flex: 1; overflow: hidden; height: calc(100vh - 54px); }
-  .sidebar { width: 228px; min-width: 228px; background: var(--surface); border-right: 1px solid var(--border); overflow-y: auto; padding: 14px 10px; display: flex; flex-direction: column; gap: 4px; }
+  .sidebar { width: 228px; min-width: 228px; background: var(--surface); border-right: 1px solid var(--border); overflow-y: auto; padding: 14px 10px; display: flex; flex-direction: column; }
   .main { flex: 1; overflow-y: auto; padding: 22px; }
 
   /* ── Sidebar ── */
   .sidebar-section { margin-bottom: 20px; }
   .sidebar-label { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px; padding: 0 6px; }
-  .filter-btn {
-    display: flex; align-items: center; gap: 8px;
-    width: 100%; padding: 7px 10px;
-    border-radius: var(--radius-sm); border: none;
-    background: transparent; color: var(--text-dim);
-    font-size: 12.5px; cursor: pointer; text-align: left;
-    transition: all .12s;
-  }
+  .filter-btn { display: flex; align-items: center; gap: 8px; width: 100%; padding: 7px 10px; border-radius: var(--radius-sm); border: none; background: transparent; color: var(--text-dim); font-size: 12.5px; cursor: pointer; text-align: left; transition: all .12s; }
   .filter-btn:hover { background: var(--surface2); color: var(--text); }
-  .filter-btn.active { background: var(--accent-dim); color: var(--accent2); font-weight: 600; }
-  .filter-btn .count { margin-left: auto; font-size: 10px; background: var(--surface2); color: var(--text-muted); padding: 1px 6px; border-radius: 8px; }
-  .filter-btn.active .count { background: var(--accent); color: #fff; }
+  .filter-btn.active { background: var(--accent-dim); color: var(--accent); font-weight: 600; }
+  .filter-btn .count { margin-left: auto; font-size: 10px; background: var(--surface2); color: var(--text-muted); padding: 1px 6px; border-radius: 8px; border: 1px solid var(--border); }
+  .filter-btn.active .count { background: var(--accent); color: #fff; border-color: var(--accent); }
 
   .chip-group { display: flex; flex-wrap: wrap; gap: 5px; padding: 2px 4px; }
-  .chip {
-    padding: 3px 9px; border-radius: 20px; font-size: 11px;
-    background: var(--tag-bg); color: var(--tag-text);
-    cursor: pointer; border: 1px solid transparent;
-    transition: all .12s; user-select: none;
-  }
-  .chip:hover { border-color: var(--accent); color: var(--text); }
+  .chip { padding: 3px 9px; border-radius: 20px; font-size: 11px; background: var(--surface2); color: var(--text-dim); cursor: pointer; border: 1px solid var(--border); transition: all .12s; user-select: none; }
+  .chip:hover { border-color: var(--accent); color: var(--accent); }
   .chip.active { background: var(--accent); color: #fff; border-color: var(--accent); }
-
-  /* ── Search bar ── */
-  .search-bar { display: flex; gap: 8px; margin-bottom: 18px; align-items: center; }
-  .search-input {
-    flex: 1; padding: 8px 14px;
-    border-radius: var(--radius); border: 1px solid var(--border);
-    background: var(--surface); color: var(--text);
-    font-size: 13px; outline: none; transition: border-color .15s;
-  }
-  .search-input:focus { border-color: var(--accent); }
-  .search-input::placeholder { color: var(--text-muted); }
 
   /* ── Buttons ── */
   .btn { padding: 8px 16px; border-radius: var(--radius); border: none; font-size: 13px; cursor: pointer; font-weight: 600; transition: all .15s; white-space: nowrap; }
   .btn-primary { background: var(--accent); color: #fff; }
-  .btn-primary:hover { background: var(--accent2); box-shadow: 0 0 16px var(--accent-glow); }
+  .btn-primary:hover { background: var(--accent2); box-shadow: var(--shadow-md); }
   .btn-secondary { background: var(--surface2); color: var(--text-dim); border: 1px solid var(--border); }
-  .btn-secondary:hover { color: var(--text); border-color: var(--accent); }
+  .btn-secondary:hover { color: var(--text); border-color: var(--accent); background: var(--surface); }
   .btn-ghost { background: transparent; color: var(--text-dim); border: 1px solid var(--border); }
   .btn-ghost:hover { color: var(--text); background: var(--surface2); }
-  .btn-danger { background: transparent; color: #f87171; border: 1px solid transparent; }
-  .btn-danger:hover { background: rgba(248,113,113,.1); border-color: #f87171; }
+  .btn-danger { background: transparent; color: var(--red); border: 1px solid transparent; }
+  .btn-danger:hover { background: #fef2f2; border-color: var(--red); }
   .btn-sm { padding: 4px 11px; font-size: 11.5px; border-radius: 5px; }
 
-  /* ── Toolbar ── */
+  /* ── Search / toolbar ── */
+  .search-bar { display: flex; gap: 8px; margin-bottom: 18px; align-items: center; }
+  .search-input { flex: 1; padding: 8px 14px; border-radius: var(--radius); border: 1px solid var(--border); background: var(--surface); color: var(--text); font-size: 13px; outline: none; transition: border-color .15s; box-shadow: var(--shadow); }
+  .search-input:focus { border-color: var(--accent); }
+  .search-input::placeholder { color: var(--text-muted); }
+
   .toolbar { display: flex; gap: 8px; align-items: center; margin-bottom: 18px; flex-wrap: wrap; }
   .toolbar-label { font-size: 11.5px; color: var(--text-muted); }
-  select.sort-select { padding: 5px 10px; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--surface); color: var(--text-dim); font-size: 12px; outline: none; cursor: pointer; }
+  select.sort-select { padding: 5px 10px; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--surface); color: var(--text-dim); font-size: 12px; outline: none; cursor: pointer; box-shadow: var(--shadow); }
   select.sort-select:focus { border-color: var(--accent); }
   .result-count { margin-left: auto; font-size: 11.5px; color: var(--text-muted); }
 
   /* ── Cards ── */
   .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 14px; }
-  .card {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: var(--radius); padding: 16px;
-    display: flex; flex-direction: column; gap: 11px;
-    transition: border-color .15s, box-shadow .15s;
-    position: relative;
-  }
-  .card:hover { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent-glow); }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; display: flex; flex-direction: column; gap: 10px; transition: border-color .15s, box-shadow .15s; position: relative; box-shadow: var(--shadow); }
+  .card:hover { border-color: var(--accent); box-shadow: var(--shadow-md); }
 
   .card-header { display: flex; align-items: flex-start; gap: 8px; }
   .card-title { font-size: 13.5px; font-weight: 600; color: var(--text); flex: 1; line-height: 1.4; }
 
-  .preset-badge {
-    font-size: 9.5px; padding: 2px 7px; border-radius: 4px;
-    font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase;
-    white-space: nowrap; flex-shrink: 0;
-  }
-  .preset-badge.cinematic { background: #1a1228; color: #c4b5fd; border: 1px solid #3d2f70; }
-  .preset-badge.photorealistic { background: #0f1e14; color: #86efac; border: 1px solid #1e4d28; }
-  .preset-badge.sketch { background: #1a1510; color: #fde68a; border: 1px solid #4d3810; }
-  .preset-badge.watercolor { background: #0f1a2a; color: #93c5fd; border: 1px solid #1e3a5f; }
-  .preset-badge.concept { background: #1a0f0f; color: #fca5a5; border: 1px solid #4d1818; }
+  /* Project label */
+  .card-project { font-size: 10px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); background: var(--accent-dim); border: 1px solid rgba(208,74,26,0.2); border-radius: 4px; padding: 2px 8px; white-space: nowrap; }
+
+  .preset-badge { font-size: 9.5px; padding: 2px 7px; border-radius: 4px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; white-space: nowrap; flex-shrink: 0; }
+  .preset-badge.cinematic { background: #f5f0ff; color: #6d28d9; border: 1px solid #ddd6fe; }
+  .preset-badge.photorealistic { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
+  .preset-badge.sketch { background: #fefce8; color: #a16207; border: 1px solid #fde68a; }
+  .preset-badge.watercolor { background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; }
+  .preset-badge.concept { background: #fff1f2; color: #be123c; border: 1px solid #fecdd3; }
   .preset-badge.other { background: var(--surface2); color: var(--text-muted); border: 1px solid var(--border); }
 
-  .card-prompt {
-    font-size: 11.5px; color: var(--text-dim); line-height: 1.65;
-    display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden;
-    font-family: 'Cascadia Code', 'Fira Mono', monospace;
-    background: var(--bg); border: 1px solid var(--border);
-    border-radius: var(--radius-sm); padding: 9px 11px;
-    white-space: pre-wrap; word-break: break-word;
-  }
+  /* ── Star rating ── */
+  .star-display { display: flex; gap: 2px; align-items: center; }
+  .star-display .s { font-size: 14px; color: var(--star-off); cursor: default; }
+  .star-display .s.on { color: var(--star-on); }
+  .star-input { display: flex; gap: 2px; align-items: center; flex-direction: row-reverse; justify-content: flex-end; }
+  .star-input input { display: none; }
+  .star-input label { font-size: 22px; color: var(--star-off); cursor: pointer; transition: color .1s; }
+  .star-input label:hover,
+  .star-input label:hover ~ label,
+  .star-input input:checked ~ label { color: var(--star-on); }
 
-  /* Veras parameters display */
+  .card-prompt { font-size: 11.5px; color: var(--text-dim); line-height: 1.65; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; font-family: 'Cascadia Code','Fira Mono',monospace; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 9px 11px; white-space: pre-wrap; word-break: break-word; }
+
   .veras-params { display: flex; gap: 6px; flex-wrap: wrap; }
-  .vparam {
-    font-size: 10px; padding: 2px 8px; border-radius: 4px;
-    border: 1px solid var(--border); display: flex; gap: 4px; align-items: center;
-  }
+  .vparam { font-size: 10px; padding: 2px 8px; border-radius: 4px; border: 1px solid var(--border); display: flex; gap: 4px; align-items: center; background: var(--surface2); }
   .vparam-label { color: var(--text-muted); }
-  .vparam-value { color: var(--accent2); font-weight: 700; }
+  .vparam-value { color: var(--accent); font-weight: 700; }
 
   .card-meta { display: flex; flex-wrap: wrap; gap: 5px; align-items: center; }
-  .meta-badge { font-size: 10px; padding: 2px 7px; border-radius: 4px; background: var(--surface2); color: var(--text-muted); border: 1px solid var(--border); }
-  .meta-badge.style { border-color: #3d2f6e; color: #a78bfa; }
-  .meta-badge.lighting { border-color: #2a3d1e; color: #86efac; }
-  .meta-badge.geo { border-color: #1e2f3d; color: #93c5fd; }
+  .meta-badge { font-size: 10px; padding: 2px 7px; border-radius: 4px; background: var(--surface2); color: var(--text-dim); border: 1px solid var(--border); }
+  .meta-badge.lighting { border-color: #bbf7d0; color: #15803d; background: #f0fdf4; }
+  .meta-badge.cat { border-color: #bfdbfe; color: #1d4ed8; background: #eff6ff; }
 
   .card-tags { display: flex; flex-wrap: wrap; gap: 4px; }
-  .card-tag { font-size: 10px; padding: 2px 7px; border-radius: 20px; background: var(--tag-bg); color: var(--tag-text); }
+  .card-tag { font-size: 10px; padding: 2px 7px; border-radius: 20px; background: var(--tag-bg); color: var(--tag-text); border: 1px solid #d4caff; }
 
   .card-actions { display: flex; gap: 5px; align-items: center; margin-top: 2px; border-top: 1px solid var(--border); padding-top: 10px; }
   .card-date { font-size: 10px; color: var(--text-muted); margin-left: auto; }
 
-  .copy-feedback { position: absolute; top: 10px; right: 10px; background: var(--green); color: #000; font-size: 10.5px; font-weight: 700; padding: 2px 9px; border-radius: 20px; opacity: 0; transition: opacity .2s; pointer-events: none; }
+  .copy-feedback { position: absolute; top: 10px; right: 10px; background: var(--green); color: #fff; font-size: 10.5px; font-weight: 700; padding: 2px 9px; border-radius: 20px; opacity: 0; transition: opacity .2s; pointer-events: none; }
   .copy-feedback.show { opacity: 1; }
 
   /* ── Empty state ── */
   .empty { text-align: center; padding: 70px 24px; color: var(--text-muted); }
-  .empty .empty-icon { font-size: 44px; margin-bottom: 14px; opacity: .35; }
+  .empty .empty-icon { font-size: 44px; margin-bottom: 14px; opacity: .4; }
   .empty h3 { font-size: 15px; color: var(--text-dim); margin-bottom: 8px; }
   .empty p { font-size: 12.5px; line-height: 1.7; }
 
   /* ── Modal ── */
-  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.75); z-index: 200; display: flex; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(5px); }
+  .modal-overlay { position: fixed; inset: 0; background: rgba(30,30,60,.4); z-index: 200; display: flex; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(4px); }
   .modal-overlay.hidden { display: none; }
-  .modal { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; width: 100%; max-width: 700px; max-height: 92vh; overflow-y: auto; padding: 26px; display: flex; flex-direction: column; gap: 18px; box-shadow: 0 28px 80px rgba(0,0,0,.7); }
+  .modal { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; width: 100%; max-width: 700px; max-height: 92vh; overflow-y: auto; padding: 26px; display: flex; flex-direction: column; gap: 18px; box-shadow: 0 20px 60px rgba(0,0,0,.18); }
   .modal-header { display: flex; align-items: center; gap: 12px; }
   .modal-title { font-size: 17px; font-weight: 700; flex: 1; }
-  .modal-close { background: transparent; border: none; color: var(--text-dim); font-size: 20px; cursor: pointer; padding: 4px; border-radius: 4px; transition: color .12s; }
+  .modal-close { background: transparent; border: none; color: var(--text-muted); font-size: 20px; cursor: pointer; padding: 4px; border-radius: 4px; transition: color .12s; }
   .modal-close:hover { color: var(--text); }
 
   /* ── Form ── */
@@ -211,116 +171,77 @@
   .form-full { grid-column: 1 / -1; }
   .form-group { display: flex; flex-direction: column; gap: 5px; }
   .form-label { font-size: 11.5px; font-weight: 600; color: var(--text-dim); }
-  .form-input, .form-select, .form-textarea { padding: 8px 11px; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--bg); color: var(--text); font-size: 12.5px; outline: none; transition: border-color .15s; font-family: inherit; }
-  .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--accent); }
+  .form-input, .form-select, .form-textarea { padding: 8px 11px; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--surface); color: var(--text); font-size: 12.5px; outline: none; transition: border-color .15s; font-family: inherit; }
+  .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-dim); }
   .form-textarea { resize: vertical; min-height: 100px; font-family: 'Cascadia Code','Fira Mono',monospace; font-size: 12px; line-height: 1.65; }
   .form-hint { font-size: 10.5px; color: var(--text-muted); }
   .form-actions { display: flex; gap: 8px; justify-content: flex-end; padding-top: 2px; }
 
   /* ── Slider ── */
-  .slider-group { display: flex; flex-direction: column; gap: 5px; }
   .slider-row { display: flex; align-items: center; gap: 10px; }
-  .slider-row input[type=range] { flex: 1; accent-color: var(--accent); height: 4px; cursor: pointer; }
-  .slider-val { font-size: 12px; font-weight: 700; color: var(--accent2); min-width: 28px; text-align: right; font-family: monospace; }
+  .slider-row input[type=range] { flex: 1; accent-color: var(--accent); cursor: pointer; }
+  .slider-val { font-size: 12px; font-weight: 700; color: var(--accent); min-width: 28px; text-align: right; font-family: monospace; }
 
   /* ── Tab panels ── */
   .tab-panel { display: none; }
   .tab-panel.active { display: flex; }
 
   /* ── Builder ── */
-  #tab-builder { padding: 22px; overflow-y: auto; flex: 1; gap: 0; }
+  #tab-builder { flex: 1; }
+  .builder-wrap { padding: 22px; overflow-y: auto; flex: 1; width: 100%; }
   .builder-layout { display: grid; grid-template-columns: 1fr 380px; gap: 20px; align-items: start; }
   .builder-col { display: flex; flex-direction: column; gap: 14px; }
 
-  .bpanel {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: var(--radius); padding: 18px;
-    display: flex; flex-direction: column; gap: 14px;
-  }
-  .bpanel-title {
-    font-size: 11px; font-weight: 700; letter-spacing: 0.09em;
-    text-transform: uppercase; color: var(--accent);
-    padding-bottom: 6px; border-bottom: 1px solid var(--border);
-  }
+  .bpanel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; display: flex; flex-direction: column; gap: 14px; box-shadow: var(--shadow); }
+  .bpanel-title { font-size: 11px; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; color: var(--accent); padding-bottom: 6px; border-bottom: 1px solid var(--border); }
   .bpanel-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   .bpanel-full { grid-column: 1 / -1; }
 
-  /* Preview sticky panel */
   .preview-col { position: sticky; top: 22px; }
-  .preview-panel {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: var(--radius); padding: 18px;
-    display: flex; flex-direction: column; gap: 14px;
-  }
+  .preview-panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; display: flex; flex-direction: column; gap: 14px; box-shadow: var(--shadow); }
   .preview-panel-title { font-size: 11px; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; color: var(--accent); padding-bottom: 6px; border-bottom: 1px solid var(--border); }
 
-  .preview-prompt {
-    background: var(--bg); border: 1px solid var(--border);
-    border-radius: var(--radius-sm); padding: 13px;
-    font-size: 12px; font-family: 'Cascadia Code','Fira Mono',monospace;
-    color: var(--text); line-height: 1.7; white-space: pre-wrap;
-    word-break: break-word; min-height: 120px;
-  }
-  .preview-prompt em { color: var(--accent2); font-style: normal; font-weight: 700; }
+  .preview-prompt { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 13px; font-size: 12px; font-family: 'Cascadia Code','Fira Mono',monospace; color: var(--text); line-height: 1.7; white-space: pre-wrap; word-break: break-word; min-height: 120px; }
+  .preview-negative { background: #fef2f2; border: 1px solid #fecdd3; border-radius: var(--radius-sm); padding: 10px 12px; font-size: 11.5px; font-family: 'Cascadia Code','Fira Mono',monospace; color: var(--red); line-height: 1.6; white-space: pre-wrap; display: none; }
 
-  .veras-output-block {
-    background: var(--bg); border: 1px solid var(--border);
-    border-radius: var(--radius-sm); padding: 12px;
-    font-size: 11.5px; display: flex; flex-direction: column; gap: 8px;
-  }
+  .veras-output-block { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px; font-size: 11.5px; display: flex; flex-direction: column; gap: 8px; }
   .vop-row { display: flex; justify-content: space-between; align-items: center; }
   .vop-label { color: var(--text-muted); font-size: 11px; }
-  .vop-val { color: var(--accent2); font-weight: 700; font-size: 12px; }
-  .vop-bar { flex: 1; height: 3px; background: var(--border); border-radius: 2px; margin: 0 10px; }
+  .vop-val { color: var(--accent); font-weight: 700; font-size: 12px; }
+  .vop-bar { flex: 1; height: 4px; background: var(--border); border-radius: 2px; margin: 0 10px; }
   .vop-bar-fill { height: 100%; background: var(--accent); border-radius: 2px; transition: width .2s; }
 
-  .preview-negative {
-    background: rgba(248,113,113,.07); border: 1px solid rgba(248,113,113,.2);
-    border-radius: var(--radius-sm); padding: 10px 12px;
-    font-size: 11.5px; font-family: 'Cascadia Code','Fira Mono',monospace;
-    color: #fca5a5; line-height: 1.6; white-space: pre-wrap; display: none;
-  }
-
-  .copy-row { display: flex; gap: 8px; }
   .token-count { font-size: 10.5px; color: var(--text-muted); }
+  .copy-row { display: flex; gap: 8px; }
 
   /* Preset grid */
   .preset-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
-  .preset-opt {
-    padding: 8px 6px; border-radius: var(--radius-sm);
-    border: 1px solid var(--border); background: var(--bg);
-    cursor: pointer; text-align: center; font-size: 11px;
-    color: var(--text-dim); transition: all .12s; user-select: none;
-  }
-  .preset-opt:hover { border-color: var(--accent); color: var(--text); }
-  .preset-opt.selected { border-color: var(--accent); background: var(--accent-dim); color: var(--accent2); font-weight: 700; }
+  .preset-opt { padding: 8px 6px; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--surface2); cursor: pointer; text-align: center; font-size: 11px; color: var(--text-dim); transition: all .12s; user-select: none; }
+  .preset-opt:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
+  .preset-opt.selected { border-color: var(--accent); background: var(--accent-dim); color: var(--accent); font-weight: 700; }
   .preset-opt .preset-icon { font-size: 18px; display: block; margin-bottom: 3px; }
 
-  /* Emphasis helper */
+  /* Emphasis chips */
   .emphasis-row { display: flex; gap: 6px; flex-wrap: wrap; }
-  .emphasis-chip {
-    font-size: 10.5px; padding: 3px 9px; border-radius: 20px;
-    border: 1px solid var(--border); color: var(--text-muted);
-    background: transparent; cursor: pointer; transition: all .12s;
-  }
-  .emphasis-chip:hover { border-color: var(--accent); color: var(--accent2); }
+  .emphasis-chip { font-size: 10.5px; padding: 3px 9px; border-radius: 20px; border: 1px solid var(--border); color: var(--text-muted); background: var(--surface2); cursor: pointer; transition: all .12s; }
+  .emphasis-chip:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
+
+  /* ── IE modal tabs ── */
+  .ie-tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--border); padding-bottom: 14px; margin-bottom: 2px; }
+  .ie-tab { padding: 6px 14px; border-radius: var(--radius-sm); border: none; background: transparent; color: var(--text-muted); font-size: 13px; cursor: pointer; font-weight: 500; transition: all .12s; }
+  .ie-tab:hover { background: var(--surface2); color: var(--text); }
+  .ie-tab.active { background: var(--accent); color: #fff; }
+  .ie-panel { display: none; flex-direction: column; gap: 12px; }
+  .ie-panel.active { display: flex; }
 
   /* ── Scrollbar ── */
-  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar { width: 6px; }
   ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
 
   /* ── Responsive ── */
-  @media (max-width: 1100px) {
-    .builder-layout { grid-template-columns: 1fr; }
-    .preview-col { position: static; }
-  }
-  @media (max-width: 800px) {
-    .sidebar { display: none; }
-    .cards-grid { grid-template-columns: 1fr; }
-    .bpanel-grid { grid-template-columns: 1fr; }
-    .form-grid { grid-template-columns: 1fr; }
-  }
+  @media (max-width: 1100px) { .builder-layout { grid-template-columns: 1fr; } .preview-col { position: static; } }
+  @media (max-width: 800px) { .sidebar { display: none; } .cards-grid { grid-template-columns: 1fr; } .bpanel-grid { grid-template-columns: 1fr; } .form-grid { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
@@ -340,7 +261,7 @@
 
 <div class="app" id="app-root">
 
-<!-- ═══════════════════  LIBRARY  ═══════════════════ -->
+<!-- ════════════════  LIBRARY  ════════════════ -->
 <div id="tab-library" class="tab-panel active" style="display:flex;flex-direction:row;flex:1;overflow:hidden;height:100%;">
 
   <aside class="sidebar">
@@ -355,31 +276,37 @@
       <button class="filter-btn" onclick="setCategory('concept',this)">Concept / Mood <span class="count" id="count-concept">0</span></button>
       <button class="filter-btn" onclick="setCategory('other',this)">Other <span class="count" id="count-other">0</span></button>
     </div>
-
+    <div class="sidebar-section">
+      <div class="sidebar-label">Rating</div>
+      <button class="filter-btn" onclick="setRating(5,this)">★★★★★ 5 stars <span class="count" id="count-r5">0</span></button>
+      <button class="filter-btn" onclick="setRating(4,this)">★★★★☆ 4+ stars <span class="count" id="count-r4">0</span></button>
+      <button class="filter-btn" onclick="setRating(3,this)">★★★☆☆ 3+ stars <span class="count" id="count-r3">0</span></button>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Project</div>
+      <div id="project-filters" class="chip-group"></div>
+    </div>
     <div class="sidebar-section">
       <div class="sidebar-label">Veras Preset</div>
       <div id="preset-filters" class="chip-group"></div>
     </div>
-
     <div class="sidebar-section">
       <div class="sidebar-label">Lighting</div>
       <div id="lighting-filters" class="chip-group"></div>
     </div>
-
     <div class="sidebar-section">
       <div class="sidebar-label">Tags</div>
       <div id="tag-filters" class="chip-group"></div>
     </div>
-
     <div class="sidebar-section" style="margin-top:auto;padding-top:16px;display:flex;flex-direction:column;gap:6px;">
-      <button class="btn btn-ghost" style="width:100%;font-size:11.5px;" onclick="importExport()">Import / Export</button>
+      <button class="btn btn-secondary" style="width:100%;font-size:11.5px;" onclick="openIEModal()">Import / Export</button>
       <button class="btn btn-danger" style="width:100%;font-size:11.5px;" onclick="clearAllPrompts()">Clear All</button>
     </div>
   </aside>
 
   <div class="main">
     <div class="search-bar">
-      <input type="text" class="search-input" id="search-input" placeholder="Search prompts, presets, tags, materials..." oninput="renderCards()">
+      <input type="text" class="search-input" id="search-input" placeholder="Search prompts, projects, presets, tags..." oninput="renderCards()">
       <button class="btn btn-primary" onclick="openAddModal()">+ New Prompt</button>
     </div>
     <div class="toolbar">
@@ -387,6 +314,7 @@
       <select class="sort-select" onchange="renderCards()" id="sort-select">
         <option value="newest">Newest first</option>
         <option value="oldest">Oldest first</option>
+        <option value="rating">Highest rated</option>
         <option value="title">Title A–Z</option>
         <option value="favorite">Favorites first</option>
       </select>
@@ -394,56 +322,30 @@
     </div>
     <div id="cards-container"></div>
   </div>
-
 </div>
 
-<!-- ═══════════════════  BUILDER  ═══════════════════ -->
+<!-- ════════════════  BUILDER  ════════════════ -->
 <div id="tab-builder" class="tab-panel" style="flex:1;">
-  <div style="padding:22px;overflow-y:auto;flex:1;width:100%;">
+  <div class="builder-wrap">
     <div class="builder-layout">
 
-      <!-- LEFT COL: inputs -->
       <div class="builder-col">
 
         <div class="bpanel">
           <div class="bpanel-title">Veras Preset</div>
           <div class="preset-grid" id="preset-grid">
-            <div class="preset-opt selected" data-preset="" onclick="selectPreset(this)">
-              <span class="preset-icon">✦</span>None
-            </div>
-            <div class="preset-opt" data-preset="Photorealistic" onclick="selectPreset(this)">
-              <span class="preset-icon">📷</span>Photorealistic
-            </div>
-            <div class="preset-opt" data-preset="Cinematic" onclick="selectPreset(this)">
-              <span class="preset-icon">🎬</span>Cinematic
-            </div>
-            <div class="preset-opt" data-preset="Turbo Nature" onclick="selectPreset(this)">
-              <span class="preset-icon">🌿</span>Turbo Nature
-            </div>
-            <div class="preset-opt" data-preset="Pencil Sketch" onclick="selectPreset(this)">
-              <span class="preset-icon">✏️</span>Pencil Sketch
-            </div>
-            <div class="preset-opt" data-preset="Watercolor" onclick="selectPreset(this)">
-              <span class="preset-icon">🎨</span>Watercolor
-            </div>
-            <div class="preset-opt" data-preset="Oil Painting" onclick="selectPreset(this)">
-              <span class="preset-icon">🖌️</span>Oil Painting
-            </div>
-            <div class="preset-opt" data-preset="Concept Art" onclick="selectPreset(this)">
-              <span class="preset-icon">💡</span>Concept Art
-            </div>
-            <div class="preset-opt" data-preset="Blueprint" onclick="selectPreset(this)">
-              <span class="preset-icon">📐</span>Blueprint
-            </div>
-            <div class="preset-opt" data-preset="Axonometric" onclick="selectPreset(this)">
-              <span class="preset-icon">📦</span>Axonometric
-            </div>
-            <div class="preset-opt" data-preset="Moodboard" onclick="selectPreset(this)">
-              <span class="preset-icon">🗂️</span>Moodboard
-            </div>
-            <div class="preset-opt" data-preset="V-Ray Style" onclick="selectPreset(this)">
-              <span class="preset-icon">⚡</span>V-Ray Style
-            </div>
+            <div class="preset-opt selected" data-preset="" onclick="selectPreset(this)"><span class="preset-icon">✦</span>None</div>
+            <div class="preset-opt" data-preset="Photorealistic" onclick="selectPreset(this)"><span class="preset-icon">📷</span>Photorealistic</div>
+            <div class="preset-opt" data-preset="Cinematic" onclick="selectPreset(this)"><span class="preset-icon">🎬</span>Cinematic</div>
+            <div class="preset-opt" data-preset="Turbo Nature" onclick="selectPreset(this)"><span class="preset-icon">🌿</span>Turbo Nature</div>
+            <div class="preset-opt" data-preset="Pencil Sketch" onclick="selectPreset(this)"><span class="preset-icon">✏️</span>Pencil Sketch</div>
+            <div class="preset-opt" data-preset="Watercolor" onclick="selectPreset(this)"><span class="preset-icon">🎨</span>Watercolor</div>
+            <div class="preset-opt" data-preset="Oil Painting" onclick="selectPreset(this)"><span class="preset-icon">🖌️</span>Oil Painting</div>
+            <div class="preset-opt" data-preset="Concept Art" onclick="selectPreset(this)"><span class="preset-icon">💡</span>Concept Art</div>
+            <div class="preset-opt" data-preset="Blueprint" onclick="selectPreset(this)"><span class="preset-icon">📐</span>Blueprint</div>
+            <div class="preset-opt" data-preset="Axonometric" onclick="selectPreset(this)"><span class="preset-icon">📦</span>Axonometric</div>
+            <div class="preset-opt" data-preset="Moodboard" onclick="selectPreset(this)"><span class="preset-icon">🗂️</span>Moodboard</div>
+            <div class="preset-opt" data-preset="V-Ray Style" onclick="selectPreset(this)"><span class="preset-icon">⚡</span>V-Ray Style</div>
           </div>
         </div>
 
@@ -451,24 +353,24 @@
           <div class="bpanel-title">Scene</div>
           <div class="bpanel-grid">
             <div class="form-group">
+              <label class="form-label">Project Name</label>
+              <input class="form-input" id="b-project" placeholder="Project / client name..." oninput="buildPrompt()">
+            </div>
+            <div class="form-group">
               <label class="form-label">Category</label>
               <select class="form-select" id="b-category" onchange="buildPrompt()">
                 <option value="">—</option>
-                <option>Exterior</option>
-                <option>Interior</option>
-                <option>Aerial</option>
-                <option>Detail</option>
-                <option>Landscape</option>
-                <option>Concept</option>
+                <option>Exterior</option><option>Interior</option><option>Aerial</option>
+                <option>Detail</option><option>Landscape</option><option>Concept</option>
               </select>
             </div>
             <div class="form-group">
               <label class="form-label">Building / Space Type</label>
               <input class="form-input" id="b-subject" placeholder="villa, office tower, museum..." oninput="buildPrompt()">
             </div>
-            <div class="form-group bpanel-full">
+            <div class="form-group">
               <label class="form-label">Location / Setting</label>
-              <input class="form-input" id="b-location" placeholder="coastal cliffs, urban downtown, forest..." oninput="buildPrompt()">
+              <input class="form-input" id="b-location" placeholder="coastal cliffs, urban, forest..." oninput="buildPrompt()">
             </div>
           </div>
         </div>
@@ -480,59 +382,45 @@
               <label class="form-label">Time of Day</label>
               <select class="form-select" id="b-time" onchange="buildPrompt()">
                 <option value="">—</option>
-                <option>golden hour sunrise</option>
-                <option>golden hour sunset</option>
-                <option>midday</option>
-                <option>overcast day</option>
-                <option>blue hour</option>
-                <option>night</option>
-                <option>dawn</option>
-                <option>dusk</option>
+                <option>golden hour sunrise</option><option>golden hour sunset</option>
+                <option>midday</option><option>overcast day</option>
+                <option>blue hour</option><option>night</option>
+                <option>dawn</option><option>dusk</option>
               </select>
             </div>
             <div class="form-group">
               <label class="form-label">Weather</label>
               <select class="form-select" id="b-weather" onchange="buildPrompt()">
                 <option value="">—</option>
-                <option>clear sky</option>
-                <option>partly cloudy</option>
-                <option>overcast moody</option>
-                <option>fog mist</option>
-                <option>rain</option>
-                <option>heavy rain</option>
-                <option>snow blizzard</option>
-                <option>dramatic storm</option>
+                <option>clear sky</option><option>partly cloudy</option>
+                <option>overcast moody</option><option>fog mist</option>
+                <option>rain</option><option>heavy rain</option>
+                <option>snow blizzard</option><option>dramatic storm</option>
               </select>
             </div>
             <div class="form-group">
               <label class="form-label">Season</label>
               <select class="form-select" id="b-season" onchange="buildPrompt()">
                 <option value="">—</option>
-                <option>spring sakura</option>
-                <option>summer lush</option>
-                <option>autumn foliage</option>
-                <option>winter snow</option>
+                <option>spring sakura</option><option>summer lush</option>
+                <option>autumn foliage</option><option>winter snow</option>
               </select>
             </div>
             <div class="form-group">
-              <label class="form-label">Mood / Atmosphere</label>
+              <label class="form-label">Mood</label>
               <select class="form-select" id="b-mood" onchange="buildPrompt()">
                 <option value="">—</option>
-                <option>warm cozy</option>
-                <option>cool minimal</option>
-                <option>dramatic moody</option>
-                <option>bright airy</option>
-                <option>serene tranquil</option>
-                <option>futuristic high-tech</option>
-                <option>raw industrial</option>
-                <option>lush organic</option>
+                <option>warm cozy</option><option>cool minimal</option>
+                <option>dramatic moody</option><option>bright airy</option>
+                <option>serene tranquil</option><option>futuristic high-tech</option>
+                <option>raw industrial</option><option>lush organic</option>
               </select>
             </div>
           </div>
         </div>
 
         <div class="bpanel">
-          <div class="bpanel-title">Materials & Vegetation</div>
+          <div class="bpanel-title">Materials &amp; Vegetation</div>
           <div class="bpanel-grid">
             <div class="form-group bpanel-full">
               <label class="form-label">Key Materials</label>
@@ -540,18 +428,15 @@
             </div>
             <div class="form-group bpanel-full">
               <label class="form-label">Vegetation / Landscape</label>
-              <input class="form-input" id="b-vegetation" placeholder="tropical plants, manicured lawn, desert scrub..." oninput="buildPrompt()">
+              <input class="form-input" id="b-vegetation" placeholder="tropical plants, manicured lawn..." oninput="buildPrompt()">
             </div>
             <div class="form-group">
               <label class="form-label">Color Palette</label>
               <select class="form-select" id="b-colors" onchange="buildPrompt()">
                 <option value="">—</option>
-                <option>warm earth tones</option>
-                <option>cool blues grays</option>
-                <option>monochromatic white</option>
-                <option>vibrant bold colors</option>
-                <option>muted desaturated</option>
-                <option>high contrast</option>
+                <option>warm earth tones</option><option>cool blues grays</option>
+                <option>monochromatic white</option><option>vibrant bold colors</option>
+                <option>muted desaturated</option><option>high contrast</option>
                 <option>soft pastels</option>
               </select>
             </div>
@@ -559,10 +444,8 @@
               <label class="form-label">Entourage</label>
               <select class="form-select" id="b-people" onchange="buildPrompt()">
                 <option value="">—</option>
-                <option>no people</option>
-                <option>silhouetted figures</option>
-                <option>blurred pedestrians</option>
-                <option>casually dressed people</option>
+                <option>no people</option><option>silhouetted figures</option>
+                <option>blurred pedestrians</option><option>casually dressed people</option>
                 <option>families</option>
               </select>
             </div>
@@ -570,85 +453,64 @@
         </div>
 
         <div class="bpanel">
-          <div class="bpanel-title">Lighting</div>
+          <div class="bpanel-title">Lighting &amp; Camera</div>
           <div class="bpanel-grid">
             <div class="form-group">
               <label class="form-label">Light Type</label>
               <select class="form-select" id="b-lighting" onchange="buildPrompt()">
                 <option value="">—</option>
-                <option>natural sunlight</option>
-                <option>diffused soft light</option>
-                <option>dramatic side lighting</option>
-                <option>backlighting silhouette</option>
-                <option>HDRI sky</option>
-                <option>interior artificial lighting</option>
-                <option>mixed interior exterior</option>
-                <option>neon urban glow</option>
-                <option>candlelight warm glow</option>
+                <option>natural sunlight</option><option>diffused soft light</option>
+                <option>dramatic side lighting</option><option>backlighting silhouette</option>
+                <option>HDRI sky</option><option>interior artificial lighting</option>
+                <option>mixed interior exterior</option><option>neon urban glow</option>
               </select>
             </div>
             <div class="form-group">
               <label class="form-label">Shadows</label>
               <select class="form-select" id="b-shadows" onchange="buildPrompt()">
                 <option value="">—</option>
-                <option>soft shadows</option>
-                <option>hard shadows</option>
-                <option>long dramatic shadows</option>
-                <option>no shadows</option>
+                <option>soft shadows</option><option>hard shadows</option>
+                <option>long dramatic shadows</option><option>no shadows</option>
               </select>
             </div>
-          </div>
-        </div>
-
-        <div class="bpanel">
-          <div class="bpanel-title">Camera</div>
-          <div class="bpanel-grid">
             <div class="form-group">
               <label class="form-label">Shot Type</label>
               <select class="form-select" id="b-shot" onchange="buildPrompt()">
                 <option value="">—</option>
-                <option>wide establishing shot</option>
-                <option>3/4 view</option>
-                <option>street-level perspective</option>
-                <option>worm's eye view</option>
-                <option>bird's eye aerial view</option>
-                <option>interior wide angle</option>
-                <option>close-up detail</option>
-                <option>symmetrical front elevation</option>
+                <option>wide establishing shot</option><option>3/4 view</option>
+                <option>street-level perspective</option><option>worm's eye view</option>
+                <option>bird's eye aerial view</option><option>interior wide angle</option>
+                <option>close-up detail</option><option>symmetrical front elevation</option>
               </select>
             </div>
             <div class="form-group">
               <label class="form-label">Focal Length</label>
               <select class="form-select" id="b-lens" onchange="buildPrompt()">
                 <option value="">—</option>
-                <option>ultra-wide 14mm</option>
-                <option>wide 24mm</option>
-                <option>standard 35mm</option>
-                <option>50mm</option>
-                <option>85mm</option>
+                <option>ultra-wide 14mm</option><option>wide 24mm</option>
+                <option>standard 35mm</option><option>50mm</option><option>85mm</option>
               </select>
             </div>
           </div>
         </div>
 
-        <!-- Veras-specific parameters -->
         <div class="bpanel">
           <div class="bpanel-title">Veras Parameters</div>
-          <div class="form-group slider-group">
+          <div class="form-group">
             <label class="form-label">Geometry Override <span class="form-hint">— 0 = preserve geometry · 100 = full AI freedom</span></label>
             <div class="slider-row">
               <input type="range" min="0" max="100" value="20" id="b-geo" oninput="syncSlider('b-geo','bv-geo');buildPrompt()">
               <span class="slider-val" id="bv-geo">20</span>
             </div>
           </div>
-          <div class="form-group slider-group">
+          <div class="form-group">
             <label class="form-label">Material Override <span class="form-hint">— how much AI replaces materials</span></label>
             <div class="slider-row">
               <input type="range" min="0" max="100" value="80" id="b-mat" oninput="syncSlider('b-mat','bv-mat');buildPrompt()">
               <span class="slider-val" id="bv-mat">80</span>
             </div>
           </div>
-          <div class="form-group slider-group">
+          <div class="form-group">
             <label class="form-label">Prompt Strength <span class="form-hint">— how strictly the prompt is followed</span></label>
             <div class="slider-row">
               <input type="range" min="0" max="100" value="60" id="b-strength" oninput="syncSlider('b-strength','bv-strength');buildPrompt()">
@@ -660,25 +522,25 @@
         <div class="bpanel">
           <div class="bpanel-title">Emphasis &amp; Extra</div>
           <div class="form-group">
-            <label class="form-label">Emphasize keywords <span class="form-hint">— triple parentheses add weight in Veras</span></label>
-            <div class="emphasis-row" id="emphasis-row">
+            <label class="form-label">Quick emphasis <span class="form-hint">— adds (((word))) weight</span></label>
+            <div class="emphasis-row">
               <span class="emphasis-chip" onclick="addEmphasis('golden hour')">golden hour</span>
               <span class="emphasis-chip" onclick="addEmphasis('warm colors')">warm colors</span>
               <span class="emphasis-chip" onclick="addEmphasis('photorealistic')">photorealistic</span>
               <span class="emphasis-chip" onclick="addEmphasis('highly detailed')">highly detailed</span>
               <span class="emphasis-chip" onclick="addEmphasis('lush greenery')">lush greenery</span>
               <span class="emphasis-chip" onclick="addEmphasis('dramatic lighting')">dramatic lighting</span>
-              <span class="emphasis-chip" onclick="addEmphasis('award winning render')">award winning</span>
+              <span class="emphasis-chip" onclick="addEmphasis('award winning')">award winning</span>
               <span class="emphasis-chip" onclick="addEmphasis('8K ultra detail')">8K ultra detail</span>
             </div>
           </div>
           <div class="form-group">
-            <label class="form-label">Extra / Custom Keywords</label>
-            <input class="form-input" id="b-extra" placeholder="any additional keywords or overrides..." oninput="buildPrompt()">
+            <label class="form-label">Extra Keywords</label>
+            <input class="form-input" id="b-extra" placeholder="custom overrides..." oninput="buildPrompt()">
           </div>
           <div class="form-group">
             <label class="form-label">Negative Prompt</label>
-            <textarea class="form-textarea" id="b-negative" rows="2" style="min-height:60px;" placeholder="e.g. blurry, bad proportions, cartoon, unrealistic shadows..." oninput="buildPrompt()"></textarea>
+            <textarea class="form-textarea" id="b-negative" rows="2" style="min-height:55px;" placeholder="e.g. blurry, cartoon, bad proportions..." oninput="buildPrompt()"></textarea>
           </div>
         </div>
 
@@ -691,7 +553,17 @@
             </div>
             <div class="form-group bpanel-full">
               <label class="form-label">Tags <span style="font-weight:400;color:var(--text-muted)">(comma-separated)</span></label>
-              <input class="form-input" id="b-tags" placeholder="luxury, residential, sunset, concrete...">
+              <input class="form-input" id="b-tags" placeholder="luxury, residential, sunset...">
+            </div>
+            <div class="form-group bpanel-full">
+              <label class="form-label">Rating</label>
+              <div class="star-input" id="b-star-input">
+                <input type="radio" name="b-rating" id="bst5" value="5"><label for="bst5">★</label>
+                <input type="radio" name="b-rating" id="bst4" value="4"><label for="bst4">★</label>
+                <input type="radio" name="b-rating" id="bst3" value="3"><label for="bst3">★</label>
+                <input type="radio" name="b-rating" id="bst2" value="2"><label for="bst2">★</label>
+                <input type="radio" name="b-rating" id="bst1" value="1"><label for="bst1">★</label>
+              </div>
             </div>
           </div>
           <div style="display:flex;gap:8px;">
@@ -702,7 +574,6 @@
 
       </div><!-- /builder-col -->
 
-      <!-- RIGHT COL: live preview -->
       <div class="preview-col">
         <div class="preview-panel">
           <div class="preview-panel-title">Live Preview</div>
@@ -715,10 +586,7 @@
 
           <div class="form-label" style="margin-bottom:6px;">Veras Parameters</div>
           <div class="veras-output-block">
-            <div class="vop-row">
-              <span class="vop-label">Preset</span>
-              <span class="vop-val" id="out-preset">—</span>
-            </div>
+            <div class="vop-row"><span class="vop-label">Preset</span><span class="vop-val" id="out-preset">—</span></div>
             <div class="vop-row">
               <span class="vop-label">Geometry Override</span>
               <div class="vop-bar"><div class="vop-bar-fill" id="bar-geo" style="width:20%"></div></div>
@@ -737,14 +605,12 @@
           </div>
 
           <div class="token-count" id="token-count"></div>
-
           <div class="copy-row">
             <button class="btn btn-primary" style="flex:1;" onclick="copyBuiltPrompt(this)">Copy Prompt</button>
             <button class="btn btn-secondary" onclick="copyFullVeras(this)">Copy Full Config</button>
           </div>
-
           <div style="font-size:10.5px;color:var(--text-muted);line-height:1.6;">
-            <strong style="color:var(--text-dim);">Tip:</strong> In Veras, set sliders to the values shown above, then paste the prompt. Use parentheses for extra emphasis on key words.
+            <strong style="color:var(--text-dim);">Tip:</strong> Set Veras sliders to the values shown, then paste the prompt. Use (((word))) for emphasis.
           </div>
         </div>
       </div>
@@ -767,13 +633,9 @@
         <label class="form-label">Title *</label>
         <input class="form-input" id="f-title" placeholder="Descriptive name...">
       </div>
-      <div class="form-group form-full">
-        <label class="form-label">Prompt Text *</label>
-        <textarea class="form-textarea" id="f-prompt" rows="5" placeholder="Paste your Veras prompt here..."></textarea>
-      </div>
-      <div class="form-group form-full">
-        <label class="form-label">Negative Prompt</label>
-        <textarea class="form-textarea" id="f-negative" rows="2" style="min-height:55px;" placeholder="Optional..."></textarea>
+      <div class="form-group">
+        <label class="form-label">Project Name</label>
+        <input class="form-input" id="f-project" placeholder="Client / project...">
       </div>
       <div class="form-group">
         <label class="form-label">Category</label>
@@ -787,21 +649,30 @@
           <option value="concept">Concept / Mood</option>
         </select>
       </div>
+      <div class="form-group form-full">
+        <label class="form-label">Prompt Text *</label>
+        <textarea class="form-textarea" id="f-prompt" rows="5" placeholder="Paste your Veras prompt here..."></textarea>
+      </div>
+      <div class="form-group form-full">
+        <label class="form-label">Negative Prompt</label>
+        <textarea class="form-textarea" id="f-negative" rows="2" style="min-height:55px;" placeholder="Optional..."></textarea>
+      </div>
       <div class="form-group">
         <label class="form-label">Veras Preset</label>
         <select class="form-select" id="f-preset">
           <option value="">None</option>
-          <option>Photorealistic</option>
-          <option>Cinematic</option>
-          <option>Turbo Nature</option>
-          <option>Pencil Sketch</option>
-          <option>Watercolor</option>
-          <option>Oil Painting</option>
-          <option>Concept Art</option>
-          <option>Blueprint</option>
-          <option>Axonometric</option>
-          <option>Moodboard</option>
-          <option>V-Ray Style</option>
+          <option>Photorealistic</option><option>Cinematic</option><option>Turbo Nature</option>
+          <option>Pencil Sketch</option><option>Watercolor</option><option>Oil Painting</option>
+          <option>Concept Art</option><option>Blueprint</option><option>Axonometric</option>
+          <option>Moodboard</option><option>V-Ray Style</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Lighting</label>
+        <select class="form-select" id="f-lighting">
+          <option value="">Not specified</option>
+          <option>Natural sunlight</option><option>Golden Hour</option><option>Blue Hour</option>
+          <option>Night</option><option>Overcast</option><option>Dramatic</option><option>Artificial</option>
         </select>
       </div>
       <div class="form-group">
@@ -818,29 +689,26 @@
           <span class="slider-val" id="fv-mat">80</span>
         </div>
       </div>
-      <div class="form-group">
+      <div class="form-group form-full">
         <label class="form-label">Prompt Strength (0–100)</label>
         <div class="slider-row">
           <input type="range" min="0" max="100" value="60" id="f-strength" oninput="syncSlider('f-strength','fv-strength')">
           <span class="slider-val" id="fv-strength">60</span>
         </div>
       </div>
-      <div class="form-group">
-        <label class="form-label">Lighting</label>
-        <select class="form-select" id="f-lighting">
-          <option value="">Not specified</option>
-          <option>Natural sunlight</option>
-          <option>Golden Hour</option>
-          <option>Blue Hour</option>
-          <option>Night</option>
-          <option>Overcast</option>
-          <option>Dramatic</option>
-          <option>Artificial</option>
-        </select>
-      </div>
       <div class="form-group form-full">
         <label class="form-label">Tags <span style="font-weight:400;color:var(--text-muted)">(comma-separated)</span></label>
-        <input class="form-input" id="f-tags" placeholder="e.g. luxury, residential, sunset, concrete">
+        <input class="form-input" id="f-tags" placeholder="luxury, residential, sunset, concrete">
+      </div>
+      <div class="form-group form-full">
+        <label class="form-label">Rating</label>
+        <div class="star-input" id="f-star-input">
+          <input type="radio" name="f-rating" id="fst5" value="5"><label for="fst5">★</label>
+          <input type="radio" name="f-rating" id="fst4" value="4"><label for="fst4">★</label>
+          <input type="radio" name="f-rating" id="fst3" value="3"><label for="fst3">★</label>
+          <input type="radio" name="f-rating" id="fst2" value="2"><label for="fst2">★</label>
+          <input type="radio" name="f-rating" id="fst1" value="1"><label for="fst1">★</label>
+        </div>
       </div>
       <div class="form-group form-full" style="flex-direction:row;align-items:center;gap:10px;">
         <input type="checkbox" id="f-favorite" style="width:15px;height:15px;accent-color:var(--accent);">
@@ -854,44 +722,72 @@
   </div>
 </div>
 
-<!-- ═══════  MODAL: Import/Export  ═══════ -->
+<!-- ═══════  MODAL: Import / Export  ═══════ -->
 <div class="modal-overlay hidden" id="ie-modal" onclick="if(event.target===this)closeIEModal()">
-  <div class="modal" style="max-width:500px;">
+  <div class="modal" style="max-width:560px;">
     <div class="modal-header">
       <div class="modal-title">Import / Export</div>
       <button class="modal-close" onclick="closeIEModal()">×</button>
     </div>
-    <div class="form-group">
-      <label class="form-label">Export JSON (copy below)</label>
-      <textarea class="form-textarea" id="export-area" rows="8" readonly></textarea>
+    <div class="ie-tabs">
+      <button class="ie-tab active" onclick="switchIETab('export',this)">Export</button>
+      <button class="ie-tab" onclick="switchIETab('import',this)">Import</button>
     </div>
-    <div class="form-group">
-      <label class="form-label">Import JSON (paste here)</label>
-      <textarea class="form-textarea" id="import-area" rows="4" placeholder="Paste exported JSON..."></textarea>
+
+    <!-- Export panel -->
+    <div class="ie-panel active" id="ie-export">
+      <div class="form-group">
+        <label class="form-label">Format</label>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-secondary btn-sm" onclick="exportAs('md')" id="btn-export-md">Export as Markdown (.md)</button>
+          <button class="btn btn-secondary btn-sm" onclick="exportAs('json')" id="btn-export-json">Export as JSON</button>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Preview</label>
+        <textarea class="form-textarea" id="export-area" rows="12" readonly style="font-size:11px;"></textarea>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-primary" onclick="downloadExport()">Download File</button>
+        <button class="btn btn-secondary" onclick="copyExport()">Copy to Clipboard</button>
+      </div>
     </div>
-    <div class="form-actions">
-      <button class="btn btn-secondary" onclick="doImport()">Import</button>
-      <button class="btn btn-primary" onclick="closeIEModal()">Done</button>
+
+    <!-- Import panel -->
+    <div class="ie-panel" id="ie-import">
+      <div style="font-size:12px;color:var(--text-dim);line-height:1.7;background:var(--surface2);padding:12px;border-radius:var(--radius-sm);border:1px solid var(--border);">
+        Paste either a <strong>Markdown</strong> (.md) or <strong>JSON</strong> export below. Duplicates are skipped automatically.
+      </div>
+      <div class="form-group">
+        <label class="form-label">Paste content here</label>
+        <textarea class="form-textarea" id="import-area" rows="12" placeholder="Paste exported Markdown or JSON..." style="font-size:11px;"></textarea>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-primary" onclick="doImport()">Import Prompts</button>
+      </div>
     </div>
   </div>
 </div>
 
 <script>
-// ══════════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════
 // Storage
-// ══════════════════════════════════════════════════════════════
-const KEY = 'verasp_v2';
+// ════════════════════════════════════════════════════
+const KEY = 'verasp_v3';
 function load() { try { return JSON.parse(localStorage.getItem(KEY)) || []; } catch { return []; } }
 function save(arr) { localStorage.setItem(KEY, JSON.stringify(arr)); }
 
 let prompts = load();
 let editingId = null;
 let activeCategory = 'all';
+let activeMinRating = 0;
+let activeProjects = new Set();
 let activePresets = new Set();
 let activeLightings = new Set();
 let activeTags = new Set();
+let ieExportFormat = 'md';
 
-// ── Tab switching ──────────────────────────────────────────────
+// ── Tab switching ──────────────────────────────────
 function showTab(t) {
   document.querySelectorAll('.tab-panel').forEach(p => { p.classList.remove('active'); p.style.display = 'none'; });
   document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
@@ -907,17 +803,36 @@ function showTab(t) {
   }
 }
 
-// ── Slider sync ────────────────────────────────────────────────
+// ── Slider sync ────────────────────────────────────
 function syncSlider(inputId, valId) {
-  const v = document.getElementById(inputId).value;
-  document.getElementById(valId).textContent = v;
+  document.getElementById(valId).textContent = document.getElementById(inputId).value;
+}
+function setSlider(inputId, valId, val) {
+  document.getElementById(inputId).value = val;
+  document.getElementById(valId).textContent = val;
 }
 
-// ── Library ────────────────────────────────────────────────────
+// ── Stars utility ──────────────────────────────────
+function starsHTML(r) {
+  let h = '';
+  for (let i = 1; i <= 5; i++) h += `<span class="s${i <= r ? ' on' : ''}">★</span>`;
+  return h;
+}
+function getRadioVal(name) {
+  const checked = document.querySelector(`input[name="${name}"]:checked`);
+  return checked ? +checked.value : 0;
+}
+function setRadioVal(name, val) {
+  document.querySelectorAll(`input[name="${name}"]`).forEach(r => r.checked = (+r.value === val));
+}
+
+// ── Library filtering ──────────────────────────────
 function getFiltered() {
   const q = (document.getElementById('search-input')?.value || '').toLowerCase();
   return prompts.filter(p => {
     if (activeCategory !== 'all' && p.category !== activeCategory) return false;
+    if (activeMinRating > 0 && (p.rating || 0) < activeMinRating) return false;
+    if (activeProjects.size && !activeProjects.has(p.project || '')) return false;
     if (activePresets.size && !activePresets.has(p.preset)) return false;
     if (activeLightings.size && !activeLightings.has(p.lighting)) return false;
     if (activeTags.size) {
@@ -925,7 +840,7 @@ function getFiltered() {
       if (![...activeTags].every(t => pt.includes(t))) return false;
     }
     if (q) {
-      const hay = [p.title, p.prompt, p.negative, p.preset, p.lighting, ...(p.tags || [])].join(' ').toLowerCase();
+      const hay = [p.title, p.prompt, p.negative, p.preset, p.lighting, p.project, ...(p.tags || [])].join(' ').toLowerCase();
       if (!hay.includes(q)) return false;
     }
     return true;
@@ -935,9 +850,10 @@ function getFiltered() {
 function getSorted(arr) {
   const s = document.getElementById('sort-select')?.value || 'newest';
   return [...arr].sort((a, b) =>
-    s === 'newest' ? b.created - a.created :
-    s === 'oldest' ? a.created - b.created :
-    s === 'title'  ? a.title.localeCompare(b.title) :
+    s === 'newest'   ? b.created - a.created :
+    s === 'oldest'   ? a.created - b.created :
+    s === 'rating'   ? (b.rating || 0) - (a.rating || 0) :
+    s === 'title'    ? a.title.localeCompare(b.title) :
     (b.favorite ? 1 : 0) - (a.favorite ? 1 : 0)
   );
 }
@@ -946,35 +862,30 @@ function renderCards() {
   const list = getSorted(getFiltered());
   const c = document.getElementById('cards-container');
   document.getElementById('result-count').textContent = `${list.length} prompt${list.length !== 1 ? 's' : ''}`;
-
   if (!list.length) {
-    c.innerHTML = `<div class="empty"><div class="empty-icon">🏛️</div><h3>No prompts found</h3><p>Adjust your filters or add a new Veras prompt.</p></div>`;
-    updateSidebarCounts();
-    return;
+    c.innerHTML = `<div class="empty"><div class="empty-icon">🏛️</div><h3>No prompts found</h3><p>Adjust filters or add a new Veras prompt.</p></div>`;
+    updateSidebar(); return;
   }
   c.innerHTML = `<div class="cards-grid">${list.map(cardHTML).join('')}</div>`;
-  updateSidebarCounts();
+  updateSidebar();
 }
 
-function presetClass(preset) {
-  if (!preset) return 'other';
-  const p = preset.toLowerCase();
-  if (p.includes('cinema')) return 'cinematic';
-  if (p.includes('photo') || p.includes('v-ray')) return 'photorealistic';
-  if (p.includes('sketch') || p.includes('pencil') || p.includes('water') || p.includes('oil')) return 'sketch';
-  if (p.includes('blueprint') || p.includes('axon')) return 'watercolor';
-  if (p.includes('concept') || p.includes('mood')) return 'concept';
+function presetClass(p) {
+  if (!p) return 'other';
+  const l = p.toLowerCase();
+  if (l.includes('cinema')) return 'cinematic';
+  if (l.includes('photo') || l.includes('v-ray')) return 'photorealistic';
+  if (l.includes('sketch') || l.includes('pencil') || l.includes('water') || l.includes('oil')) return 'sketch';
+  if (l.includes('blueprint') || l.includes('axon')) return 'watercolor';
+  if (l.includes('concept') || l.includes('mood')) return 'concept';
   return 'other';
 }
 
 function cardHTML(p) {
   const tags = (p.tags || []).map(t => `<span class="card-tag">${esc(t)}</span>`).join('');
   const date = new Date(p.created).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-
-  const geoVal = p.geoOverride ?? '—';
-  const matVal = p.matOverride ?? '—';
-  const strVal = p.promptStrength ?? '—';
-
+  const rating = p.rating || 0;
+  const geo = p.geoOverride ?? '—'; const mat = p.matOverride ?? '—'; const str = p.promptStrength ?? '—';
   return `
   <div class="card" id="card-${p.id}">
     <div class="copy-feedback" id="cf-${p.id}">Copied!</div>
@@ -982,15 +893,17 @@ function cardHTML(p) {
       <div class="card-title">${p.favorite ? '<span style="color:var(--yellow)">★ </span>' : ''}${esc(p.title)}</div>
       ${p.preset ? `<span class="preset-badge ${presetClass(p.preset)}">${esc(p.preset)}</span>` : ''}
     </div>
+    ${p.project ? `<div><span class="card-project">${esc(p.project)}</span></div>` : ''}
+    <div class="star-display">${starsHTML(rating)}</div>
     <div class="card-prompt">${esc(p.prompt)}</div>
     <div class="veras-params">
-      <span class="vparam"><span class="vparam-label">Geo</span><span class="vparam-value">${geoVal}</span></span>
-      <span class="vparam"><span class="vparam-label">Mat</span><span class="vparam-value">${matVal}</span></span>
-      <span class="vparam"><span class="vparam-label">Strength</span><span class="vparam-value">${strVal}</span></span>
+      <span class="vparam"><span class="vparam-label">Geo</span><span class="vparam-value">${geo}</span></span>
+      <span class="vparam"><span class="vparam-label">Mat</span><span class="vparam-value">${mat}</span></span>
+      <span class="vparam"><span class="vparam-label">Strength</span><span class="vparam-value">${str}</span></span>
     </div>
     <div class="card-meta">
       ${p.lighting ? `<span class="meta-badge lighting">${esc(p.lighting)}</span>` : ''}
-      ${p.category ? `<span class="meta-badge">${esc(p.category)}</span>` : ''}
+      ${p.category ? `<span class="meta-badge cat">${esc(p.category)}</span>` : ''}
     </div>
     ${tags ? `<div class="card-tags">${tags}</div>` : ''}
     <div class="card-actions">
@@ -1004,24 +917,33 @@ function cardHTML(p) {
   </div>`;
 }
 
-function updateSidebarCounts() {
+function updateSidebar() {
   const cats = ['all','exterior','interior','aerial','detail','landscape','concept','other'];
   cats.forEach(c => {
     const el = document.getElementById(`count-${c}`);
     if (el) el.textContent = c === 'all' ? prompts.length : prompts.filter(p => p.category === c).length;
   });
+  // Rating counts
+  document.getElementById('count-r5').textContent = prompts.filter(p => (p.rating||0) >= 5).length;
+  document.getElementById('count-r4').textContent = prompts.filter(p => (p.rating||0) >= 4).length;
+  document.getElementById('count-r3').textContent = prompts.filter(p => (p.rating||0) >= 3).length;
+
+  // Project chips
+  const projs = [...new Set(prompts.map(p => p.project).filter(Boolean))].sort();
+  document.getElementById('project-filters').innerHTML = projs.map(r =>
+    `<span class="chip${activeProjects.has(r)?' active':''}" onclick="toggleFilter('project','${esc(r)}',this)">${esc(r)}</span>`).join('');
 
   const presets = [...new Set(prompts.map(p => p.preset).filter(Boolean))].sort();
   document.getElementById('preset-filters').innerHTML = presets.map(r =>
-    `<span class="chip${activePresets.has(r)?' active':''}" onclick="toggleFilter('preset','${r}',this)">${r}</span>`).join('');
+    `<span class="chip${activePresets.has(r)?' active':''}" onclick="toggleFilter('preset','${esc(r)}',this)">${esc(r)}</span>`).join('');
 
   const lts = [...new Set(prompts.map(p => p.lighting).filter(Boolean))].sort();
   document.getElementById('lighting-filters').innerHTML = lts.map(l =>
-    `<span class="chip${activeLightings.has(l)?' active':''}" onclick="toggleFilter('lighting','${l}',this)">${l}</span>`).join('');
+    `<span class="chip${activeLightings.has(l)?' active':''}" onclick="toggleFilter('lighting','${esc(l)}',this)">${esc(l)}</span>`).join('');
 
   const allTags = [...new Set(prompts.flatMap(p => p.tags || []).map(t => t.toLowerCase()))].sort();
   document.getElementById('tag-filters').innerHTML = allTags.map(t =>
-    `<span class="chip${activeTags.has(t)?' active':''}" onclick="toggleFilter('tag','${t}',this)">${t}</span>`).join('');
+    `<span class="chip${activeTags.has(t)?' active':''}" onclick="toggleFilter('tag','${esc(t)}',this)">${esc(t)}</span>`).join('');
 }
 
 function setCategory(cat, btn) {
@@ -1031,80 +953,78 @@ function setCategory(cat, btn) {
   renderCards();
 }
 
-function toggleFilter(type, val, el) {
-  const map = { preset: activePresets, lighting: activeLightings, tag: activeTags };
-  const s = map[type];
-  s.has(val) ? s.delete(val) : s.add(val);
-  el.classList.toggle('active');
+function setRating(min, btn) {
+  if (activeMinRating === min) {
+    activeMinRating = 0;
+    btn.classList.remove('active');
+  } else {
+    activeMinRating = min;
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    document.querySelector('.filter-btn[onclick^="setCategory(\'all"]').classList.add('active');
+    btn.classList.add('active');
+    activeCategory = 'all';
+  }
   renderCards();
 }
 
+function toggleFilter(type, val, el) {
+  const map = { project: activeProjects, preset: activePresets, lighting: activeLightings, tag: activeTags };
+  const s = map[type]; s.has(val) ? s.delete(val) : s.add(val);
+  el.classList.toggle('active'); renderCards();
+}
+
+// ── Card actions ───────────────────────────────────
 function copyPrompt(id) {
-  const p = prompts.find(x => x.id === id);
-  if (!p) return;
+  const p = prompts.find(x => x.id === id); if (!p) return;
   const txt = p.negative ? `${p.prompt}\n\nNegative: ${p.negative}` : p.prompt;
   navigator.clipboard.writeText(txt).then(() => {
     const fb = document.getElementById(`cf-${id}`);
-    fb.classList.add('show');
-    setTimeout(() => fb.classList.remove('show'), 1500);
+    fb.classList.add('show'); setTimeout(() => fb.classList.remove('show'), 1500);
   });
 }
-
 function copyFullVerasCard(id, btn) {
-  const p = prompts.find(x => x.id === id);
-  if (!p) return;
-  const cfg = buildVerasConfig(p.prompt, p.negative, p.preset, p.geoOverride, p.matOverride, p.promptStrength);
-  navigator.clipboard.writeText(cfg).then(() => {
-    btn.textContent = 'Copied!';
-    setTimeout(() => btn.textContent = 'Full Config', 1500);
-  });
+  const p = prompts.find(x => x.id === id); if (!p) return;
+  navigator.clipboard.writeText(verasConfig(p.prompt, p.negative, p.preset, p.geoOverride, p.matOverride, p.promptStrength))
+    .then(() => { btn.textContent = 'Copied!'; setTimeout(() => btn.textContent = 'Full Config', 1500); });
 }
-
-function buildVerasConfig(prompt, negative, preset, geo, mat, strength) {
+function verasConfig(prompt, neg, preset, geo, mat, str) {
   const lines = [`Prompt: ${prompt}`];
-  if (negative) lines.push(`Negative: ${negative}`);
+  if (neg) lines.push(`Negative: ${neg}`);
   if (preset) lines.push(`Preset: ${preset}`);
-  if (geo !== undefined && geo !== null) lines.push(`Geometry Override: ${geo}`);
-  if (mat !== undefined && mat !== null) lines.push(`Material Override: ${mat}`);
-  if (strength !== undefined && strength !== null) lines.push(`Prompt Strength: ${strength}`);
+  if (geo != null) lines.push(`Geometry Override: ${geo}`);
+  if (mat != null) lines.push(`Material Override: ${mat}`);
+  if (str != null) lines.push(`Prompt Strength: ${str}`);
   return lines.join('\n');
 }
-
 function toggleFav(id) {
-  const p = prompts.find(x => x.id === id);
-  if (!p) return;
-  p.favorite = !p.favorite;
-  save(prompts); renderCards();
+  const p = prompts.find(x => x.id === id); if (!p) return;
+  p.favorite = !p.favorite; save(prompts); renderCards();
 }
-
 function deletePrompt(id) {
   if (!confirm('Delete this prompt?')) return;
-  prompts = prompts.filter(p => p.id !== id);
-  save(prompts); renderCards();
+  prompts = prompts.filter(p => p.id !== id); save(prompts); renderCards();
 }
 
-// ── Modal: Add/Edit ────────────────────────────────────────────
+// ── Modal: Add/Edit ────────────────────────────────
 function openAddModal() {
   editingId = null;
   document.getElementById('modal-title').textContent = 'New Prompt';
-  ['f-title','f-prompt','f-negative','f-tags'].forEach(id => document.getElementById(id).value = '');
+  ['f-title','f-project','f-prompt','f-negative','f-tags'].forEach(id => document.getElementById(id).value = '');
   document.getElementById('f-category').value = 'other';
   document.getElementById('f-preset').value = '';
   document.getElementById('f-lighting').value = '';
   document.getElementById('f-favorite').checked = false;
-  setSlider('f-geo','fv-geo',20);
-  setSlider('f-mat','fv-mat',80);
-  setSlider('f-strength','fv-strength',60);
+  setSlider('f-geo','fv-geo',20); setSlider('f-mat','fv-mat',80); setSlider('f-strength','fv-strength',60);
+  setRadioVal('f-rating', 0);
   document.getElementById('modal-overlay').classList.remove('hidden');
   document.getElementById('f-title').focus();
 }
-
 function openEditModal(id) {
-  const p = prompts.find(x => x.id === id);
-  if (!p) return;
+  const p = prompts.find(x => x.id === id); if (!p) return;
   editingId = id;
   document.getElementById('modal-title').textContent = 'Edit Prompt';
   document.getElementById('f-title').value = p.title || '';
+  document.getElementById('f-project').value = p.project || '';
   document.getElementById('f-prompt').value = p.prompt || '';
   document.getElementById('f-negative').value = p.negative || '';
   document.getElementById('f-tags').value = (p.tags || []).join(', ');
@@ -1115,24 +1035,18 @@ function openEditModal(id) {
   setSlider('f-geo','fv-geo', p.geoOverride ?? 20);
   setSlider('f-mat','fv-mat', p.matOverride ?? 80);
   setSlider('f-strength','fv-strength', p.promptStrength ?? 60);
+  setRadioVal('f-rating', p.rating || 0);
   document.getElementById('modal-overlay').classList.remove('hidden');
 }
-
-function setSlider(inputId, valId, val) {
-  document.getElementById(inputId).value = val;
-  document.getElementById(valId).textContent = val;
-}
-
 function closeModal() { document.getElementById('modal-overlay').classList.add('hidden'); }
-
 function savePrompt() {
   const title = document.getElementById('f-title').value.trim();
   const prompt = document.getElementById('f-prompt').value.trim();
   if (!title || !prompt) { alert('Title and prompt text are required.'); return; }
   const tags = document.getElementById('f-tags').value.split(',').map(t => t.trim().toLowerCase()).filter(Boolean);
   const obj = {
-    id: editingId || crypto.randomUUID(),
-    title, prompt,
+    id: editingId || crypto.randomUUID(), title, prompt,
+    project: document.getElementById('f-project').value.trim(),
     negative: document.getElementById('f-negative').value.trim(),
     category: document.getElementById('f-category').value,
     preset: document.getElementById('f-preset').value,
@@ -1140,6 +1054,7 @@ function savePrompt() {
     geoOverride: +document.getElementById('f-geo').value,
     matOverride: +document.getElementById('f-mat').value,
     promptStrength: +document.getElementById('f-strength').value,
+    rating: getRadioVal('f-rating'),
     tags, favorite: document.getElementById('f-favorite').checked,
     created: editingId ? (prompts.find(p => p.id === editingId)?.created || Date.now()) : Date.now(),
   };
@@ -1147,36 +1062,21 @@ function savePrompt() {
   save(prompts); closeModal(); renderCards();
 }
 
-// ── Builder ────────────────────────────────────────────────────
+// ── Builder ────────────────────────────────────────
 let selectedPreset = '';
-
 function selectPreset(el) {
   document.querySelectorAll('.preset-opt').forEach(o => o.classList.remove('selected'));
-  el.classList.add('selected');
-  selectedPreset = el.dataset.preset || '';
-  buildPrompt();
+  el.classList.add('selected'); selectedPreset = el.dataset.preset || ''; buildPrompt();
 }
-
 function v(id) { return document.getElementById(id)?.value?.trim() || ''; }
-
 function buildPrompt() {
   const parts = [];
-  const cat = v('b-category');
-  const subject = v('b-subject');
-  const location = v('b-location');
-  const time = v('b-time');
-  const weather = v('b-weather');
-  const season = v('b-season');
-  const mood = v('b-mood');
-  const materials = v('b-materials');
-  const vegetation = v('b-vegetation');
-  const colors = v('b-colors');
-  const people = v('b-people');
-  const lighting = v('b-lighting');
-  const shadows = v('b-shadows');
-  const shot = v('b-shot');
-  const lens = v('b-lens');
-  const extra = v('b-extra');
+  const subject = v('b-subject'), cat = v('b-category'), location = v('b-location');
+  const time = v('b-time'), weather = v('b-weather'), season = v('b-season'), mood = v('b-mood');
+  const materials = v('b-materials'), vegetation = v('b-vegetation');
+  const colors = v('b-colors'), people = v('b-people');
+  const lighting = v('b-lighting'), shadows = v('b-shadows');
+  const shot = v('b-shot'), lens = v('b-lens'), extra = v('b-extra');
 
   if (subject) parts.push(subject);
   if (cat) parts.push(cat.toLowerCase() + ' view');
@@ -1195,20 +1095,15 @@ function buildPrompt() {
   if (extra) parts.push(extra);
 
   const out = parts.join(', ');
-  const el = document.getElementById('preview-output');
-  el.textContent = out || 'Select options on the left…';
+  document.getElementById('preview-output').textContent = out || 'Select options on the left…';
 
-  // Negative
   const neg = v('b-negative');
   const negEl = document.getElementById('preview-negative');
-  if (neg) { negEl.style.display = 'block'; negEl.textContent = neg; }
-  else negEl.style.display = 'none';
+  if (neg) { negEl.style.display = 'block'; negEl.textContent = neg; } else negEl.style.display = 'none';
 
-  // Veras params display
   const geo = document.getElementById('b-geo').value;
   const mat = document.getElementById('b-mat').value;
   const str = document.getElementById('b-strength').value;
-
   document.getElementById('out-preset').textContent = selectedPreset || '—';
   document.getElementById('out-geo').textContent = geo;
   document.getElementById('out-mat').textContent = mat;
@@ -1220,154 +1115,237 @@ function buildPrompt() {
   const words = out.split(/\s+/).filter(Boolean).length;
   document.getElementById('token-count').textContent = out ? `~${words} words` : '';
 }
-
 function addEmphasis(word) {
   const inp = document.getElementById('b-extra');
   const emp = `(((${word})))`;
   inp.value = inp.value ? inp.value + ', ' + emp : emp;
-  buildPrompt();
-  inp.focus();
+  buildPrompt(); inp.focus();
 }
-
 function copyBuiltPrompt(btn) {
   const txt = document.getElementById('preview-output').textContent;
   if (!txt || txt.startsWith('Select')) { alert('Build a prompt first.'); return; }
   navigator.clipboard.writeText(txt).then(() => { btn.textContent = 'Copied!'; setTimeout(() => btn.textContent = 'Copy Prompt', 1500); });
 }
-
 function copyFullVeras(btn) {
   const prompt = document.getElementById('preview-output').textContent;
   if (!prompt || prompt.startsWith('Select')) { alert('Build a prompt first.'); return; }
-  const neg = v('b-negative');
-  const geo = document.getElementById('b-geo').value;
-  const mat = document.getElementById('b-mat').value;
-  const str = document.getElementById('b-strength').value;
-  const cfg = buildVerasConfig(prompt, neg, selectedPreset, geo, mat, str);
+  const cfg = verasConfig(prompt, v('b-negative'), selectedPreset,
+    document.getElementById('b-geo').value, document.getElementById('b-mat').value, document.getElementById('b-strength').value);
   navigator.clipboard.writeText(cfg).then(() => { btn.textContent = 'Copied!'; setTimeout(() => btn.textContent = 'Copy Full Config', 1500); });
 }
-
 function saveBuiltPrompt() {
   const title = v('b-title');
   const txt = document.getElementById('preview-output').textContent;
   if (!title) { alert('Give the prompt a title.'); document.getElementById('b-title').focus(); return; }
   if (!txt || txt.startsWith('Select')) { alert('Build a prompt first.'); return; }
   const tags = v('b-tags').split(',').map(t => t.trim().toLowerCase()).filter(Boolean);
-  const obj = {
+  prompts.unshift({
     id: crypto.randomUUID(), title,
-    prompt: txt,
-    negative: v('b-negative'),
+    project: v('b-project'),
+    prompt: txt, negative: v('b-negative'),
     category: (v('b-category') || 'other').toLowerCase(),
-    preset: selectedPreset,
-    lighting: v('b-lighting'),
+    preset: selectedPreset, lighting: v('b-lighting'),
     geoOverride: +document.getElementById('b-geo').value,
     matOverride: +document.getElementById('b-mat').value,
     promptStrength: +document.getElementById('b-strength').value,
+    rating: getRadioVal('b-rating'),
     tags, favorite: false, created: Date.now(),
-  };
-  prompts.unshift(obj); save(prompts);
-  alert(`Saved "${title}" to library!`);
+  });
+  save(prompts); alert(`Saved "${title}" to library!`);
 }
-
 function resetBuilder() {
   ['b-category','b-subject','b-location','b-time','b-weather','b-season','b-mood',
    'b-materials','b-vegetation','b-colors','b-people','b-lighting','b-shadows',
-   'b-shot','b-lens','b-extra','b-title','b-tags','b-negative']
+   'b-shot','b-lens','b-extra','b-title','b-tags','b-negative','b-project']
     .forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
-  setSlider('b-geo','bv-geo',20);
-  setSlider('b-mat','bv-mat',80);
-  setSlider('b-strength','bv-strength',60);
+  setSlider('b-geo','bv-geo',20); setSlider('b-mat','bv-mat',80); setSlider('b-strength','bv-strength',60);
   document.querySelectorAll('.preset-opt').forEach(o => o.classList.remove('selected'));
   document.querySelector('.preset-opt[data-preset=""]').classList.add('selected');
-  selectedPreset = '';
-  buildPrompt();
+  selectedPreset = ''; setRadioVal('b-rating', 0); buildPrompt();
 }
 
-// ── Import / Export ────────────────────────────────────────────
-function importExport() {
-  document.getElementById('export-area').value = JSON.stringify(prompts, null, 2);
-  document.getElementById('import-area').value = '';
+// ════════════════════════════════════════════════════
+// Import / Export
+// ════════════════════════════════════════════════════
+function openIEModal() {
   document.getElementById('ie-modal').classList.remove('hidden');
+  switchIETab('export', document.querySelector('.ie-tab'));
+  exportAs('md');
 }
 function closeIEModal() { document.getElementById('ie-modal').classList.add('hidden'); }
-function doImport() {
-  try {
-    const data = JSON.parse(document.getElementById('import-area').value);
-    if (!Array.isArray(data)) throw new Error('Expected array');
-    const merged = [...prompts];
-    data.forEach(p => { if (!merged.find(x => x.id === p.id)) merged.push(p); });
-    prompts = merged; save(prompts); closeIEModal(); renderCards();
-    alert(`Imported. Duplicates skipped.`);
-  } catch(e) { alert('Invalid JSON: ' + e.message); }
+function switchIETab(tab, btn) {
+  document.querySelectorAll('.ie-tab').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.ie-panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('ie-' + tab).classList.add('active');
 }
+
+// ── Markdown format ────────────────────────────────
+function promptToMd(p) {
+  const stars = p.rating ? '★'.repeat(p.rating) + '☆'.repeat(5 - p.rating) : '';
+  let md = `## ${p.title}\n\n`;
+  if (p.project)       md += `**Project:** ${p.project}\n`;
+  if (p.category)      md += `**Category:** ${p.category}\n`;
+  if (p.preset)        md += `**Preset:** ${p.preset}\n`;
+  if (p.lighting)      md += `**Lighting:** ${p.lighting}\n`;
+  if (stars)           md += `**Rating:** ${stars}\n`;
+  if (p.favorite)      md += `**Favorite:** yes\n`;
+  if ((p.tags||[]).length) md += `**Tags:** ${p.tags.join(', ')}\n`;
+  md += `**Geometry Override:** ${p.geoOverride ?? 20}\n`;
+  md += `**Material Override:** ${p.matOverride ?? 80}\n`;
+  md += `**Prompt Strength:** ${p.promptStrength ?? 60}\n`;
+  md += `**Created:** ${new Date(p.created).toISOString().slice(0,10)}\n`;
+  md += `\n### Prompt\n\n${p.prompt}\n`;
+  if (p.negative) md += `\n### Negative Prompt\n\n${p.negative}\n`;
+  md += '\n---\n\n';
+  return md;
+}
+
+function promptsToMd(arr) {
+  return `# Veras Prompt Library\n\nExported: ${new Date().toISOString().slice(0,10)} | Count: ${arr.length}\n\n---\n\n` + arr.map(promptToMd).join('');
+}
+
+// ── Parse Markdown back into prompts ──────────────
+function mdToPrompts(md) {
+  const blocks = md.split(/\n---\n/).filter(b => b.trim().startsWith('## '));
+  return blocks.map(block => {
+    const lines = block.trim().split('\n');
+    const title = (lines[0] || '').replace(/^## /, '').trim();
+    if (!title) return null;
+
+    const getMeta = (key) => {
+      const line = lines.find(l => l.toLowerCase().startsWith(`**${key.toLowerCase()}:**`));
+      return line ? line.replace(/^\*\*[^*]+\*\*:\s*/, '').trim() : '';
+    };
+
+    // Extract prompt section (between ### Prompt and ### Negative Prompt or end)
+    const promptMatch = block.match(/###\s+Prompt\s*\n+([\s\S]*?)(?=###\s+Negative Prompt|$)/);
+    const negMatch    = block.match(/###\s+Negative Prompt\s*\n+([\s\S]*?)(?=$)/);
+    const promptText  = promptMatch ? promptMatch[1].trim() : '';
+    const negText     = negMatch    ? negMatch[1].trim()    : '';
+
+    if (!promptText) return null;
+
+    const ratingStr = getMeta('Rating').replace(/[^★]/g, '').length;
+    const tagsStr   = getMeta('Tags');
+
+    return {
+      id: crypto.randomUUID(),
+      title,
+      project:       getMeta('Project'),
+      category:      getMeta('Category') || 'other',
+      preset:        getMeta('Preset'),
+      lighting:      getMeta('Lighting'),
+      rating:        ratingStr || 0,
+      favorite:      getMeta('Favorite').toLowerCase() === 'yes',
+      tags:          tagsStr ? tagsStr.split(',').map(t => t.trim().toLowerCase()).filter(Boolean) : [],
+      geoOverride:   +getMeta('Geometry Override') || 20,
+      matOverride:   +getMeta('Material Override') || 80,
+      promptStrength:+getMeta('Prompt Strength') || 60,
+      prompt:        promptText,
+      negative:      negText,
+      created:       Date.now(),
+    };
+  }).filter(Boolean);
+}
+
+function exportAs(fmt) {
+  ieExportFormat = fmt;
+  document.getElementById('btn-export-md').classList.toggle('btn-primary', fmt === 'md');
+  document.getElementById('btn-export-md').classList.toggle('btn-secondary', fmt !== 'md');
+  document.getElementById('btn-export-json').classList.toggle('btn-primary', fmt === 'json');
+  document.getElementById('btn-export-json').classList.toggle('btn-secondary', fmt !== 'json');
+  const content = fmt === 'md' ? promptsToMd(prompts) : JSON.stringify(prompts, null, 2);
+  document.getElementById('export-area').value = content;
+}
+
+function downloadExport() {
+  const content = document.getElementById('export-area').value;
+  const ext = ieExportFormat === 'md' ? 'md' : 'json';
+  const mime = ieExportFormat === 'md' ? 'text/markdown' : 'application/json';
+  const date = new Date().toISOString().slice(0,10);
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([content], { type: mime }));
+  a.download = `veras-prompts-${date}.${ext}`;
+  a.click(); URL.revokeObjectURL(a.href);
+}
+
+function copyExport() {
+  navigator.clipboard.writeText(document.getElementById('export-area').value)
+    .then(() => { const btn = event.target; btn.textContent = 'Copied!'; setTimeout(() => btn.textContent = 'Copy to Clipboard', 1500); });
+}
+
+function doImport() {
+  const raw = document.getElementById('import-area').value.trim();
+  if (!raw) { alert('Paste content first.'); return; }
+  let imported = [];
+  try {
+    // Try JSON first
+    const parsed = JSON.parse(raw);
+    if (Array.isArray(parsed)) imported = parsed;
+    else throw new Error('Not array');
+  } catch {
+    // Try Markdown
+    imported = mdToPrompts(raw);
+    if (!imported.length) { alert('Could not parse content. Make sure it is a valid Veras Markdown or JSON export.'); return; }
+  }
+  let added = 0;
+  imported.forEach(p => {
+    if (!prompts.find(x => x.id === p.id)) { prompts.push(p); added++; }
+  });
+  save(prompts); renderCards(); closeIEModal();
+  alert(`Imported ${added} prompt${added !== 1 ? 's' : ''} (${imported.length - added} duplicate${imported.length - added !== 1 ? 's' : ''} skipped).`);
+}
+
 function clearAllPrompts() {
-  if (!confirm('Delete ALL prompts?')) return;
+  if (!confirm('Delete ALL prompts? This cannot be undone.')) return;
   prompts = []; save(prompts); renderCards();
 }
 
-// ── Utility ────────────────────────────────────────────────────
+// ── Utility ────────────────────────────────────────
 function esc(s) {
   return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-// ── Seed examples ──────────────────────────────────────────────
+// ── Seed examples ──────────────────────────────────
 function seed() {
   if (prompts.length) return;
   prompts = [
-    {
-      id: crypto.randomUUID(),
-      title: 'Coastal Villa – Golden Hour (Cinematic)',
+    { id: crypto.randomUUID(), title: 'Coastal Villa – Golden Hour', project: 'Casa Mar Residence',
       prompt: 'minimalist white concrete villa, exterior view, coastal cliffs setting, (((golden hour sunset))), warm amber light, soft shadows, lush tropical plants, wide establishing shot, 24mm, warm earth tones, no people',
-      negative: 'blurry, cartoon, flat lighting, bad proportions, ugly',
-      category: 'exterior', preset: 'Cinematic',
-      lighting: 'Golden Hour', geoOverride: 15, matOverride: 85, promptStrength: 65,
-      tags: ['villa','coastal','sunset','tropical','luxury','minimalist'],
-      favorite: true, created: Date.now() - 864e5 * 3,
-    },
-    {
-      id: crypto.randomUUID(),
-      title: 'Urban Office Tower – Night Glow (Photorealistic)',
+      negative: 'blurry, cartoon, flat lighting, bad proportions',
+      category: 'exterior', preset: 'Cinematic', lighting: 'Golden Hour',
+      geoOverride: 15, matOverride: 85, promptStrength: 65, rating: 5,
+      tags: ['villa','coastal','sunset','tropical','luxury','minimalist'], favorite: true, created: Date.now() - 864e5*3 },
+    { id: crypto.randomUUID(), title: 'Urban Office Tower – Night Glow', project: 'Tower 42 Competition',
       prompt: 'glass office tower, exterior view, downtown urban context, (((night))), neon urban glow, artificial interior lighting through facade, street-level perspective, 35mm, blurred pedestrians, high contrast',
       negative: 'daytime, overexposed, empty street',
-      category: 'exterior', preset: 'Photorealistic',
-      lighting: 'Night', geoOverride: 10, matOverride: 90, promptStrength: 70,
-      tags: ['office','tower','night','urban','glass','commercial'],
-      favorite: false, created: Date.now() - 864e5,
-    },
-    {
-      id: crypto.randomUUID(),
-      title: 'Luxury Interior Living Room (Turbo Nature)',
-      prompt: 'luxury penthouse living room, interior wide angle, floor-to-ceiling windows with city skyline, warm ambient light, polished concrete floor, warm wood panels, marble accents, minimalist furniture, afternoon sunlight streaming in, soft shadows, neutral balanced',
-      negative: 'cluttered, dark, distorted, unrealistic materials',
-      category: 'interior', preset: 'Turbo Nature',
-      lighting: 'Natural sunlight', geoOverride: 20, matOverride: 75, promptStrength: 55,
-      tags: ['interior','luxury','penthouse','living room','concrete','warm'],
-      favorite: false, created: Date.now() - 864e5 * 7,
-    },
-    {
-      id: crypto.randomUUID(),
-      title: 'Brutalist Cultural Center – Pencil Sketch',
+      category: 'exterior', preset: 'Photorealistic', lighting: 'Night',
+      geoOverride: 10, matOverride: 90, promptStrength: 70, rating: 4,
+      tags: ['office','tower','night','urban','glass'], favorite: false, created: Date.now() - 864e5 },
+    { id: crypto.randomUUID(), title: 'Luxury Interior – Living Room', project: 'Casa Mar Residence',
+      prompt: 'luxury penthouse living room, interior wide angle, floor-to-ceiling windows with city skyline, warm ambient light, polished concrete floor, warm wood panels, marble accents, minimalist furniture, afternoon sunlight streaming in, soft shadows',
+      negative: 'cluttered, dark, distorted',
+      category: 'interior', preset: 'Turbo Nature', lighting: 'Natural sunlight',
+      geoOverride: 20, matOverride: 75, promptStrength: 55, rating: 4,
+      tags: ['interior','luxury','penthouse','concrete','warm'], favorite: false, created: Date.now() - 864e5*7 },
+    { id: crypto.randomUUID(), title: 'Brutalist Cultural Center – Sketch', project: 'Cultural Center Bid',
       prompt: 'brutalist cultural center, raw exposed concrete, dramatic cantilevered roof, European plaza, (((overcast moody sky))), autumn foliage, symmetrical front elevation, ultra-wide 14mm, desaturated muted',
       negative: 'colorful, warm tones, tropical, modern glass',
-      category: 'exterior', preset: 'Pencil Sketch',
-      lighting: 'Overcast', geoOverride: 30, matOverride: 60, promptStrength: 80,
-      tags: ['brutalist','cultural','concrete','moody','autumn','sketch'],
-      favorite: true, created: Date.now() - 864e5 * 14,
-    },
-    {
-      id: crypto.randomUUID(),
-      title: 'Concept Moodboard – Forest Retreat',
+      category: 'exterior', preset: 'Pencil Sketch', lighting: 'Overcast',
+      geoOverride: 30, matOverride: 60, promptStrength: 80, rating: 3,
+      tags: ['brutalist','cultural','concrete','moody','autumn'], favorite: true, created: Date.now() - 864e5*14 },
+    { id: crypto.randomUUID(), title: 'Forest Retreat – Moodboard', project: 'Timber Cabin Study',
       prompt: 'timber cabin retreat, forest clearing, (((lush greenery))), morning mist fog, soft diffused light, warm wood materials, stone accents, bird\'s eye aerial view, spring sakura, serene tranquil',
       negative: 'urban, concrete, dark, nighttime',
-      category: 'concept', preset: 'Moodboard',
-      lighting: 'Natural sunlight', geoOverride: 50, matOverride: 95, promptStrength: 75,
-      tags: ['cabin','forest','moodboard','nature','timber','concept'],
-      favorite: false, created: Date.now() - 864e5 * 21,
-    },
+      category: 'concept', preset: 'Moodboard', lighting: 'Natural sunlight',
+      geoOverride: 50, matOverride: 95, promptStrength: 75, rating: 5,
+      tags: ['cabin','forest','moodboard','nature','timber'], favorite: false, created: Date.now() - 864e5*21 },
   ];
   save(prompts);
 }
 
-// ── Init ───────────────────────────────────────────────────────
+// ── Init ───────────────────────────────────────────
 seed();
 renderCards();
 </script>
