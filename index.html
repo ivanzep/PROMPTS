@@ -705,11 +705,29 @@
     <!-- Import -->
     <div class="ie-panel" id="ie-import">
       <div style="font-size:13.5px;color:var(--text-dim);line-height:1.7;background:var(--surface2);padding:13px;border-radius:var(--radius-sm);border:1px solid var(--border);">
-        Paste a <strong>Markdown</strong> (.md) or <strong>JSON</strong> export below, then choose which prompts to import.
+        Upload a <strong>.md</strong> or <strong>.json</strong> export file, or paste content below, then choose which prompts to import.
       </div>
+
+      <!-- File upload drop zone -->
+      <div id="drop-zone" style="border:2px dashed var(--border);border-radius:var(--radius);padding:28px 20px;text-align:center;cursor:pointer;transition:all .2s;background:var(--surface2);"
+           onclick="document.getElementById('file-input').click()"
+           ondragover="dzOver(event)" ondragleave="dzLeave(event)" ondrop="dzDrop(event)">
+        <div style="font-size:28px;margin-bottom:8px;">📂</div>
+        <div style="font-size:14px;font-weight:600;color:var(--text-dim);margin-bottom:4px;">Click to upload or drag &amp; drop</div>
+        <div style="font-size:12.5px;color:var(--text-muted);">Supports .md and .json export files</div>
+        <div id="dz-filename" style="font-size:12.5px;color:var(--accent);margin-top:8px;font-weight:600;display:none;"></div>
+      </div>
+      <input type="file" id="file-input" accept=".md,.json,text/markdown,application/json" style="display:none" onchange="handleFileUpload(this)">
+
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div style="flex:1;height:1px;background:var(--border);"></div>
+        <span style="font-size:12px;color:var(--text-muted);">or paste manually</span>
+        <div style="flex:1;height:1px;background:var(--border);"></div>
+      </div>
+
       <div class="form-group">
         <label class="form-label">Paste exported content</label>
-        <textarea class="form-textarea" id="import-area" rows="7" placeholder="Paste exported Markdown or JSON here..." style="font-size:12px;"></textarea>
+        <textarea class="form-textarea" id="import-area" rows="5" placeholder="Paste exported Markdown or JSON here..." style="font-size:12px;"></textarea>
       </div>
       <button class="btn btn-secondary" onclick="parseImport()">Parse &amp; Preview</button>
 
@@ -1227,6 +1245,50 @@ function seed(){
 
 seed();
 renderCards();
+
+// ── File upload / drag-drop ────────────────────────
+function handleFileUpload(input) {
+  const file = input.files[0];
+  if (!file) return;
+  loadFile(file);
+  input.value = ''; // reset so same file can be re-uploaded
+}
+
+function loadFile(file) {
+  const allowed = ['.md', '.json', 'text/markdown', 'application/json'];
+  const ext = file.name.split('.').pop().toLowerCase();
+  if (!['md','json'].includes(ext)) { alert('Please upload a .md or .json file.'); return; }
+  const reader = new FileReader();
+  reader.onload = e => {
+    const content = e.target.result;
+    document.getElementById('import-area').value = content;
+    // Show filename in drop zone
+    const fn = document.getElementById('dz-filename');
+    fn.textContent = '✓ ' + file.name; fn.style.display = 'block';
+    dzReset();
+    // Auto-parse
+    parseImport();
+  };
+  reader.readAsText(file);
+}
+
+function dzOver(e) {
+  e.preventDefault();
+  const dz = document.getElementById('drop-zone');
+  dz.style.borderColor = 'var(--accent)';
+  dz.style.background = 'var(--accent-dim)';
+}
+function dzLeave(e) { dzReset(); }
+function dzReset() {
+  const dz = document.getElementById('drop-zone');
+  dz.style.borderColor = '';
+  dz.style.background = '';
+}
+function dzDrop(e) {
+  e.preventDefault(); dzReset();
+  const file = e.dataTransfer.files[0];
+  if (file) loadFile(file);
+}
 </script>
 </body>
 </html>
