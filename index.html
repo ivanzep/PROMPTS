@@ -1,0 +1,1410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arch Render Prompt Manager</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0f0f13;
+    --surface: #1a1a22;
+    --surface2: #22222e;
+    --border: #2e2e3e;
+    --accent: #7c6af7;
+    --accent2: #a78bfa;
+    --accent-glow: rgba(124,106,247,0.25);
+    --text: #e8e8f0;
+    --text-dim: #8888a8;
+    --text-muted: #555570;
+    --green: #4ade80;
+    --red: #f87171;
+    --yellow: #fbbf24;
+    --tag-bg: #2a2040;
+    --tag-text: #b09cf5;
+    --radius: 10px;
+    --radius-sm: 6px;
+  }
+
+  body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── Header ─────────────────────────────── */
+  header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    height: 58px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  header h1 {
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: var(--accent2);
+    flex: 1;
+  }
+  header h1 span { color: var(--text-dim); font-weight: 400; }
+  .nav-tabs { display: flex; gap: 4px; }
+  .nav-tab {
+    padding: 6px 16px;
+    border-radius: var(--radius-sm);
+    border: none;
+    background: transparent;
+    color: var(--text-dim);
+    font-size: 13px;
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .nav-tab:hover { background: var(--surface2); color: var(--text); }
+  .nav-tab.active { background: var(--accent); color: #fff; }
+
+  /* ── Layout ─────────────────────────────── */
+  .app { display: flex; flex: 1; overflow: hidden; height: calc(100vh - 58px); }
+  .sidebar {
+    width: 240px;
+    min-width: 240px;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    overflow-y: auto;
+    padding: 16px 12px;
+  }
+  .main { flex: 1; overflow-y: auto; padding: 24px; }
+
+  /* ── Sidebar ─────────────────────────────── */
+  .sidebar-section { margin-bottom: 24px; }
+  .sidebar-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+    padding: 0 4px;
+  }
+  .filter-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 7px 10px;
+    border-radius: var(--radius-sm);
+    border: none;
+    background: transparent;
+    color: var(--text-dim);
+    font-size: 13px;
+    cursor: pointer;
+    text-align: left;
+    transition: all .12s;
+  }
+  .filter-btn:hover { background: var(--surface2); color: var(--text); }
+  .filter-btn.active { background: var(--accent-glow); color: var(--accent2); }
+  .filter-btn .count {
+    margin-left: auto;
+    font-size: 11px;
+    background: var(--surface2);
+    color: var(--text-muted);
+    padding: 1px 7px;
+    border-radius: 10px;
+  }
+  .filter-btn.active .count { background: var(--accent); color: #fff; }
+
+  .tag-filter {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 4px;
+  }
+  .tag-chip {
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    background: var(--tag-bg);
+    color: var(--tag-text);
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: all .12s;
+    user-select: none;
+  }
+  .tag-chip:hover { border-color: var(--accent); }
+  .tag-chip.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+  /* ── Search Bar ─────────────────────────── */
+  .search-bar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    align-items: center;
+  }
+  .search-input {
+    flex: 1;
+    padding: 9px 14px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    font-size: 13px;
+    outline: none;
+    transition: border-color .15s;
+  }
+  .search-input:focus { border-color: var(--accent); }
+  .search-input::placeholder { color: var(--text-muted); }
+
+  .btn {
+    padding: 9px 18px;
+    border-radius: var(--radius);
+    border: none;
+    font-size: 13px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all .15s;
+    white-space: nowrap;
+  }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-primary:hover { background: var(--accent2); box-shadow: 0 0 20px var(--accent-glow); }
+  .btn-secondary { background: var(--surface2); color: var(--text-dim); border: 1px solid var(--border); }
+  .btn-secondary:hover { color: var(--text); border-color: var(--accent); }
+  .btn-ghost { background: transparent; color: var(--text-dim); border: 1px solid var(--border); }
+  .btn-ghost:hover { color: var(--text); background: var(--surface2); }
+  .btn-danger { background: transparent; color: var(--red); border: 1px solid transparent; }
+  .btn-danger:hover { background: rgba(248,113,113,.1); border-color: var(--red); }
+  .btn-sm { padding: 5px 12px; font-size: 12px; }
+
+  /* ── Sort/View row ───────────────────────── */
+  .toolbar { display: flex; gap: 10px; align-items: center; margin-bottom: 20px; flex-wrap: wrap; }
+  .toolbar-label { font-size: 12px; color: var(--text-muted); }
+  select.sort-select {
+    padding: 6px 10px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text-dim);
+    font-size: 12px;
+    outline: none;
+    cursor: pointer;
+  }
+  select.sort-select:focus { border-color: var(--accent); }
+
+  .result-count { margin-left: auto; font-size: 12px; color: var(--text-muted); }
+
+  /* ── Prompt Cards ────────────────────────── */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+    gap: 16px;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transition: border-color .15s, box-shadow .15s;
+    position: relative;
+  }
+  .card:hover { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent-glow); }
+
+  .card-header { display: flex; align-items: flex-start; gap: 10px; }
+  .card-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+    flex: 1;
+    line-height: 1.4;
+  }
+  .card-renderer {
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    background: var(--surface2);
+    color: var(--text-muted);
+    white-space: nowrap;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .card-prompt {
+    font-size: 12px;
+    color: var(--text-dim);
+    line-height: 1.6;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    font-family: 'Cascadia Code', 'Fira Mono', monospace;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 10px 12px;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  .card-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+  }
+  .meta-badge {
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    background: var(--surface2);
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+  }
+  .meta-badge.style { border-color: #4a3f70; color: #a78bfa; }
+  .meta-badge.lighting { border-color: #3f4a2a; color: #86efac; }
+  .meta-badge.camera { border-color: #3a3f50; color: #93c5fd; }
+
+  .card-tags { display: flex; flex-wrap: wrap; gap: 5px; }
+  .card-tag {
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 20px;
+    background: var(--tag-bg);
+    color: var(--tag-text);
+  }
+
+  .card-actions {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    margin-top: 4px;
+    border-top: 1px solid var(--border);
+    padding-top: 12px;
+  }
+  .card-date { font-size: 10px; color: var(--text-muted); margin-left: auto; }
+
+  .copy-feedback {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: var(--green);
+    color: #000;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 20px;
+    opacity: 0;
+    transition: opacity .2s;
+    pointer-events: none;
+  }
+  .copy-feedback.show { opacity: 1; }
+
+  /* ── Empty State ─────────────────────────── */
+  .empty {
+    text-align: center;
+    padding: 80px 24px;
+    color: var(--text-muted);
+  }
+  .empty .empty-icon { font-size: 48px; margin-bottom: 16px; opacity: .4; }
+  .empty h3 { font-size: 16px; color: var(--text-dim); margin-bottom: 8px; }
+  .empty p { font-size: 13px; line-height: 1.6; }
+
+  /* ── Modal ───────────────────────────────── */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.7);
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    backdrop-filter: blur(4px);
+  }
+  .modal-overlay.hidden { display: none; }
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    width: 100%;
+    max-width: 680px;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    box-shadow: 0 24px 80px rgba(0,0,0,.6);
+  }
+  .modal-header { display: flex; align-items: center; gap: 12px; }
+  .modal-title { font-size: 18px; font-weight: 700; flex: 1; }
+  .modal-close {
+    background: transparent; border: none; color: var(--text-dim);
+    font-size: 20px; cursor: pointer; line-height: 1; padding: 4px;
+    border-radius: 4px; transition: color .12s;
+  }
+  .modal-close:hover { color: var(--text); }
+
+  /* ── Form ────────────────────────────────── */
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .form-full { grid-column: 1 / -1; }
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+  .form-label { font-size: 12px; font-weight: 600; color: var(--text-dim); }
+  .form-input, .form-select, .form-textarea {
+    padding: 9px 12px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--text);
+    font-size: 13px;
+    outline: none;
+    transition: border-color .15s;
+    font-family: inherit;
+  }
+  .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--accent); }
+  .form-textarea { resize: vertical; min-height: 120px; font-family: 'Cascadia Code', 'Fira Mono', monospace; font-size: 12px; line-height: 1.6; }
+  .form-hint { font-size: 11px; color: var(--text-muted); }
+
+  .form-actions { display: flex; gap: 10px; justify-content: flex-end; padding-top: 4px; }
+
+  /* ── Builder Tab ─────────────────────────── */
+  .builder-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  .builder-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .builder-panel h2 { font-size: 14px; font-weight: 700; color: var(--text-dim); }
+  .builder-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .builder-full { grid-column: 1 / -1; }
+
+  .preview-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    position: sticky;
+    top: 24px;
+    height: fit-content;
+  }
+  .preview-panel h2 { font-size: 14px; font-weight: 700; color: var(--text-dim); }
+  .preview-output {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 14px;
+    font-size: 12px;
+    font-family: 'Cascadia Code', 'Fira Mono', monospace;
+    color: var(--text);
+    line-height: 1.7;
+    white-space: pre-wrap;
+    word-break: break-word;
+    min-height: 160px;
+  }
+  .token-count { font-size: 11px; color: var(--text-muted); text-align: right; }
+  .section-divider {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    padding-bottom: 4px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* ── Scrollbar ───────────────────────────── */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+  /* ── Tabs (hidden) ───────────────────────── */
+  .tab-panel { display: none; width: 100%; }
+  .tab-panel.active { display: flex; flex-direction: column; gap: 0; flex: 1; }
+
+  /* ── Responsive ──────────────────────────── */
+  @media (max-width: 900px) {
+    .builder-layout { grid-template-columns: 1fr; }
+    .preview-panel { position: static; }
+    .cards-grid { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>ARCH<span>PROMPT</span></h1>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="showTab('library')">Library</button>
+    <button class="nav-tab" onclick="showTab('builder')">Prompt Builder</button>
+  </div>
+</header>
+
+<!-- ═══════════════════════════════════════════════════
+     TAB: LIBRARY
+════════════════════════════════════════════════════ -->
+<div class="app">
+
+  <!-- LIBRARY PANEL -->
+  <div id="tab-library" class="tab-panel active" style="display:flex; flex-direction:row; flex:1; overflow:hidden; height:100%;">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-label">Filter by Category</div>
+        <button class="filter-btn active" onclick="setCategory('all', this)">
+          All Prompts <span class="count" id="count-all">0</span>
+        </button>
+        <button class="filter-btn" onclick="setCategory('exterior', this)">
+          Exterior <span class="count" id="count-exterior">0</span>
+        </button>
+        <button class="filter-btn" onclick="setCategory('interior', this)">
+          Interior <span class="count" id="count-interior">0</span>
+        </button>
+        <button class="filter-btn" onclick="setCategory('aerial', this)">
+          Aerial / Bird's Eye <span class="count" id="count-aerial">0</span>
+        </button>
+        <button class="filter-btn" onclick="setCategory('detail', this)">
+          Detail / Close-up <span class="count" id="count-detail">0</span>
+        </button>
+        <button class="filter-btn" onclick="setCategory('landscape', this)">
+          Landscape <span class="count" id="count-landscape">0</span>
+        </button>
+        <button class="filter-btn" onclick="setCategory('other', this)">
+          Other <span class="count" id="count-other">0</span>
+        </button>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-label">Renderer</div>
+        <div id="renderer-filters" class="tag-filter"></div>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-label">Lighting</div>
+        <div id="lighting-filters" class="tag-filter"></div>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-label">Tags</div>
+        <div id="tag-filters" class="tag-filter"></div>
+      </div>
+
+      <div class="sidebar-section" style="margin-top:auto; padding-top:16px;">
+        <button class="btn btn-ghost" style="width:100%; font-size:12px;" onclick="importExport()">Import / Export</button>
+        <button class="btn btn-danger" style="width:100%; font-size:12px; margin-top:8px;" onclick="clearAllPrompts()">Clear All</button>
+      </div>
+    </aside>
+
+    <div class="main" id="library-main">
+      <div class="search-bar">
+        <input type="text" class="search-input" id="search-input" placeholder="Search prompts by title, content, tags..." oninput="renderCards()">
+        <button class="btn btn-primary" onclick="openAddModal()">+ New Prompt</button>
+      </div>
+
+      <div class="toolbar">
+        <span class="toolbar-label">Sort by</span>
+        <select class="sort-select" onchange="renderCards()" id="sort-select">
+          <option value="newest">Newest</option>
+          <option value="oldest">Oldest</option>
+          <option value="title">Title A-Z</option>
+          <option value="favorite">Favorites first</option>
+        </select>
+        <span class="result-count" id="result-count"></span>
+      </div>
+
+      <div id="cards-container"></div>
+    </div>
+  </div>
+
+  <!-- BUILDER PANEL -->
+  <div id="tab-builder" class="tab-panel" style="padding:24px; overflow-y:auto;">
+    <div class="builder-layout">
+      <div style="display:flex; flex-direction:column; gap:16px;">
+        <div class="builder-panel">
+          <h2>Scene</h2>
+          <div class="builder-grid">
+            <div class="form-group">
+              <label class="form-label">Category</label>
+              <select class="form-select" id="b-category" onchange="buildPrompt()">
+                <option value="">Select...</option>
+                <option>Exterior</option>
+                <option>Interior</option>
+                <option>Aerial</option>
+                <option>Detail</option>
+                <option>Landscape</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Renderer</label>
+              <select class="form-select" id="b-renderer" onchange="buildPrompt()">
+                <option value="">Select...</option>
+                <option>V-Ray</option>
+                <option>Corona</option>
+                <option>Lumion</option>
+                <option>Enscape</option>
+                <option>Twinmotion</option>
+                <option>Blender Cycles</option>
+                <option>Unreal Engine Lumen</option>
+                <option>D5 Render</option>
+                <option>KeyShot</option>
+                <option>Midjourney</option>
+                <option>Stable Diffusion</option>
+                <option>DALL-E</option>
+              </select>
+            </div>
+            <div class="form-group builder-full">
+              <label class="form-label">Subject / Building Type</label>
+              <input class="form-input" id="b-subject" placeholder="e.g. minimalist villa, glass office tower..." oninput="buildPrompt()">
+            </div>
+            <div class="form-group builder-full">
+              <label class="form-label">Location / Context</label>
+              <input class="form-input" id="b-location" placeholder="e.g. cliffside coastal, urban downtown, forest clearing..." oninput="buildPrompt()">
+            </div>
+          </div>
+        </div>
+
+        <div class="builder-panel">
+          <h2>Visual Style</h2>
+          <div class="builder-grid">
+            <div class="form-group">
+              <label class="form-label">Style</label>
+              <select class="form-select" id="b-style" onchange="buildPrompt()">
+                <option value="">Select...</option>
+                <option>Photorealistic</option>
+                <option>Hyperrealistic</option>
+                <option>Cinematic</option>
+                <option>Sketchy / Hand-drawn</option>
+                <option>Watercolor</option>
+                <option>Concept Art</option>
+                <option>Minimalist</option>
+                <option>Brutalist</option>
+                <option>Futuristic</option>
+                <option>Retro / Vintage</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Time of Day</label>
+              <select class="form-select" id="b-time" onchange="buildPrompt()">
+                <option value="">Select...</option>
+                <option>Golden Hour (sunrise)</option>
+                <option>Golden Hour (sunset)</option>
+                <option>Midday</option>
+                <option>Overcast</option>
+                <option>Blue Hour</option>
+                <option>Night</option>
+                <option>Dawn</option>
+                <option>Dusk</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Weather / Atmosphere</label>
+              <select class="form-select" id="b-weather" onchange="buildPrompt()">
+                <option value="">Select...</option>
+                <option>Clear sky</option>
+                <option>Partly cloudy</option>
+                <option>Overcast / moody</option>
+                <option>Fog / mist</option>
+                <option>Rain</option>
+                <option>Snow</option>
+                <option>Dramatic storm</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Season</label>
+              <select class="form-select" id="b-season" onchange="buildPrompt()">
+                <option value="">Select...</option>
+                <option>Spring</option>
+                <option>Summer</option>
+                <option>Autumn</option>
+                <option>Winter</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="builder-panel">
+          <h2>Lighting</h2>
+          <div class="builder-grid">
+            <div class="form-group">
+              <label class="form-label">Main Lighting</label>
+              <select class="form-select" id="b-lighting" onchange="buildPrompt()">
+                <option value="">Select...</option>
+                <option>Natural sunlight</option>
+                <option>Diffused natural light</option>
+                <option>Warm ambient</option>
+                <option>Cool ambient</option>
+                <option>Dramatic side lighting</option>
+                <option>Backlighting / silhouette</option>
+                <option>HDRI sky</option>
+                <option>Artificial interior lighting</option>
+                <option>Mixed interior / exterior</option>
+                <option>Neon / urban glow</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Shadows</label>
+              <select class="form-select" id="b-shadows" onchange="buildPrompt()">
+                <option value="">Select...</option>
+                <option>Soft shadows</option>
+                <option>Hard shadows</option>
+                <option>No shadows</option>
+                <option>Long dramatic shadows</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="builder-panel">
+          <h2>Camera</h2>
+          <div class="builder-grid">
+            <div class="form-group">
+              <label class="form-label">Shot Type</label>
+              <select class="form-select" id="b-shot" onchange="buildPrompt()">
+                <option value="">Select...</option>
+                <option>Wide establishing shot</option>
+                <option>Mid-range 3/4 view</option>
+                <option>Street-level perspective</option>
+                <option>Worm's eye</option>
+                <option>Bird's eye / aerial</option>
+                <option>Interior wide angle</option>
+                <option>Interior detail close-up</option>
+                <option>Symmetrical front elevation</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Lens / Focal Length</label>
+              <select class="form-select" id="b-lens" onchange="buildPrompt()">
+                <option value="">Select...</option>
+                <option>Ultra-wide 14mm</option>
+                <option>Wide 24mm</option>
+                <option>Standard 35mm</option>
+                <option>Portrait 50mm</option>
+                <option>Medium 85mm</option>
+                <option>Telephoto 135mm</option>
+                <option>Drone shot</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Depth of Field</label>
+              <select class="form-select" id="b-dof" onchange="buildPrompt()">
+                <option value="">Select...</option>
+                <option>Deep DOF (everything sharp)</option>
+                <option>Shallow DOF (bokeh background)</option>
+                <option>Tilt-shift miniature</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Aspect Ratio</label>
+              <select class="form-select" id="b-aspect" onchange="buildPrompt()">
+                <option value="">Select...</option>
+                <option>16:9 landscape</option>
+                <option>4:3</option>
+                <option>1:1 square</option>
+                <option>9:16 portrait</option>
+                <option>2:1 cinematic</option>
+                <option>3:2</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="builder-panel">
+          <h2>Materials & Details</h2>
+          <div class="builder-grid">
+            <div class="form-group builder-full">
+              <label class="form-label">Key Materials</label>
+              <input class="form-input" id="b-materials" placeholder="e.g. raw concrete, weathered steel, warm wood, glass..." oninput="buildPrompt()">
+            </div>
+            <div class="form-group builder-full">
+              <label class="form-label">Vegetation / Landscape</label>
+              <input class="form-input" id="b-vegetation" placeholder="e.g. lush tropical plants, desert scrub, manicured lawn..." oninput="buildPrompt()">
+            </div>
+            <div class="form-group builder-full">
+              <label class="form-label">People / Entourage</label>
+              <select class="form-select" id="b-people" onchange="buildPrompt()">
+                <option value="">Select...</option>
+                <option>No people</option>
+                <option>Silhouetted figures</option>
+                <option>Blurred passersby</option>
+                <option>Casually dressed pedestrians</option>
+                <option>Business people</option>
+                <option>Families</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="builder-panel">
+          <h2>Post-Processing</h2>
+          <div class="builder-grid">
+            <div class="form-group">
+              <label class="form-label">Color Grading</label>
+              <select class="form-select" id="b-grade" onchange="buildPrompt()">
+                <option value="">Select...</option>
+                <option>Warm tones</option>
+                <option>Cool / blue tones</option>
+                <option>Neutral / balanced</option>
+                <option>High contrast</option>
+                <option>Desaturated / muted</option>
+                <option>Vibrant / saturated</option>
+                <option>Cinematic LUT</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Quality / Detail</label>
+              <select class="form-select" id="b-quality" onchange="buildPrompt()">
+                <option value="">Select...</option>
+                <option>8K ultra-detail</option>
+                <option>4K high detail</option>
+                <option>Highly detailed</option>
+                <option>Award-winning render</option>
+                <option>Professional photography</option>
+              </select>
+            </div>
+            <div class="form-group builder-full">
+              <label class="form-label">Extra Keywords / Style References</label>
+              <input class="form-input" id="b-extra" placeholder="e.g. --ar 16:9 --v 6, octane render, unreal engine..." oninput="buildPrompt()">
+            </div>
+          </div>
+        </div>
+
+        <div class="builder-panel">
+          <h2>Save Prompt</h2>
+          <div class="builder-grid">
+            <div class="form-group builder-full">
+              <label class="form-label">Prompt Title</label>
+              <input class="form-input" id="b-title" placeholder="Give this prompt a name to save it..." oninput="buildPrompt()">
+            </div>
+            <div class="form-group builder-full">
+              <label class="form-label">Tags (comma-separated)</label>
+              <input class="form-input" id="b-tags" placeholder="e.g. luxury, residential, sunset..." oninput="buildPrompt()">
+            </div>
+          </div>
+          <div style="display:flex; gap:10px;">
+            <button class="btn btn-primary" onclick="saveBuiltPrompt()">Save to Library</button>
+            <button class="btn btn-secondary" onclick="resetBuilder()">Reset</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Preview -->
+      <div>
+        <div class="preview-panel">
+          <h2>Generated Prompt</h2>
+          <div class="preview-output" id="preview-output">Select options on the left to build your prompt...</div>
+          <div class="token-count" id="token-count"></div>
+          <button class="btn btn-primary" onclick="copyBuiltPrompt(this)">Copy Prompt</button>
+          <div style="margin-top:8px;">
+            <div class="form-label" style="margin-bottom:6px;">Negative Prompt</div>
+            <textarea class="form-textarea" id="b-negative" rows="3" placeholder="e.g. blurry, bad proportions, unrealistic shadows, people..." oninput="buildPrompt()" style="min-height:80px;"></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══════ MODAL: Add / Edit Prompt ═══════ -->
+<div class="modal-overlay hidden" id="modal-overlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-title">New Prompt</div>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+
+    <div class="form-grid">
+      <div class="form-group form-full">
+        <label class="form-label">Title *</label>
+        <input class="form-input" id="f-title" placeholder="Descriptive name for this prompt">
+      </div>
+      <div class="form-group form-full">
+        <label class="form-label">Prompt Text *</label>
+        <textarea class="form-textarea" id="f-prompt" rows="6" placeholder="Paste or type your full prompt here..."></textarea>
+      </div>
+      <div class="form-group form-full">
+        <label class="form-label">Negative Prompt</label>
+        <textarea class="form-textarea" id="f-negative" rows="2" placeholder="Optional negative prompt..." style="min-height:60px;"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Category</label>
+        <select class="form-select" id="f-category">
+          <option value="other">Other</option>
+          <option value="exterior">Exterior</option>
+          <option value="interior">Interior</option>
+          <option value="aerial">Aerial</option>
+          <option value="detail">Detail</option>
+          <option value="landscape">Landscape</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Renderer / Tool</label>
+        <select class="form-select" id="f-renderer">
+          <option value="">Not specified</option>
+          <option>V-Ray</option>
+          <option>Corona</option>
+          <option>Lumion</option>
+          <option>Enscape</option>
+          <option>Twinmotion</option>
+          <option>Blender Cycles</option>
+          <option>Unreal Engine Lumen</option>
+          <option>D5 Render</option>
+          <option>KeyShot</option>
+          <option>Midjourney</option>
+          <option>Stable Diffusion</option>
+          <option>DALL-E</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Style</label>
+        <select class="form-select" id="f-style">
+          <option value="">Not specified</option>
+          <option>Photorealistic</option>
+          <option>Hyperrealistic</option>
+          <option>Cinematic</option>
+          <option>Sketchy / Hand-drawn</option>
+          <option>Watercolor</option>
+          <option>Concept Art</option>
+          <option>Minimalist</option>
+          <option>Futuristic</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Lighting</label>
+        <select class="form-select" id="f-lighting">
+          <option value="">Not specified</option>
+          <option>Natural sunlight</option>
+          <option>Golden Hour</option>
+          <option>Blue Hour</option>
+          <option>Night</option>
+          <option>Overcast</option>
+          <option>Dramatic</option>
+          <option>Artificial</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Camera Angle</label>
+        <select class="form-select" id="f-camera">
+          <option value="">Not specified</option>
+          <option>Wide establishing shot</option>
+          <option>Street-level</option>
+          <option>Aerial / Bird's eye</option>
+          <option>Interior wide angle</option>
+          <option>Interior close-up</option>
+          <option>Worm's eye</option>
+          <option>Symmetrical elevation</option>
+        </select>
+      </div>
+      <div class="form-group form-full">
+        <label class="form-label">Tags <span style="font-weight:400;color:var(--text-muted)">(comma-separated)</span></label>
+        <input class="form-input" id="f-tags" placeholder="e.g. luxury, residential, sunset, concrete, tropical">
+      </div>
+      <div class="form-group form-full" style="display:flex; align-items:center; gap:10px; flex-direction:row;">
+        <input type="checkbox" id="f-favorite" style="width:16px;height:16px;accent-color:var(--accent);">
+        <label class="form-label" for="f-favorite" style="cursor:pointer;">Mark as Favorite</label>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="savePrompt()">Save Prompt</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ MODAL: Import/Export ═══════ -->
+<div class="modal-overlay hidden" id="ie-modal-overlay" onclick="if(event.target===this)closeIEModal()">
+  <div class="modal" style="max-width:500px;">
+    <div class="modal-header">
+      <div class="modal-title">Import / Export</div>
+      <button class="modal-close" onclick="closeIEModal()">×</button>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Export — copy JSON below</label>
+      <textarea class="form-textarea" id="export-area" rows="8" readonly></textarea>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Import — paste JSON here</label>
+      <textarea class="form-textarea" id="import-area" rows="4" placeholder='Paste exported JSON here and click Import...'></textarea>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-secondary" onclick="doImport()">Import</button>
+      <button class="btn btn-primary" onclick="closeIEModal()">Done</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════
+// Data
+// ══════════════════════════════════════════════════
+const STORAGE_KEY = 'archprompt_v1';
+
+function loadPrompts() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
+  catch { return []; }
+}
+function savePrompts(arr) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(arr));
+}
+
+let prompts = loadPrompts();
+let editingId = null;
+let activeCategory = 'all';
+let activeRenderers = new Set();
+let activeLightings = new Set();
+let activeTags = new Set();
+
+// ══════════════════════════════════════════════════
+// Tab navigation
+// ══════════════════════════════════════════════════
+function showTab(tab) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
+
+  if (tab === 'library') {
+    document.getElementById('tab-library').classList.add('active');
+    document.querySelectorAll('.nav-tab')[0].classList.add('active');
+  } else {
+    document.getElementById('tab-builder').classList.add('active');
+    document.querySelectorAll('.nav-tab')[1].classList.add('active');
+    buildPrompt();
+  }
+}
+
+// ══════════════════════════════════════════════════
+// Library Rendering
+// ══════════════════════════════════════════════════
+function getFiltered() {
+  const q = (document.getElementById('search-input')?.value || '').toLowerCase();
+  return prompts.filter(p => {
+    if (activeCategory !== 'all' && p.category !== activeCategory) return false;
+    if (activeRenderers.size && !activeRenderers.has(p.renderer)) return false;
+    if (activeLightings.size && !activeLightings.has(p.lighting)) return false;
+    if (activeTags.size) {
+      const ptags = (p.tags || []).map(t => t.toLowerCase());
+      if (![...activeTags].every(t => ptags.includes(t))) return false;
+    }
+    if (q) {
+      const hay = [p.title, p.prompt, p.negative, ...(p.tags || []), p.renderer, p.style, p.lighting, p.camera].join(' ').toLowerCase();
+      if (!hay.includes(q)) return false;
+    }
+    return true;
+  });
+}
+
+function getSorted(arr) {
+  const s = document.getElementById('sort-select')?.value || 'newest';
+  return [...arr].sort((a, b) => {
+    if (s === 'newest') return b.created - a.created;
+    if (s === 'oldest') return a.created - b.created;
+    if (s === 'title') return a.title.localeCompare(b.title);
+    if (s === 'favorite') return (b.favorite ? 1 : 0) - (a.favorite ? 1 : 0);
+    return 0;
+  });
+}
+
+function renderCards() {
+  const filtered = getSorted(getFiltered());
+  const container = document.getElementById('cards-container');
+  document.getElementById('result-count').textContent = `${filtered.length} prompt${filtered.length !== 1 ? 's' : ''}`;
+
+  if (!filtered.length) {
+    container.innerHTML = `<div class="empty"><div class="empty-icon">🏗️</div><h3>No prompts found</h3><p>Try adjusting your filters or search query,<br>or add a new prompt to get started.</p></div>`;
+    return;
+  }
+
+  container.innerHTML = `<div class="cards-grid">${filtered.map(cardHTML).join('')}</div>`;
+  updateCounts();
+}
+
+function cardHTML(p) {
+  const tags = (p.tags || []).map(t => `<span class="card-tag">${esc(t)}</span>`).join('');
+  const date = new Date(p.created).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  const fav = p.favorite ? '★' : '☆';
+  return `
+  <div class="card" id="card-${p.id}">
+    <div class="copy-feedback" id="cf-${p.id}">Copied!</div>
+    <div class="card-header">
+      <div class="card-title">${p.favorite ? '<span style="color:var(--yellow)">★ </span>' : ''}${esc(p.title)}</div>
+      ${p.renderer ? `<span class="card-renderer">${esc(p.renderer)}</span>` : ''}
+    </div>
+    <div class="card-prompt">${esc(p.prompt)}</div>
+    <div class="card-meta">
+      ${p.style ? `<span class="meta-badge style">${esc(p.style)}</span>` : ''}
+      ${p.lighting ? `<span class="meta-badge lighting">${esc(p.lighting)}</span>` : ''}
+      ${p.camera ? `<span class="meta-badge camera">${esc(p.camera)}</span>` : ''}
+    </div>
+    ${tags ? `<div class="card-tags">${tags}</div>` : ''}
+    <div class="card-actions">
+      <button class="btn btn-primary btn-sm" onclick="copyPrompt('${p.id}')">Copy</button>
+      <button class="btn btn-secondary btn-sm" onclick="openEditModal('${p.id}')">Edit</button>
+      <button class="btn btn-ghost btn-sm" onclick="toggleFavorite('${p.id}')">${fav}</button>
+      <button class="btn btn-danger btn-sm" onclick="deletePrompt('${p.id}')">Delete</button>
+      <span class="card-date">${date}</span>
+    </div>
+  </div>`;
+}
+
+function updateCounts() {
+  const cats = ['all','exterior','interior','aerial','detail','landscape','other'];
+  cats.forEach(c => {
+    const el = document.getElementById(`count-${c}`);
+    if (el) el.textContent = c === 'all' ? prompts.length : prompts.filter(p => p.category === c).length;
+  });
+
+  // Renderer filter chips
+  const renderers = [...new Set(prompts.map(p => p.renderer).filter(Boolean))].sort();
+  const rf = document.getElementById('renderer-filters');
+  rf.innerHTML = renderers.map(r => `<span class="tag-chip${activeRenderers.has(r)?' active':''}" onclick="toggleFilter('renderer','${r}',this)">${r}</span>`).join('');
+
+  // Lighting filter chips
+  const lightings = [...new Set(prompts.map(p => p.lighting).filter(Boolean))].sort();
+  const lf = document.getElementById('lighting-filters');
+  lf.innerHTML = lightings.map(l => `<span class="tag-chip${activeLightings.has(l)?' active':''}" onclick="toggleFilter('lighting','${l}',this)">${l}</span>`).join('');
+
+  // Tag filter chips
+  const allTags = [...new Set(prompts.flatMap(p => p.tags || []).map(t => t.toLowerCase()))].sort();
+  const tf = document.getElementById('tag-filters');
+  tf.innerHTML = allTags.map(t => `<span class="tag-chip${activeTags.has(t)?' active':''}" onclick="toggleFilter('tag','${t}',this)">${t}</span>`).join('');
+}
+
+function setCategory(cat, btn) {
+  activeCategory = cat;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderCards();
+}
+
+function toggleFilter(type, val, el) {
+  if (type === 'renderer') { activeRenderers.has(val) ? activeRenderers.delete(val) : activeRenderers.add(val); }
+  if (type === 'lighting') { activeLightings.has(val) ? activeLightings.delete(val) : activeLightings.add(val); }
+  if (type === 'tag') { activeTags.has(val) ? activeTags.delete(val) : activeTags.add(val); }
+  el.classList.toggle('active');
+  renderCards();
+}
+
+function copyPrompt(id) {
+  const p = prompts.find(x => x.id === id);
+  if (!p) return;
+  const text = p.negative ? `${p.prompt}\n\nNegative: ${p.negative}` : p.prompt;
+  navigator.clipboard.writeText(text).then(() => {
+    const fb = document.getElementById(`cf-${id}`);
+    fb.classList.add('show');
+    setTimeout(() => fb.classList.remove('show'), 1500);
+  });
+}
+
+function toggleFavorite(id) {
+  const p = prompts.find(x => x.id === id);
+  if (!p) return;
+  p.favorite = !p.favorite;
+  savePrompts(prompts);
+  renderCards();
+}
+
+function deletePrompt(id) {
+  if (!confirm('Delete this prompt?')) return;
+  prompts = prompts.filter(p => p.id !== id);
+  savePrompts(prompts);
+  renderCards();
+}
+
+// ══════════════════════════════════════════════════
+// Modal: Add / Edit
+// ══════════════════════════════════════════════════
+function openAddModal() {
+  editingId = null;
+  document.getElementById('modal-title').textContent = 'New Prompt';
+  ['title','prompt','negative','tags'].forEach(f => document.getElementById(`f-${f}`).value = '');
+  ['category','renderer','style','lighting','camera'].forEach(f => document.getElementById(`f-${f}`).value = f === 'category' ? 'other' : '');
+  document.getElementById('f-favorite').checked = false;
+  document.getElementById('modal-overlay').classList.remove('hidden');
+  document.getElementById('f-title').focus();
+}
+
+function openEditModal(id) {
+  const p = prompts.find(x => x.id === id);
+  if (!p) return;
+  editingId = id;
+  document.getElementById('modal-title').textContent = 'Edit Prompt';
+  document.getElementById('f-title').value = p.title || '';
+  document.getElementById('f-prompt').value = p.prompt || '';
+  document.getElementById('f-negative').value = p.negative || '';
+  document.getElementById('f-tags').value = (p.tags || []).join(', ');
+  document.getElementById('f-category').value = p.category || 'other';
+  document.getElementById('f-renderer').value = p.renderer || '';
+  document.getElementById('f-style').value = p.style || '';
+  document.getElementById('f-lighting').value = p.lighting || '';
+  document.getElementById('f-camera').value = p.camera || '';
+  document.getElementById('f-favorite').checked = p.favorite || false;
+  document.getElementById('modal-overlay').classList.remove('hidden');
+  document.getElementById('f-title').focus();
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').classList.add('hidden');
+}
+
+function savePrompt() {
+  const title = document.getElementById('f-title').value.trim();
+  const prompt = document.getElementById('f-prompt').value.trim();
+  if (!title || !prompt) { alert('Title and prompt text are required.'); return; }
+
+  const tags = document.getElementById('f-tags').value.split(',').map(t => t.trim().toLowerCase()).filter(Boolean);
+  const obj = {
+    id: editingId || crypto.randomUUID(),
+    title,
+    prompt,
+    negative: document.getElementById('f-negative').value.trim(),
+    category: document.getElementById('f-category').value,
+    renderer: document.getElementById('f-renderer').value,
+    style: document.getElementById('f-style').value,
+    lighting: document.getElementById('f-lighting').value,
+    camera: document.getElementById('f-camera').value,
+    tags,
+    favorite: document.getElementById('f-favorite').checked,
+    created: editingId ? (prompts.find(p => p.id === editingId)?.created || Date.now()) : Date.now(),
+  };
+
+  if (editingId) {
+    prompts = prompts.map(p => p.id === editingId ? obj : p);
+  } else {
+    prompts.unshift(obj);
+  }
+  savePrompts(prompts);
+  closeModal();
+  renderCards();
+}
+
+// ══════════════════════════════════════════════════
+// Import / Export
+// ══════════════════════════════════════════════════
+function importExport() {
+  document.getElementById('export-area').value = JSON.stringify(prompts, null, 2);
+  document.getElementById('import-area').value = '';
+  document.getElementById('ie-modal-overlay').classList.remove('hidden');
+}
+function closeIEModal() { document.getElementById('ie-modal-overlay').classList.add('hidden'); }
+function doImport() {
+  try {
+    const data = JSON.parse(document.getElementById('import-area').value);
+    if (!Array.isArray(data)) throw new Error('Expected array');
+    const merged = [...prompts];
+    data.forEach(p => { if (!merged.find(x => x.id === p.id)) merged.push(p); });
+    prompts = merged;
+    savePrompts(prompts);
+    closeIEModal();
+    renderCards();
+    alert(`Imported ${data.length} prompts (duplicates skipped).`);
+  } catch(e) { alert('Invalid JSON: ' + e.message); }
+}
+function clearAllPrompts() {
+  if (!confirm('Delete ALL prompts? This cannot be undone.')) return;
+  prompts = [];
+  savePrompts(prompts);
+  renderCards();
+}
+
+// ══════════════════════════════════════════════════
+// Prompt Builder
+// ══════════════════════════════════════════════════
+function v(id) { return document.getElementById(id)?.value?.trim() || ''; }
+
+function buildPrompt() {
+  const parts = [];
+
+  const cat = v('b-category');
+  const renderer = v('b-renderer');
+  const subject = v('b-subject');
+  const location = v('b-location');
+  const style = v('b-style');
+  const time = v('b-time');
+  const weather = v('b-weather');
+  const season = v('b-season');
+  const lighting = v('b-lighting');
+  const shadows = v('b-shadows');
+  const shot = v('b-shot');
+  const lens = v('b-lens');
+  const dof = v('b-dof');
+  const aspect = v('b-aspect');
+  const materials = v('b-materials');
+  const vegetation = v('b-vegetation');
+  const people = v('b-people');
+  const grade = v('b-grade');
+  const quality = v('b-quality');
+  const extra = v('b-extra');
+
+  if (style) parts.push(style);
+  if (cat) parts.push(`architectural rendering, ${cat.toLowerCase()} view`);
+  if (subject) parts.push(`of ${subject}`);
+  if (location) parts.push(`set in ${location}`);
+  if (season || time || weather) {
+    const atm = [season, time, weather].filter(Boolean).join(', ');
+    parts.push(atm);
+  }
+  if (lighting) parts.push(lighting);
+  if (shadows) parts.push(shadows);
+  if (shot) parts.push(shot);
+  if (lens) parts.push(lens);
+  if (dof) parts.push(dof);
+  if (aspect) parts.push(aspect);
+  if (materials) parts.push(`materials: ${materials}`);
+  if (vegetation) parts.push(vegetation);
+  if (people && people !== 'No people') parts.push(people);
+  if (grade) parts.push(grade);
+  if (quality) parts.push(quality);
+  if (renderer) parts.push(`rendered in ${renderer}`);
+  if (extra) parts.push(extra);
+
+  const out = parts.join(', ');
+  const el = document.getElementById('preview-output');
+  el.textContent = out || 'Select options on the left to build your prompt...';
+
+  const words = out.split(/\s+/).filter(Boolean).length;
+  document.getElementById('token-count').textContent = out ? `~${words} words` : '';
+}
+
+function copyBuiltPrompt(btn) {
+  const text = document.getElementById('preview-output').textContent;
+  const neg = v('b-negative');
+  const full = neg ? `${text}\n\nNegative prompt: ${neg}` : text;
+  navigator.clipboard.writeText(full).then(() => {
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = 'Copy Prompt', 1500);
+  });
+}
+
+function saveBuiltPrompt() {
+  const title = v('b-title');
+  const text = document.getElementById('preview-output').textContent;
+  if (!title) { alert('Please give the prompt a title before saving.'); document.getElementById('b-title').focus(); return; }
+  if (!text || text.startsWith('Select options')) { alert('Build a prompt first.'); return; }
+
+  const tags = v('b-tags').split(',').map(t => t.trim().toLowerCase()).filter(Boolean);
+  const p = {
+    id: crypto.randomUUID(),
+    title,
+    prompt: text,
+    negative: v('b-negative'),
+    category: (v('b-category') || 'other').toLowerCase(),
+    renderer: v('b-renderer'),
+    style: v('b-style'),
+    lighting: v('b-lighting'),
+    camera: v('b-shot'),
+    tags,
+    favorite: false,
+    created: Date.now(),
+  };
+  prompts.unshift(p);
+  savePrompts(prompts);
+  alert(`Saved "${title}" to library!`);
+}
+
+function resetBuilder() {
+  ['b-category','b-renderer','b-subject','b-location','b-style','b-time','b-weather','b-season',
+   'b-lighting','b-shadows','b-shot','b-lens','b-dof','b-aspect','b-materials','b-vegetation',
+   'b-people','b-grade','b-quality','b-extra','b-title','b-tags','b-negative']
+    .forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+  buildPrompt();
+}
+
+// ══════════════════════════════════════════════════
+// Utilities
+// ══════════════════════════════════════════════════
+function esc(s) {
+  return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ══════════════════════════════════════════════════
+// Seed example prompts
+// ══════════════════════════════════════════════════
+function seedExamples() {
+  if (prompts.length) return;
+  prompts = [
+    {
+      id: crypto.randomUUID(),
+      title: 'Minimalist Beach Villa – Golden Hour',
+      prompt: 'Photorealistic architectural rendering, exterior view of a minimalist white concrete beach villa, floor-to-ceiling glass walls, set on a sandy coastline with turquoise water, golden hour sunset, warm ambient light, long dramatic shadows, wide establishing shot, 24mm lens, deep DOF, lush tropical landscaping, no people, warm color grading, 8K ultra-detail, rendered in V-Ray',
+      negative: 'blurry, unrealistic, cartoon, flat lighting, bad proportions',
+      category: 'exterior',
+      renderer: 'V-Ray',
+      style: 'Photorealistic',
+      lighting: 'Golden Hour',
+      camera: 'Wide establishing shot',
+      tags: ['beach', 'villa', 'minimalist', 'concrete', 'tropical', 'luxury'],
+      favorite: true,
+      created: Date.now() - 86400000 * 3,
+    },
+    {
+      id: crypto.randomUUID(),
+      title: 'Urban Office Tower – Night Glow',
+      prompt: 'Hyperrealistic architectural rendering, exterior view of a 40-story glass office tower, downtown urban context, night time, artificial interior lighting glowing through glass facade, neon urban glow from street level, street-level perspective, 35mm lens, shallow DOF with bokeh streetlights, business people silhouettes, cinematic LUT color grading, highly detailed, rendered in Corona',
+      negative: 'daytime, overexposed, empty street, flat render',
+      category: 'exterior',
+      renderer: 'Corona',
+      style: 'Hyperrealistic',
+      lighting: 'Night',
+      camera: 'Street-level',
+      tags: ['office', 'tower', 'night', 'urban', 'glass', 'commercial'],
+      favorite: false,
+      created: Date.now() - 86400000 * 1,
+    },
+    {
+      id: crypto.randomUUID(),
+      title: 'Luxury Interior – Living Room',
+      prompt: 'Photorealistic architectural interior rendering, wide angle living room of a luxury penthouse, floor-to-ceiling windows overlooking city skyline, warm ambient lighting, polished concrete floors, warm wood paneling, marble accents, minimalist furniture, afternoon light streaming in, soft shadows, interior wide angle 24mm, deep DOF, neutral balanced color grading, highly detailed, rendered in Lumion',
+      negative: 'cluttered, dark, unrealistic materials, distorted perspective',
+      category: 'interior',
+      renderer: 'Lumion',
+      style: 'Photorealistic',
+      lighting: 'Natural sunlight',
+      camera: 'Interior wide angle',
+      tags: ['interior', 'luxury', 'penthouse', 'living room', 'concrete', 'warm'],
+      favorite: false,
+      created: Date.now() - 86400000 * 7,
+    },
+    {
+      id: crypto.randomUUID(),
+      title: 'Midjourney – Brutalist Cultural Center',
+      prompt: 'Cinematic architectural rendering of a brutalist cultural center, raw exposed concrete, dramatic cantilevered roof, set in a European plaza, overcast moody sky, autumn season, diffused natural light, hard shadows, symmetrical front elevation, ultra-wide 14mm, award-winning render, desaturated muted color grading --ar 16:9 --v 6 --style raw',
+      negative: 'colorful, warm tones, tropical, modern glass',
+      category: 'exterior',
+      renderer: 'Midjourney',
+      style: 'Cinematic',
+      lighting: 'Overcast',
+      camera: 'Symmetrical elevation',
+      tags: ['brutalist', 'cultural', 'concrete', 'moody', 'autumn', 'midjourney'],
+      favorite: true,
+      created: Date.now() - 86400000 * 14,
+    },
+  ];
+  savePrompts(prompts);
+}
+
+// ══════════════════════════════════════════════════
+// Init
+// ══════════════════════════════════════════════════
+seedExamples();
+renderCards();
+</script>
+</body>
+</html>
