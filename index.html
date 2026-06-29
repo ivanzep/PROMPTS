@@ -672,14 +672,16 @@
     <div class="ie-tabs">
       <button class="ie-tab active" onclick="switchIETab('export',this)">Export</button>
       <button class="ie-tab" onclick="switchIETab('import',this)">Import</button>
+      <button class="ie-tab" onclick="switchIETab('sheets',this)">Google Sheets</button>
     </div>
 
     <!-- Export -->
     <div class="ie-panel active" id="ie-export">
       <div class="form-group"><label class="form-label">Format</label>
-        <div style="display:flex;gap:8px;">
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
           <button class="btn btn-primary btn-sm" onclick="exportAs('md')" id="btn-export-md">Markdown (.md)</button>
           <button class="btn btn-secondary btn-sm" onclick="exportAs('json')" id="btn-export-json">JSON</button>
+          <button class="btn btn-secondary btn-sm" onclick="exportAs('csv')" id="btn-export-csv">CSV for Sheets</button>
         </div>
       </div>
       <div>
@@ -714,10 +716,10 @@
            ondragover="dzOver(event)" ondragleave="dzLeave(event)" ondrop="dzDrop(event)">
         <div style="font-size:28px;margin-bottom:8px;">📂</div>
         <div style="font-size:14px;font-weight:600;color:var(--text-dim);margin-bottom:4px;">Click to upload or drag &amp; drop</div>
-        <div style="font-size:12.5px;color:var(--text-muted);">Supports .md and .json export files</div>
+        <div style="font-size:12.5px;color:var(--text-muted);">Supports .md, .json and .csv export files</div>
         <div id="dz-filename" style="font-size:12.5px;color:var(--accent);margin-top:8px;font-weight:600;display:none;"></div>
       </div>
-      <input type="file" id="file-input" accept=".md,.json,text/markdown,application/json" style="display:none" onchange="handleFileUpload(this)">
+      <input type="file" id="file-input" accept=".md,.json,.csv,text/markdown,application/json,text/csv" style="display:none" onchange="handleFileUpload(this)">
 
       <div style="display:flex;align-items:center;gap:10px;">
         <div style="flex:1;height:1px;background:var(--border);"></div>
@@ -745,6 +747,70 @@
       <div class="form-actions" id="import-actions" style="display:none;">
         <button class="btn btn-primary" onclick="doImport()">Import Selected</button>
       </div>
+    </div>
+
+    <!-- Google Sheets panel -->
+    <div class="ie-panel" id="ie-sheets">
+      <!-- Step 1: Script URL -->
+      <div style="font-size:13.5px;color:var(--text-dim);line-height:1.7;background:var(--surface2);padding:13px 15px;border-radius:var(--radius-sm);border:1px solid var(--border);">
+        Connect to a Google Sheet using a one-time Apps Script setup. Your prompts sync directly to a spreadsheet you own.
+        <a href="#" onclick="openScriptSetup();return false;" style="color:var(--accent);font-weight:600;margin-left:6px;">How to set up →</a>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Apps Script Web App URL</label>
+        <div style="display:flex;gap:8px;">
+          <input class="form-input" id="sheets-url" placeholder="https://script.google.com/macros/s/…/exec" style="flex:1;" oninput="saveSheetsUrl()">
+          <button class="btn btn-secondary btn-sm" onclick="testSheetsUrl()">Test</button>
+        </div>
+        <div style="font-size:12px;color:var(--text-muted);">Paste the Web App URL from your deployed Apps Script. Saved locally.</div>
+        <div id="sheets-status" style="font-size:12.5px;margin-top:4px;display:none;"></div>
+      </div>
+
+      <!-- Selection for which prompts to push -->
+      <div>
+        <div class="sel-toolbar">
+          <span class="form-label" style="margin:0;">Prompts to push</span>
+          <button class="btn btn-xs btn-secondary" onclick="selSheetsAll()">All</button>
+          <button class="btn btn-xs btn-ghost" onclick="selSheetsNone()">None</button>
+          <button class="btn btn-xs btn-ghost" onclick="selSheetsFaved()">Favorites</button>
+          <span class="sel-toolbar-count" id="sheets-sel-count">0 selected</span>
+        </div>
+        <div class="sel-list" id="sheets-checklist" style="max-height:220px;"></div>
+      </div>
+
+      <div class="form-actions" style="justify-content:space-between;flex-wrap:wrap;gap:10px;">
+        <button class="btn btn-secondary" onclick="sheetsLoad()" id="btn-sheets-load">⬇ Load from Sheet</button>
+        <button class="btn btn-primary" onclick="sheetsPush()" id="btn-sheets-push">⬆ Push to Sheet</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════  MODAL: Apps Script Setup Guide  ═══════ -->
+<div class="modal-overlay hidden" id="script-setup-modal" onclick="if(event.target===this)closeScriptSetup()">
+  <div class="modal" style="max-width:600px;">
+    <div class="modal-header">
+      <div class="modal-title">Google Sheets Setup (one-time)</div>
+      <button class="modal-close" onclick="closeScriptSetup()">×</button>
+    </div>
+    <ol style="font-size:14px;color:var(--text-dim);line-height:1.9;padding-left:20px;display:flex;flex-direction:column;gap:6px;">
+      <li>Open <strong>Google Sheets</strong> and create a new spreadsheet (or use an existing one).</li>
+      <li>Click <strong>Extensions → Apps Script</strong>.</li>
+      <li>Delete any existing code and paste the script below.</li>
+      <li>Click <strong>Deploy → New deployment</strong>.</li>
+      <li>Set type to <strong>Web app</strong>, execute as <strong>Me</strong>, access <strong>Anyone</strong>. Click <strong>Deploy</strong>.</li>
+      <li>Copy the <strong>Web App URL</strong> and paste it into the URL field on the Google Sheets tab.</li>
+    </ol>
+    <div class="form-group">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+        <label class="form-label">Apps Script code — paste this into your script editor</label>
+        <button class="btn btn-sm btn-secondary" onclick="copyScriptCode(this)">Copy</button>
+      </div>
+      <textarea class="form-textarea" id="script-code-area" rows="18" readonly style="font-size:11.5px;font-family:'Cascadia Code','Fira Mono',monospace;background:var(--surface2);"></textarea>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-primary" onclick="closeScriptSetup()">Done</button>
     </div>
   </div>
 </div>
@@ -1090,6 +1156,7 @@ function switchIETab(tab,btn){
   document.querySelectorAll('.ie-panel').forEach(p=>p.classList.remove('active'));
   btn.classList.add('active');document.getElementById('ie-'+tab).classList.add('active');
   if(tab==='import'){document.getElementById('import-preview-wrap').style.display='none';document.getElementById('import-actions').style.display='none';}
+  if(tab==='sheets'){openIESheetsTab();}
 }
 
 // ── Export checklist ───────────────────────────────
@@ -1122,15 +1189,18 @@ function exportAs(fmt){
   ieExportFormat=fmt;
   document.getElementById('btn-export-md').className=`btn btn-sm ${fmt==='md'?'btn-primary':'btn-secondary'}`;
   document.getElementById('btn-export-json').className=`btn btn-sm ${fmt==='json'?'btn-primary':'btn-secondary'}`;
+  document.getElementById('btn-export-csv').className=`btn btn-sm ${fmt==='csv'?'btn-primary':'btn-secondary'}`;
   refreshExportPreview();
 }
 function refreshExportPreview(){
   const sel=prompts.filter(p=>exportSelectedIds.has(p.id));
-  document.getElementById('export-area').value=ieExportFormat==='md'?promptsToMd(sel):JSON.stringify(sel,null,2);
+  const val=ieExportFormat==='md'?promptsToMd(sel):ieExportFormat==='csv'?promptsToCsv(sel):JSON.stringify(sel,null,2);
+  document.getElementById('export-area').value=val;
 }
 function downloadExport(){
   const content=document.getElementById('export-area').value;
-  const ext=ieExportFormat==='md'?'md':'json', mime=ieExportFormat==='md'?'text/markdown':'application/json';
+  const ext=ieExportFormat==='md'?'md':ieExportFormat==='csv'?'csv':'json';
+  const mime=ieExportFormat==='md'?'text/markdown':ieExportFormat==='csv'?'text/csv':'application/json';
   const date=new Date().toISOString().slice(0,10);
   const a=document.createElement('a');
   a.href=URL.createObjectURL(new Blob([content],{type:mime}));a.download=`veras-prompts-${date}.${ext}`;a.click();URL.revokeObjectURL(a.href);
@@ -1142,7 +1212,7 @@ function parseImport(){
   const raw=document.getElementById('import-area').value.trim();
   if(!raw){alert('Paste content first.');return;}
   try{ const parsed=JSON.parse(raw); if(Array.isArray(parsed)) parsedImportItems=parsed; else throw 0; }
-  catch{ parsedImportItems=mdToPrompts(raw); }
+  catch{ try{ const c=csvToPrompts(raw); if(c.length) parsedImportItems=c; else throw 0; } catch{ parsedImportItems=mdToPrompts(raw); } }
   if(!parsedImportItems.length){alert('Could not find any prompts. Check the format.');return;}
 
   const existing=new Set(prompts.map(p=>p.id));
@@ -1246,6 +1316,233 @@ function seed(){
 seed();
 renderCards();
 
+// ════════════════════════════════════════════════════
+// CSV export / import
+// ════════════════════════════════════════════════════
+const CSV_HEADERS = ['id','title','project','category','preset','lighting','rating','favorite','tags','geoOverride','matOverride','promptStrength','prompt','negative','created'];
+
+function csvEscape(v) {
+  const s = String(v == null ? '' : v);
+  return /[",\n\r]/.test(s) ? `"${s.replace(/"/g,'""')}"` : s;
+}
+
+function promptsToCsv(arr) {
+  const rows = [CSV_HEADERS.join(',')];
+  arr.forEach(p => {
+    rows.push(CSV_HEADERS.map(h => {
+      if (h === 'tags') return csvEscape((p.tags||[]).join('|'));
+      if (h === 'favorite') return p.favorite ? 'yes' : 'no';
+      if (h === 'created') return new Date(p.created).toISOString().slice(0,10);
+      return csvEscape(p[h] ?? '');
+    }).join(','));
+  });
+  return rows.join('\r\n');
+}
+
+function csvToPrompts(text) {
+  // Split respecting quoted fields
+  function parseLine(line) {
+    const out = []; let cur = '', inQ = false;
+    for (let i = 0; i < line.length; i++) {
+      const ch = line[i];
+      if (ch === '"') { if (inQ && line[i+1]==='"') { cur+='"'; i++; } else inQ=!inQ; }
+      else if (ch===',' && !inQ) { out.push(cur); cur=''; }
+      else cur+=ch;
+    }
+    out.push(cur); return out;
+  }
+  const lines = text.replace(/\r\n/g,'\n').replace(/\r/g,'\n').split('\n').filter(l=>l.trim());
+  if (!lines.length) return [];
+  const headers = parseLine(lines[0]);
+  return lines.slice(1).map(line => {
+    const vals = parseLine(line);
+    const p = {};
+    headers.forEach((h,i) => p[h] = vals[i]??'');
+    return {
+      id: p.id || crypto.randomUUID(),
+      title: p.title || 'Untitled',
+      project: p.project || '',
+      category: p.category || 'other',
+      preset: p.preset || '',
+      lighting: p.lighting || '',
+      rating: +p.rating || 0,
+      favorite: p.favorite === 'yes' || p.favorite === 'true',
+      tags: p.tags ? p.tags.split('|').map(t=>t.trim()).filter(Boolean) : [],
+      geoOverride: +p.geoOverride || 20,
+      matOverride: +p.matOverride || 80,
+      promptStrength: +p.promptStrength || 60,
+      prompt: p.prompt || '',
+      negative: p.negative || '',
+      created: p.created ? new Date(p.created).getTime() : Date.now(),
+    };
+  }).filter(p => p.prompt);
+}
+
+// ════════════════════════════════════════════════════
+// Google Sheets (Apps Script Web App)
+// ════════════════════════════════════════════════════
+const SHEETS_URL_KEY = 'verasp_sheets_url';
+let sheetsSelectedIds = new Set();
+
+const APPS_SCRIPT_CODE = `// Veras Prompt Manager — Google Sheets sync
+// Deploy as: Web App | Execute as: Me | Access: Anyone
+
+const SHEET_NAME = 'Prompts';
+const HEADERS = ['id','title','project','category','preset','lighting','rating','favorite','tags',
+                 'geoOverride','matOverride','promptStrength','prompt','negative','created'];
+
+function doGet(e) {
+  try {
+    const sheet = getSheet();
+    const rows = sheet.getDataRange().getValues();
+    if (rows.length < 2) return jsonResp({ prompts: [] });
+    const headers = rows[0];
+    const prompts = rows.slice(1).map(row => {
+      const obj = {};
+      headers.forEach((h, i) => obj[h] = row[i]);
+      obj.rating = Number(obj.rating) || 0;
+      obj.favorite = obj.favorite === 'yes' || obj.favorite === true;
+      obj.tags = obj.tags ? String(obj.tags).split('|').filter(Boolean) : [];
+      obj.geoOverride = Number(obj.geoOverride) || 20;
+      obj.matOverride = Number(obj.matOverride) || 80;
+      obj.promptStrength = Number(obj.promptStrength) || 60;
+      obj.created = obj.created ? new Date(obj.created).getTime() : Date.now();
+      return obj;
+    });
+    return jsonResp({ prompts });
+  } catch(err) { return jsonResp({ error: err.message }); }
+}
+
+function doPost(e) {
+  try {
+    const data = JSON.parse(e.postData.contents);
+    const prompts = data.prompts || [];
+    const sheet = getSheet();
+    sheet.clearContents();
+    sheet.appendRow(HEADERS);
+    prompts.forEach(p => {
+      sheet.appendRow(HEADERS.map(h => {
+        if (h === 'tags') return (p.tags||[]).join('|');
+        if (h === 'favorite') return p.favorite ? 'yes' : 'no';
+        if (h === 'created') return new Date(p.created || Date.now()).toISOString().slice(0,10);
+        return p[h] ?? '';
+      }));
+    });
+    return jsonResp({ ok: true, count: prompts.length });
+  } catch(err) { return jsonResp({ error: err.message }); }
+}
+
+function getSheet() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  return ss.getSheetByName(SHEET_NAME) || ss.insertSheet(SHEET_NAME);
+}
+function jsonResp(obj) {
+  return ContentService.createTextOutput(JSON.stringify(obj))
+    .setMimeType(ContentService.MimeType.JSON);
+}`;
+
+function getSheetsUrl() { return localStorage.getItem(SHEETS_URL_KEY) || ''; }
+function saveSheetsUrl() {
+  const url = document.getElementById('sheets-url').value.trim();
+  localStorage.setItem(SHEETS_URL_KEY, url);
+}
+
+function openIESheetsTab() {
+  document.getElementById('sheets-url').value = getSheetsUrl();
+  renderSheetsChecklist();
+}
+
+function renderSheetsChecklist() {
+  if (!sheetsSelectedIds.size) sheetsSelectedIds = new Set(prompts.map(p=>p.id));
+  const el = document.getElementById('sheets-checklist');
+  el.innerHTML = getSorted([...prompts]).map(p => `
+    <div class="sel-item${sheetsSelectedIds.has(p.id)?' checked':''}" onclick="toggleSheetsSel('${p.id}',this)">
+      <input type="checkbox" ${sheetsSelectedIds.has(p.id)?'checked':''} onclick="event.stopPropagation();toggleSheetsSel('${p.id}',this.closest('.sel-item'))">
+      <div class="sel-item-info">
+        <div class="sel-item-title">${esc(p.title)}</div>
+        <div class="sel-item-meta">${[p.project,p.category,p.preset].filter(Boolean).join(' · ')} ${p.rating?'<span class="sel-item-stars">'+starsText(p.rating)+'</span>':''}</div>
+      </div>
+    </div>`).join('');
+  updateSheetsCount();
+}
+function toggleSheetsSel(id,el){sheetsSelectedIds.has(id)?sheetsSelectedIds.delete(id):sheetsSelectedIds.add(id);el.classList.toggle('checked',sheetsSelectedIds.has(id));el.querySelector('input').checked=sheetsSelectedIds.has(id);updateSheetsCount();}
+function updateSheetsCount(){document.getElementById('sheets-sel-count').textContent=`${sheetsSelectedIds.size} of ${prompts.length} selected`;}
+function selSheetsAll(){sheetsSelectedIds=new Set(prompts.map(p=>p.id));renderSheetsChecklist();}
+function selSheetsNone(){sheetsSelectedIds.clear();renderSheetsChecklist();}
+function selSheetsFaved(){sheetsSelectedIds=new Set(prompts.filter(p=>p.favorite).map(p=>p.id));renderSheetsChecklist();}
+
+function setSheetsStatus(msg, ok) {
+  const el = document.getElementById('sheets-status');
+  el.style.display = 'block';
+  el.style.color = ok ? 'var(--green)' : 'var(--red)';
+  el.textContent = msg;
+}
+
+async function testSheetsUrl() {
+  const url = document.getElementById('sheets-url').value.trim();
+  if (!url) { setSheetsStatus('Please enter a URL first.', false); return; }
+  setSheetsStatus('Testing…', true);
+  try {
+    const r = await fetch(url);
+    const j = await r.json();
+    if (j.error) setSheetsStatus('Error: ' + j.error, false);
+    else setSheetsStatus(`✓ Connected! Sheet has ${(j.prompts||[]).length} prompt(s).`, true);
+  } catch(e) { setSheetsStatus('Could not reach URL. Check the script is deployed and URL is correct.', false); }
+}
+
+async function sheetsPush() {
+  const url = getSheetsUrl();
+  if (!url) { alert('Paste your Apps Script URL first.'); return; }
+  if (!sheetsSelectedIds.size) { alert('No prompts selected.'); return; }
+  const btn = document.getElementById('btn-sheets-push');
+  btn.textContent = 'Pushing…'; btn.disabled = true;
+  const toSend = prompts.filter(p => sheetsSelectedIds.has(p.id));
+  try {
+    const r = await fetch(url, { method:'POST', body: JSON.stringify({ prompts: toSend }), headers:{'Content-Type':'application/json'} });
+    const j = await r.json();
+    if (j.error) { setSheetsStatus('Push failed: ' + j.error, false); }
+    else { setSheetsStatus(`✓ Pushed ${j.count} prompt(s) to Google Sheets.`, true); }
+  } catch(e) { setSheetsStatus('Push failed: ' + e.message, false); }
+  finally { btn.textContent = '⬆ Push to Sheet'; btn.disabled = false; }
+}
+
+async function sheetsLoad() {
+  const url = getSheetsUrl();
+  if (!url) { alert('Paste your Apps Script URL first.'); return; }
+  const btn = document.getElementById('btn-sheets-load');
+  btn.textContent = 'Loading…'; btn.disabled = true;
+  try {
+    const r = await fetch(url);
+    const j = await r.json();
+    if (j.error) { setSheetsStatus('Load failed: ' + j.error, false); return; }
+    const incoming = j.prompts || [];
+    // Show in the import checklist flow
+    parsedImportItems = incoming.map(p => ({ ...p, id: p.id || crypto.randomUUID() }));
+    const existing = new Set(prompts.map(p=>p.id));
+    importSelectedIds = new Set(parsedImportItems.map(p=>p.id).filter(id=>!existing.has(id)));
+    const dups = parsedImportItems.filter(p=>existing.has(p.id)).length;
+    document.getElementById('import-dup-note').textContent = dups ? `${dups} duplicate(s) pre-deselected.` : '';
+    // Switch to import tab to show checklist
+    const importTab = document.querySelectorAll('.ie-tab')[1];
+    switchIETab('import', importTab);
+    renderImportChecklist(existing);
+    document.getElementById('import-preview-wrap').style.display = 'block';
+    document.getElementById('import-actions').style.display = 'flex';
+    setSheetsStatus(`✓ Fetched ${incoming.length} prompt(s). Review & import below.`, true);
+  } catch(e) { setSheetsStatus('Load failed: ' + e.message, false); }
+  finally { btn.textContent = '⬇ Load from Sheet'; btn.disabled = false; }
+}
+
+// Apps Script setup modal
+function openScriptSetup() {
+  document.getElementById('script-code-area').value = APPS_SCRIPT_CODE;
+  document.getElementById('script-setup-modal').classList.remove('hidden');
+}
+function closeScriptSetup() { document.getElementById('script-setup-modal').classList.add('hidden'); }
+function copyScriptCode(btn) {
+  navigator.clipboard.writeText(APPS_SCRIPT_CODE).then(() => { btn.textContent='Copied!'; setTimeout(()=>btn.textContent='Copy',1500); });
+}
+
 // ── File upload / drag-drop ────────────────────────
 function handleFileUpload(input) {
   const file = input.files[0];
@@ -1257,7 +1554,7 @@ function handleFileUpload(input) {
 function loadFile(file) {
   const allowed = ['.md', '.json', 'text/markdown', 'application/json'];
   const ext = file.name.split('.').pop().toLowerCase();
-  if (!['md','json'].includes(ext)) { alert('Please upload a .md or .json file.'); return; }
+  if (!['md','json','csv'].includes(ext)) { alert('Please upload a .md, .json, or .csv file.'); return; }
   const reader = new FileReader();
   reader.onload = e => {
     const content = e.target.result;
