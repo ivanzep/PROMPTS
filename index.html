@@ -751,12 +751,6 @@
 
     <!-- Google Sheets panel -->
     <div class="ie-panel" id="ie-sheets">
-      <!-- Step 1: Script URL -->
-      <div style="font-size:13.5px;color:var(--text-dim);line-height:1.7;background:var(--surface2);padding:13px 15px;border-radius:var(--radius-sm);border:1px solid var(--border);">
-        Connect to a Google Sheet using a one-time Apps Script setup. Your prompts sync directly to a spreadsheet you own.
-        <a href="#" onclick="openScriptSetup();return false;" style="color:var(--accent);font-weight:600;margin-left:6px;">How to set up →</a>
-      </div>
-
       <div class="form-group">
         <label class="form-label">Apps Script Web App URL</label>
         <div style="display:flex;gap:8px;">
@@ -787,33 +781,6 @@
   </div>
 </div>
 
-<!-- ═══════  MODAL: Apps Script Setup Guide  ═══════ -->
-<div class="modal-overlay hidden" id="script-setup-modal" onclick="if(event.target===this)closeScriptSetup()">
-  <div class="modal" style="max-width:600px;">
-    <div class="modal-header">
-      <div class="modal-title">Google Sheets Setup (one-time)</div>
-      <button class="modal-close" onclick="closeScriptSetup()">×</button>
-    </div>
-    <ol style="font-size:14px;color:var(--text-dim);line-height:1.9;padding-left:20px;display:flex;flex-direction:column;gap:6px;">
-      <li>Open <strong>Google Sheets</strong> and create a new spreadsheet (or use an existing one).</li>
-      <li>Click <strong>Extensions → Apps Script</strong>.</li>
-      <li>Delete any existing code and paste the script below.</li>
-      <li>Click <strong>Deploy → New deployment</strong>.</li>
-      <li>Set type to <strong>Web app</strong>, execute as <strong>Me</strong>, access <strong>Anyone</strong>. Click <strong>Deploy</strong>.</li>
-      <li>Copy the <strong>Web App URL</strong> and paste it into the URL field on the Google Sheets tab.</li>
-    </ol>
-    <div class="form-group">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
-        <label class="form-label">Apps Script code — paste this into your script editor</label>
-        <button class="btn btn-sm btn-secondary" onclick="copyScriptCode(this)">Copy</button>
-      </div>
-      <textarea class="form-textarea" id="script-code-area" rows="18" readonly style="font-size:11.5px;font-family:'Cascadia Code','Fira Mono',monospace;background:var(--surface2);"></textarea>
-    </div>
-    <div class="form-actions">
-      <button class="btn btn-primary" onclick="closeScriptSetup()">Done</button>
-    </div>
-  </div>
-</div>
 
 <script>
 // ════════════════════════════════════════════════════
@@ -1384,62 +1351,6 @@ function csvToPrompts(text) {
 const SHEETS_URL_KEY = 'verasp_sheets_url';
 let sheetsSelectedIds = new Set();
 
-const APPS_SCRIPT_CODE = `// Veras Prompt Manager — Google Sheets sync
-// Deploy as: Web App | Execute as: Me | Access: Anyone
-
-const SHEET_NAME = 'Prompts';
-const HEADERS = ['id','title','project','category','preset','lighting','rating','favorite','tags',
-                 'geoOverride','matOverride','promptStrength','prompt','negative','created'];
-
-function doGet(e) {
-  try {
-    const sheet = getSheet();
-    const rows = sheet.getDataRange().getValues();
-    if (rows.length < 2) return jsonResp({ prompts: [] });
-    const headers = rows[0];
-    const prompts = rows.slice(1).map(row => {
-      const obj = {};
-      headers.forEach((h, i) => obj[h] = row[i]);
-      obj.rating = Number(obj.rating) || 0;
-      obj.favorite = obj.favorite === 'yes' || obj.favorite === true;
-      obj.tags = obj.tags ? String(obj.tags).split('|').filter(Boolean) : [];
-      obj.geoOverride = Number(obj.geoOverride) || 20;
-      obj.matOverride = Number(obj.matOverride) || 80;
-      obj.promptStrength = Number(obj.promptStrength) || 60;
-      obj.created = obj.created ? new Date(obj.created).getTime() : Date.now();
-      return obj;
-    });
-    return jsonResp({ prompts });
-  } catch(err) { return jsonResp({ error: err.message }); }
-}
-
-function doPost(e) {
-  try {
-    const data = JSON.parse(e.postData.contents);
-    const prompts = data.prompts || [];
-    const sheet = getSheet();
-    sheet.clearContents();
-    sheet.appendRow(HEADERS);
-    prompts.forEach(p => {
-      sheet.appendRow(HEADERS.map(h => {
-        if (h === 'tags') return (p.tags||[]).join('|');
-        if (h === 'favorite') return p.favorite ? 'yes' : 'no';
-        if (h === 'created') return new Date(p.created || Date.now()).toISOString().slice(0,10);
-        return p[h] ?? '';
-      }));
-    });
-    return jsonResp({ ok: true, count: prompts.length });
-  } catch(err) { return jsonResp({ error: err.message }); }
-}
-
-function getSheet() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  return ss.getSheetByName(SHEET_NAME) || ss.insertSheet(SHEET_NAME);
-}
-function jsonResp(obj) {
-  return ContentService.createTextOutput(JSON.stringify(obj))
-    .setMimeType(ContentService.MimeType.JSON);
-}`;
 
 function getSheetsUrl() { return localStorage.getItem(SHEETS_URL_KEY) || ''; }
 function saveSheetsUrl() {
@@ -1533,15 +1444,6 @@ async function sheetsLoad() {
   finally { btn.textContent = '⬇ Load from Sheet'; btn.disabled = false; }
 }
 
-// Apps Script setup modal
-function openScriptSetup() {
-  document.getElementById('script-code-area').value = APPS_SCRIPT_CODE;
-  document.getElementById('script-setup-modal').classList.remove('hidden');
-}
-function closeScriptSetup() { document.getElementById('script-setup-modal').classList.add('hidden'); }
-function copyScriptCode(btn) {
-  navigator.clipboard.writeText(APPS_SCRIPT_CODE).then(() => { btn.textContent='Copied!'; setTimeout(()=>btn.textContent='Copy',1500); });
-}
 
 // ── File upload / drag-drop ────────────────────────
 function handleFileUpload(input) {
