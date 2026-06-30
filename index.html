@@ -1679,7 +1679,8 @@ async function sheetsPush() {
   btn.textContent = 'Pushing…'; btn.disabled = true;
   const toSend = prompts.filter(p => sheetsSelectedIds.has(p.id));
   try {
-    const r = await fetch(url, { method:'POST', body: JSON.stringify({ prompts: toSend }), headers:{'Content-Type':'application/json'} });
+    // text/plain avoids CORS preflight; Apps Script reads e.postData.contents as JSON
+    const r = await fetch(url, { method:'POST', body: JSON.stringify({ prompts: toSend }), headers:{'Content-Type':'text/plain;charset=utf-8'} });
     const j = await r.json();
     if (j.error) { setSheetsStatus('Push failed: ' + j.error, false); }
     else { setSheetsStatus(`✓ Pushed ${j.count} prompt(s) to Google Sheets.`, true); }
