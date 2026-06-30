@@ -220,7 +220,12 @@
   .builder-col { display: flex; flex-direction: column; gap: 16px; }
 
   .bpanel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; display: flex; flex-direction: column; gap: 15px; box-shadow: var(--shadow); }
-  .bpanel-title { font-size: 11.5px; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; color: var(--accent); padding-bottom: 7px; border-bottom: 1px solid var(--border); }
+  .bpanel-title { font-size: 11.5px; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; color: var(--accent); padding-bottom: 7px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .bpanel-toggle-wrap { display: flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 600; letter-spacing: 0; text-transform: none; color: var(--text-muted); cursor: pointer; user-select: none; }
+  .bpanel-toggle-wrap input[type=checkbox] { width: 15px; height: 15px; accent-color: var(--accent); cursor: pointer; }
+  .bpanel-body { display: flex; flex-direction: column; gap: 13px; transition: opacity .15s; }
+  .bpanel-body.sec-off { opacity: 0.35; pointer-events: none; }
+  .bpanel-desc { font-size: 12.5px; color: var(--text-muted); line-height: 1.65; background: var(--surface2); border-left: 3px solid var(--border); padding: 8px 12px; border-radius: 0 var(--radius-sm) var(--radius-sm) 0; }
   .bpanel-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 11px; }
   .bpanel-full { grid-column: 1 / -1; }
 
@@ -397,125 +402,155 @@
 
         <!-- ── TASK ── -->
         <div class="bpanel">
-          <div class="bpanel-title">TASK</div>
-          <div class="form-group">
-            <label class="form-label">Task Description</label>
-            <textarea class="form-textarea" id="b-task" rows="2" style="min-height:62px;" oninput="buildPrompt()">Enhance and embellish the provided building design into a photorealistic architectural masterpiece.</textarea>
+          <div class="bpanel-title">
+            TASK
+            <label class="bpanel-toggle-wrap"><input type="checkbox" id="sec-task" checked onchange="toggleSection('sec-task','body-task');buildPrompt()"> Include</label>
           </div>
-          <div class="bpanel-grid">
-            <div class="form-group"><label class="form-label">Project Name</label><input class="form-input" id="b-project" placeholder="Project / client name..." oninput="buildPrompt()"></div>
-            <div class="form-group"><label class="form-label">Category</label>
-              <select class="form-select" id="b-category" onchange="buildPrompt()">
-                <option value="">—</option><option>Exterior</option><option>Interior</option><option>Aerial</option><option>Detail</option><option>Landscape</option><option>Concept</option>
-              </select>
+          <div class="bpanel-body" id="body-task">
+            <p class="bpanel-desc">Describe what Veras should do with the design. Write a clear, action-oriented instruction — e.g. "enhance into a photorealistic masterpiece", "visualize as a luxury resort", "transform into a night scene". This is the top-level directive the AI follows.</p>
+            <div class="form-group">
+              <label class="form-label">Task Description</label>
+              <textarea class="form-textarea" id="b-task" rows="2" style="min-height:62px;" oninput="buildPrompt()">Enhance and embellish the provided building design into a photorealistic architectural masterpiece.</textarea>
+            </div>
+            <div class="bpanel-grid">
+              <div class="form-group"><label class="form-label">Project Name</label><input class="form-input" id="b-project" placeholder="Project / client name..." oninput="buildPrompt()"></div>
+              <div class="form-group"><label class="form-label">Category</label>
+                <select class="form-select" id="b-category" onchange="buildPrompt()">
+                  <option value="">—</option><option>Exterior</option><option>Interior</option><option>Aerial</option><option>Detail</option><option>Landscape</option><option>Concept</option>
+                </select>
+              </div>
             </div>
           </div>
         </div>
 
         <!-- ── STYLE & ART DIRECTION ── -->
         <div class="bpanel">
-          <div class="bpanel-title">STYLE &amp; ART DIRECTION</div>
-          <div class="bpanel-grid">
-            <div class="form-group bpanel-full"><label class="form-label">Editorial Style</label><input class="form-input" id="b-style" placeholder='e.g. High-end architectural photography, "ArchDaily" editorial style' value='High-end architectural photography, "ArchDaily" editorial style' oninput="buildPrompt()"></div>
-            <div class="form-group"><label class="form-label">Resolution / Quality</label>
-              <select class="form-select" id="b-resolution" onchange="buildPrompt()">
-                <option value="">—</option><option>4K high-resolution, ultra-detailed</option><option>8K ultra-resolution, hyper-detailed</option><option>cinematic 2.39:1 aspect ratio</option><option>medium format film quality</option>
-              </select>
+          <div class="bpanel-title">
+            STYLE &amp; ART DIRECTION
+            <label class="bpanel-toggle-wrap"><input type="checkbox" id="sec-style" checked onchange="toggleSection('sec-style','body-style');buildPrompt()"> Include</label>
+          </div>
+          <div class="bpanel-body" id="body-style">
+            <p class="bpanel-desc">Define the visual language and publication-level quality. Think of how the image should look in a magazine or architecture portfolio — editorial style, rendering quality, overall emotional tone, and any special visual requirements.</p>
+            <div class="bpanel-grid">
+              <div class="form-group bpanel-full"><label class="form-label">Editorial Style</label><input class="form-input" id="b-style" placeholder='High-end architectural photography, "ArchDaily" editorial style' value='High-end architectural photography, "ArchDaily" editorial style' oninput="buildPrompt()"></div>
+              <div class="form-group"><label class="form-label">Resolution / Quality</label>
+                <select class="form-select" id="b-resolution" onchange="buildPrompt()">
+                  <option value="">—</option><option>4K high-resolution, ultra-detailed</option><option>8K ultra-resolution, hyper-detailed</option><option>cinematic 2.39:1 aspect ratio</option><option>medium format film quality</option>
+                </select>
+              </div>
+              <div class="form-group"><label class="form-label">Mood</label>
+                <select class="form-select" id="b-mood" onchange="buildPrompt()">
+                  <option value="">—</option><option>warm cozy</option><option>cool minimal</option><option>dramatic moody</option><option>bright airy</option><option>serene tranquil</option><option>futuristic high-tech</option><option>raw industrial</option><option>lush organic</option>
+                </select>
+              </div>
+              <div class="form-group bpanel-full"><label class="form-label">Extra Style Notes</label><input class="form-input" id="b-style-extra" placeholder="implementation-feasible, award-winning, hyper-realistic render..." oninput="buildPrompt()"></div>
             </div>
-            <div class="form-group"><label class="form-label">Mood</label>
-              <select class="form-select" id="b-mood" onchange="buildPrompt()">
-                <option value="">—</option><option>warm cozy</option><option>cool minimal</option><option>dramatic moody</option><option>bright airy</option><option>serene tranquil</option><option>futuristic high-tech</option><option>raw industrial</option><option>lush organic</option>
-              </select>
-            </div>
-            <div class="form-group bpanel-full"><label class="form-label">Extra Style Notes</label><input class="form-input" id="b-style-extra" placeholder="implementation-feasible, award-winning..." oninput="buildPrompt()"></div>
           </div>
         </div>
 
         <!-- ── COMPONENTS ── -->
         <div class="bpanel">
-          <div class="bpanel-title">COMPONENTS</div>
-          <div class="bpanel-grid">
-            <div class="form-group bpanel-full" style="padding-bottom:4px;border-bottom:1px solid var(--border);margin-bottom:2px;"><span class="form-label" style="color:var(--accent);letter-spacing:.04em;">Main Subject</span></div>
-            <div class="form-group"><label class="form-label">Building / Space Type</label><input class="form-input" id="b-subject" placeholder="modern building, villa, office tower..." oninput="buildPrompt()"></div>
-            <div class="form-group"><label class="form-label">Architectural Style</label><input class="form-input" id="b-arch-style" placeholder="brutalist, parametric, minimalist..." oninput="buildPrompt()"></div>
+          <div class="bpanel-title">
+            COMPONENTS
+            <label class="bpanel-toggle-wrap"><input type="checkbox" id="sec-components" checked onchange="toggleSection('sec-components','body-components');buildPrompt()"> Include</label>
+          </div>
+          <div class="bpanel-body" id="body-components">
+            <p class="bpanel-desc">Break the scene into its physical parts. <strong>Main Subject</strong> — what the building is and its architectural character. <strong>Setting</strong> — where it sits and when (location, time, weather, season). <strong>Details</strong> — surface materials, landscape elements, and micro-texture cues that make the image believable.</p>
+            <div class="bpanel-grid">
+              <div class="form-group bpanel-full" style="padding-bottom:4px;border-bottom:1px solid var(--border);margin-bottom:2px;"><span class="form-label" style="color:var(--accent);letter-spacing:.04em;">Main Subject</span></div>
+              <div class="form-group"><label class="form-label">Building / Space Type</label><input class="form-input" id="b-subject" placeholder="modern building, villa, office tower..." oninput="buildPrompt()"></div>
+              <div class="form-group"><label class="form-label">Architectural Style</label><input class="form-input" id="b-arch-style" placeholder="brutalist, parametric, minimalist..." oninput="buildPrompt()"></div>
 
-            <div class="form-group bpanel-full" style="padding-bottom:4px;border-bottom:1px solid var(--border);margin-bottom:2px;margin-top:6px;"><span class="form-label" style="color:var(--accent);letter-spacing:.04em;">Setting</span></div>
-            <div class="form-group"><label class="form-label">Location / Context</label><input class="form-input" id="b-location" placeholder="modern city, coastal cliffs, forest..." oninput="buildPrompt()"></div>
-            <div class="form-group"><label class="form-label">Time of Day</label>
-              <select class="form-select" id="b-time" onchange="buildPrompt()">
-                <option value="">—</option><option>golden hour sunrise</option><option>golden hour sunset</option><option>midday</option><option>overcast day</option><option>blue hour</option><option>night</option><option>dawn</option><option>dusk</option>
-              </select>
-            </div>
-            <div class="form-group"><label class="form-label">Weather / Sky</label>
-              <select class="form-select" id="b-weather" onchange="buildPrompt()">
-                <option value="">—</option><option>dramatic sky</option><option>clear sky</option><option>partly cloudy</option><option>overcast moody</option><option>fog mist</option><option>rain</option><option>heavy rain</option><option>snow blizzard</option><option>dramatic storm</option>
-              </select>
-            </div>
-            <div class="form-group"><label class="form-label">Season</label>
-              <select class="form-select" id="b-season" onchange="buildPrompt()">
-                <option value="">—</option><option>spring sakura</option><option>summer lush</option><option>autumn foliage</option><option>winter snow</option>
-              </select>
-            </div>
+              <div class="form-group bpanel-full" style="padding-bottom:4px;border-bottom:1px solid var(--border);margin-bottom:2px;margin-top:6px;"><span class="form-label" style="color:var(--accent);letter-spacing:.04em;">Setting</span></div>
+              <div class="form-group"><label class="form-label">Location / Context</label><input class="form-input" id="b-location" placeholder="modern city, coastal cliffs, forest..." oninput="buildPrompt()"></div>
+              <div class="form-group"><label class="form-label">Time of Day</label>
+                <select class="form-select" id="b-time" onchange="buildPrompt()">
+                  <option value="">—</option><option>golden hour sunrise</option><option>golden hour sunset</option><option>midday</option><option>overcast day</option><option>blue hour</option><option>night</option><option>dawn</option><option>dusk</option>
+                </select>
+              </div>
+              <div class="form-group"><label class="form-label">Weather / Sky</label>
+                <select class="form-select" id="b-weather" onchange="buildPrompt()">
+                  <option value="">—</option><option>dramatic sky</option><option>clear sky</option><option>partly cloudy</option><option>overcast moody</option><option>fog mist</option><option>rain</option><option>heavy rain</option><option>snow blizzard</option><option>dramatic storm</option>
+                </select>
+              </div>
+              <div class="form-group"><label class="form-label">Season</label>
+                <select class="form-select" id="b-season" onchange="buildPrompt()">
+                  <option value="">—</option><option>spring sakura</option><option>summer lush</option><option>autumn foliage</option><option>winter snow</option>
+                </select>
+              </div>
 
-            <div class="form-group bpanel-full" style="padding-bottom:4px;border-bottom:1px solid var(--border);margin-bottom:2px;margin-top:6px;"><span class="form-label" style="color:var(--accent);letter-spacing:.04em;">Details</span></div>
-            <div class="form-group bpanel-full"><label class="form-label">Key Materials</label><input class="form-input" id="b-materials" placeholder="raw concrete, weathered steel, warm wood, glass..." oninput="buildPrompt()"></div>
-            <div class="form-group bpanel-full"><label class="form-label">Vegetation / Landscape</label><input class="form-input" id="b-vegetation" placeholder="tropical plants, manicured lawn, street trees..." oninput="buildPrompt()"></div>
-            <div class="form-group bpanel-full"><label class="form-label">Material Micro-Details</label><input class="form-input" id="b-microdetails" placeholder="visible wood grain, concrete pores, realistic glass reflections..." oninput="buildPrompt()"></div>
+              <div class="form-group bpanel-full" style="padding-bottom:4px;border-bottom:1px solid var(--border);margin-bottom:2px;margin-top:6px;"><span class="form-label" style="color:var(--accent);letter-spacing:.04em;">Details</span></div>
+              <div class="form-group bpanel-full"><label class="form-label">Key Materials</label><input class="form-input" id="b-materials" placeholder="raw concrete, weathered steel, warm wood, glass..." oninput="buildPrompt()"></div>
+              <div class="form-group bpanel-full"><label class="form-label">Vegetation / Landscape</label><input class="form-input" id="b-vegetation" placeholder="tropical plants, manicured lawn, street trees..." oninput="buildPrompt()"></div>
+              <div class="form-group bpanel-full"><label class="form-label">Material Micro-Details</label><input class="form-input" id="b-microdetails" placeholder="visible wood grain, concrete pores, realistic glass reflections..." oninput="buildPrompt()"></div>
+            </div>
           </div>
         </div>
 
         <!-- ── LIGHTING ── -->
         <div class="bpanel">
-          <div class="bpanel-title">LIGHTING</div>
-          <div class="bpanel-grid">
-            <div class="form-group bpanel-full"><label class="form-label">Lighting Description</label><input class="form-input" id="b-lighting-desc" placeholder="Volumetric sun rays filtering through trees, warm interior ambient lighting..." oninput="buildPrompt()"></div>
-            <div class="form-group"><label class="form-label">Light Type</label>
-              <select class="form-select" id="b-lighting" onchange="buildPrompt()">
-                <option value="">—</option><option>natural sunlight</option><option>diffused soft light</option><option>dramatic side lighting</option><option>backlighting silhouette</option><option>HDRI sky</option><option>interior artificial lighting</option><option>mixed interior exterior</option><option>neon urban glow</option><option>volumetric rays</option>
-              </select>
-            </div>
-            <div class="form-group"><label class="form-label">Shadows</label>
-              <select class="form-select" id="b-shadows" onchange="buildPrompt()">
-                <option value="">—</option><option>soft shadows</option><option>hard shadows</option><option>long dramatic shadows</option><option>no shadows</option>
-              </select>
-            </div>
-            <div class="form-group bpanel-full"><label class="form-label">Color Balance</label>
-              <select class="form-select" id="b-colorbalance" onchange="buildPrompt()">
-                <option value="">—</option><option>warm and cold color tone mixture, good contrast</option><option>warm earth tones</option><option>cool blues and grays</option><option>monochromatic white</option><option>vibrant bold colors</option><option>muted desaturated</option><option>high contrast</option><option>soft pastels</option>
-              </select>
+          <div class="bpanel-title">
+            LIGHTING
+            <label class="bpanel-toggle-wrap"><input type="checkbox" id="sec-lighting" checked onchange="toggleSection('sec-lighting','body-lighting');buildPrompt()"> Include</label>
+          </div>
+          <div class="bpanel-body" id="body-lighting">
+            <p class="bpanel-desc">Describe how light behaves in the scene. <strong>Lighting</strong> — the primary source and quality (e.g. volumetric sun rays, warm interior glow, HDRI sky). <strong>Color</strong> — the overall color temperature and tonal balance that sets the mood (warm vs. cool, high vs. low contrast).</p>
+            <div class="bpanel-grid">
+              <div class="form-group bpanel-full"><label class="form-label">Lighting Description</label><input class="form-input" id="b-lighting-desc" placeholder="Volumetric sun rays filtering through trees, warm interior ambient lighting visible through windows..." oninput="buildPrompt()"></div>
+              <div class="form-group"><label class="form-label">Light Type</label>
+                <select class="form-select" id="b-lighting" onchange="buildPrompt()">
+                  <option value="">—</option><option>natural sunlight</option><option>diffused soft light</option><option>dramatic side lighting</option><option>backlighting silhouette</option><option>HDRI sky</option><option>interior artificial lighting</option><option>mixed interior exterior</option><option>neon urban glow</option><option>volumetric rays</option>
+                </select>
+              </div>
+              <div class="form-group"><label class="form-label">Shadows</label>
+                <select class="form-select" id="b-shadows" onchange="buildPrompt()">
+                  <option value="">—</option><option>soft shadows</option><option>hard shadows</option><option>long dramatic shadows</option><option>no shadows</option>
+                </select>
+              </div>
+              <div class="form-group bpanel-full"><label class="form-label">Color Balance</label>
+                <select class="form-select" id="b-colorbalance" onchange="buildPrompt()">
+                  <option value="">—</option><option>warm and cold color tone mixture, good contrast</option><option>warm earth tones</option><option>cool blues and grays</option><option>monochromatic white</option><option>vibrant bold colors</option><option>muted desaturated</option><option>high contrast</option><option>soft pastels</option>
+                </select>
+              </div>
             </div>
           </div>
         </div>
 
         <!-- ── CONSTRAINTS ── -->
         <div class="bpanel">
-          <div class="bpanel-title">CONSTRAINTS</div>
-          <div class="bpanel-grid">
-            <div class="form-group bpanel-full">
-              <label class="form-label">Active Constraints</label>
-              <div style="display:flex;flex-direction:column;gap:7px;margin-top:2px;">
-                <label style="display:flex;align-items:center;gap:8px;font-size:14px;cursor:pointer;"><input type="checkbox" id="c-silhouette" checked onchange="buildPrompt()"> Maintain exact structural silhouette of the original design</label>
-                <label style="display:flex;align-items:center;gap:8px;font-size:14px;cursor:pointer;"><input type="checkbox" id="c-noai" checked onchange="buildPrompt()"> No over-smoothing or "plastic" AI look — prioritize raw texture fidelity</label>
-                <label style="display:flex;align-items:center;gap:8px;font-size:14px;cursor:pointer;"><input type="checkbox" id="c-lines" checked onchange="buildPrompt()"> All structural lines perfectly vertical and parallel — no lens distortion</label>
-                <label style="display:flex;align-items:center;gap:8px;font-size:14px;cursor:pointer;"><input type="checkbox" id="c-entourage" onchange="buildPrompt()"> Add people and entourage to show a lively scene</label>
+          <div class="bpanel-title">
+            CONSTRAINTS
+            <label class="bpanel-toggle-wrap"><input type="checkbox" id="sec-constraints" checked onchange="toggleSection('sec-constraints','body-constraints');buildPrompt()"> Include</label>
+          </div>
+          <div class="bpanel-body" id="body-constraints">
+            <p class="bpanel-desc">Set hard rules Veras must not break. Use these to protect geometry integrity, camera accuracy, and texture quality. Check what applies — unchecked rules are excluded from the prompt. Add camera framing and entourage here as well.</p>
+            <div class="bpanel-grid">
+              <div class="form-group bpanel-full">
+                <label class="form-label">Active Rules</label>
+                <div style="display:flex;flex-direction:column;gap:8px;margin-top:2px;">
+                  <label style="display:flex;align-items:flex-start;gap:9px;font-size:14px;cursor:pointer;line-height:1.5;"><input type="checkbox" id="c-silhouette" checked onchange="buildPrompt()" style="margin-top:2px;"> Maintain the exact structural silhouette of the original design</label>
+                  <label style="display:flex;align-items:flex-start;gap:9px;font-size:14px;cursor:pointer;line-height:1.5;"><input type="checkbox" id="c-noai" checked onchange="buildPrompt()" style="margin-top:2px;"> No over-smoothing or "plastic" AI look — prioritize raw, unretouched texture fidelity</label>
+                  <label style="display:flex;align-items:flex-start;gap:9px;font-size:14px;cursor:pointer;line-height:1.5;"><input type="checkbox" id="c-lines" checked onchange="buildPrompt()" style="margin-top:2px;"> Ensure all structural lines are perfectly vertical and parallel (no lens distortion)</label>
+                  <label style="display:flex;align-items:flex-start;gap:9px;font-size:14px;cursor:pointer;line-height:1.5;"><input type="checkbox" id="c-entourage" onchange="buildPrompt()" style="margin-top:2px;"> Add people and additional entourage to show a lively scene</label>
+                </div>
               </div>
+              <div class="form-group"><label class="form-label">Entourage Type</label>
+                <select class="form-select" id="b-people" onchange="buildPrompt()">
+                  <option value="">—</option><option>silhouetted figures</option><option>blurred pedestrians</option><option>casually dressed people</option><option>families</option><option>no people</option>
+                </select>
+              </div>
+              <div class="form-group"><label class="form-label">Shot Type</label>
+                <select class="form-select" id="b-shot" onchange="buildPrompt()">
+                  <option value="">—</option><option>wide establishing shot</option><option>3/4 view</option><option>street-level perspective</option><option>worm's eye view</option><option>bird's eye aerial view</option><option>interior wide angle</option><option>close-up detail</option><option>symmetrical front elevation</option>
+                </select>
+              </div>
+              <div class="form-group"><label class="form-label">Focal Length</label>
+                <select class="form-select" id="b-lens" onchange="buildPrompt()">
+                  <option value="">—</option><option>ultra-wide 14mm</option><option>wide 24mm</option><option>standard 35mm</option><option>50mm</option><option>85mm</option>
+                </select>
+              </div>
+              <div class="form-group bpanel-full"><label class="form-label">Custom Constraint</label><input class="form-input" id="b-constraint-extra" placeholder="e.g. No added floors or structural changes..." oninput="buildPrompt()"></div>
             </div>
-            <div class="form-group"><label class="form-label">Entourage</label>
-              <select class="form-select" id="b-people" onchange="buildPrompt()">
-                <option value="">—</option><option>silhouetted figures</option><option>blurred pedestrians</option><option>casually dressed people</option><option>families</option><option>no people</option>
-              </select>
-            </div>
-            <div class="form-group"><label class="form-label">Shot Type</label>
-              <select class="form-select" id="b-shot" onchange="buildPrompt()">
-                <option value="">—</option><option>wide establishing shot</option><option>3/4 view</option><option>street-level perspective</option><option>worm's eye view</option><option>bird's eye aerial view</option><option>interior wide angle</option><option>close-up detail</option><option>symmetrical front elevation</option>
-              </select>
-            </div>
-            <div class="form-group"><label class="form-label">Focal Length</label>
-              <select class="form-select" id="b-lens" onchange="buildPrompt()">
-                <option value="">—</option><option>ultra-wide 14mm</option><option>wide 24mm</option><option>standard 35mm</option><option>50mm</option><option>85mm</option>
-              </select>
-            </div>
-            <div class="form-group bpanel-full"><label class="form-label">Custom Constraint</label><input class="form-input" id="b-constraint-extra" placeholder="Additional constraint..." oninput="buildPrompt()"></div>
           </div>
         </div>
 
@@ -1110,6 +1145,12 @@ function savePrompt(){
 let selectedPreset='';
 function selectPreset(el){document.querySelectorAll('.preset-opt').forEach(o=>o.classList.remove('selected'));el.classList.add('selected');selectedPreset=el.dataset.preset||'';buildPrompt();}
 function v(id){return document.getElementById(id)?.value?.trim()||'';}
+function toggleSection(cbId, bodyId){
+  const on=document.getElementById(cbId).checked;
+  document.getElementById(bodyId).classList.toggle('sec-off',!on);
+}
+function secOn(id){return document.getElementById(id).checked;}
+
 function buildPrompt(){
   const task=v('b-task');
   const style=v('b-style'),resolution=v('b-resolution'),mood=v('b-mood'),styleExtra=v('b-style-extra');
@@ -1122,41 +1163,49 @@ function buildPrompt(){
   const lines=[];
 
   // TASK
-  if(task) lines.push('TASK: '+task);
+  if(secOn('sec-task') && task) lines.push('TASK: '+task);
 
   // STYLE & ART DIRECTION
-  const styleParts=[style,resolution,mood,styleExtra].filter(Boolean);
-  if(styleParts.length) lines.push('\nSTYLE & ART DIRECTION: '+styleParts.join(', ')+'.');
+  if(secOn('sec-style')){
+    const styleParts=[style,resolution,mood,styleExtra].filter(Boolean);
+    if(styleParts.length) lines.push('\nSTYLE & ART DIRECTION: '+styleParts.join(', ')+'.');
+  }
 
   // COMPONENTS
-  const compLines=[];
-  const subjectParts=[subject,archStyle,cat?cat.toLowerCase()+' view':null].filter(Boolean);
-  if(subjectParts.length) compLines.push('Main Subject: '+subjectParts.join(', ')+'.');
-  const settingParts=[location,time,weather,season].filter(Boolean);
-  if(settingParts.length) compLines.push('Setting: Situated in '+settingParts.join(' during '+(time?'':'')+'').replace('during ','')+'.');
-  const detailParts=[materials?'Materials — '+materials:null, vegetation?'Vegetation — '+vegetation:null, microdetails?'Micro-details — '+microdetails:null].filter(Boolean);
-  if(detailParts.length) compLines.push('Details: '+detailParts.join(' | ')+'.');
-  if(compLines.length) lines.push('\nCOMPONENTS:\n'+compLines.join('\n'));
+  if(secOn('sec-components')){
+    const compLines=[];
+    const subjectParts=[subject,archStyle,cat?cat.toLowerCase()+' view':null].filter(Boolean);
+    if(subjectParts.length) compLines.push('Main Subject: '+subjectParts.join(', ')+'.');
+    const settingParts=[location,time,weather,season].filter(Boolean);
+    if(settingParts.length) compLines.push('Setting: Situated in a '+settingParts.join(', ')+'.');
+    const detailParts=[materials?'Materials — '+materials:null, vegetation?'Vegetation — '+vegetation:null, microdetails?'Micro-details — '+microdetails:null].filter(Boolean);
+    if(detailParts.length) compLines.push('Details: '+detailParts.join(' | ')+'.');
+    if(compLines.length) lines.push('\nCOMPONENTS:\n'+compLines.join('\n'));
+  }
 
   // LIGHTING
-  const lParts=[];
-  const lightMain=[lightingDesc,lighting,shadows].filter(Boolean);
-  if(lightMain.length) lParts.push('Lighting: '+lightMain.join(', ')+'.');
-  if(colorbalance) lParts.push('Color: '+colorbalance+'.');
-  if(lParts.length) lines.push('\nLIGHTING:\n'+lParts.join('\n'));
+  if(secOn('sec-lighting')){
+    const lParts=[];
+    const lightMain=[lightingDesc,lighting,shadows].filter(Boolean);
+    if(lightMain.length) lParts.push('Lighting: '+lightMain.join(', ')+'.');
+    if(colorbalance) lParts.push('Color: '+colorbalance+'.');
+    if(lParts.length) lines.push('\nLIGHTING:\n'+lParts.join('\n'));
+  }
 
   // CONSTRAINTS
-  const cLines=[];
-  if(document.getElementById('c-silhouette').checked) cLines.push('Maintain the exact structural silhouette of the original design.');
-  if(document.getElementById('c-noai').checked) cLines.push('No over-smoothing or "plastic" AI look; prioritize raw, unretouched texture fidelity.');
-  if(document.getElementById('c-lines').checked) cLines.push('Ensure all structural lines are perfectly vertical and parallel (no lens distortion).');
-  if(document.getElementById('c-entourage').checked) cLines.push('Add people and additional entourage to show a lively scene.');
-  if(people&&people!=='no people') cLines.push('Entourage: '+people+'.');
-  const camParts=[shot,lens].filter(Boolean);
-  if(camParts.length) cLines.push('Camera: '+camParts.join(', ')+'.');
-  if(constraintExtra) cLines.push(constraintExtra);
-  if(extra) cLines.push(extra);
-  if(cLines.length) lines.push('\nCONSTRAINTS:\n'+cLines.join('\n'));
+  if(secOn('sec-constraints')){
+    const cLines=[];
+    if(document.getElementById('c-silhouette').checked) cLines.push('Maintain the exact structural silhouette of the original design.');
+    if(document.getElementById('c-noai').checked) cLines.push('No over-smoothing or "plastic" AI look; prioritize raw, unretouched texture fidelity.');
+    if(document.getElementById('c-lines').checked) cLines.push('Ensure all structural lines are perfectly vertical and parallel (no lens distortion).');
+    if(document.getElementById('c-entourage').checked) cLines.push('Add people and additional entourage to show a lively scene.');
+    if(people&&people!=='no people') cLines.push('Entourage: '+people+'.');
+    const camParts=[shot,lens].filter(Boolean);
+    if(camParts.length) cLines.push('Camera: '+camParts.join(', ')+'.');
+    if(constraintExtra) cLines.push(constraintExtra);
+    if(extra) cLines.push(extra);
+    if(cLines.length) lines.push('\nCONSTRAINTS:\n'+cLines.join('\n'));
+  }
 
   const out=lines.join('\n');
   document.getElementById('preview-output').textContent=out||'Fill in the sections on the left…';
@@ -1185,6 +1234,10 @@ function resetBuilder(){
   document.getElementById('b-style').value='High-end architectural photography, "ArchDaily" editorial style';
   ['c-silhouette','c-noai','c-lines'].forEach(id=>{document.getElementById(id).checked=true;});
   document.getElementById('c-entourage').checked=false;
+  ['sec-task','sec-style','sec-components','sec-lighting','sec-constraints'].forEach(id=>{
+    document.getElementById(id).checked=true;
+    toggleSection(id, id.replace('sec-','body-'));
+  });
   setSlider('b-geo','bv-geo',20);setSlider('b-mat','bv-mat',80);setSlider('b-strength','bv-strength',60);
   document.querySelectorAll('.preset-opt').forEach(o=>o.classList.remove('selected'));document.querySelector('.preset-opt[data-preset=""]').classList.add('selected');
   selectedPreset='';setRadioVal('b-rating',0);buildPrompt();
