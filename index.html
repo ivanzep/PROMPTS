@@ -243,7 +243,8 @@
   .preview-panel-title { font-size: 11.5px; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; color: var(--accent); padding-bottom: 7px; border-bottom: 1px solid var(--border); }
 
   .preview-prompt { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 14px; font-size: 13px; font-family: 'Cascadia Code','Fira Mono',monospace; color: var(--text); line-height: 1.7; white-space: pre-wrap; word-break: break-word; min-height: 130px; }
-  .preview-negative { background: #fef2f2; border: 1px solid #fecdd3; border-radius: var(--radius-sm); padding: 11px 13px; font-size: 12.5px; font-family: 'Cascadia Code','Fira Mono',monospace; color: var(--red); line-height: 1.65; white-space: pre-wrap; display: none; }
+  .preview-negative { background: #fef2f2; border: 1px solid #fecdd3; border-radius: var(--radius-sm); padding: 9px 13px; font-size: 12.5px; font-family: 'Cascadia Code','Fira Mono',monospace; color: var(--red); line-height: 1.65; white-space: pre-wrap; display: none; margin-top: 6px; }
+  .preview-negative::before { content: 'Negative: '; font-weight: 700; opacity: 0.7; }
 
   .veras-output-block { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 13px; font-size: 13px; display: flex; flex-direction: column; gap: 9px; }
   .vop-row { display: flex; justify-content: space-between; align-items: center; }
@@ -424,17 +425,16 @@
             <div class="bpanel-grid">
               <div class="form-group bpanel-full"><label class="form-label">Prompt Title *</label><input class="form-input" id="b-title" placeholder="Name for this prompt..."></div>
               <div class="form-group bpanel-full">
-                <label class="form-label">Category</label>
-                <div class="cat-chips">
-                  <span class="cat-chip" data-cat="" onclick="selectCat(this)">None</span>
-                  <span class="cat-chip" data-cat="exterior" onclick="selectCat(this)">Exterior</span>
-                  <span class="cat-chip" data-cat="interior" onclick="selectCat(this)">Interior</span>
-                  <span class="cat-chip" data-cat="aerial" onclick="selectCat(this)">Aerial</span>
-                  <span class="cat-chip" data-cat="detail" onclick="selectCat(this)">Detail</span>
-                  <span class="cat-chip" data-cat="landscape" onclick="selectCat(this)">Landscape</span>
-                  <span class="cat-chip" data-cat="concept" onclick="selectCat(this)">Concept</span>
+                <label class="form-label">Category <span style="font-weight:400;color:var(--text-muted)">(comma-separated, type freely or click to add)</span></label>
+                <input class="form-input" id="b-save-category" placeholder="exterior, interior, concept..." oninput="syncCatChips()">
+                <div class="cat-chips" style="margin-top:7px;">
+                  <span class="cat-chip" data-cat="exterior" onclick="addCat('exterior')">Exterior</span>
+                  <span class="cat-chip" data-cat="interior" onclick="addCat('interior')">Interior</span>
+                  <span class="cat-chip" data-cat="aerial" onclick="addCat('aerial')">Aerial</span>
+                  <span class="cat-chip" data-cat="detail" onclick="addCat('detail')">Detail</span>
+                  <span class="cat-chip" data-cat="landscape" onclick="addCat('landscape')">Landscape</span>
+                  <span class="cat-chip" data-cat="concept" onclick="addCat('concept')">Concept</span>
                 </div>
-                <input type="hidden" id="b-save-category" value="">
               </div>
               <div class="form-group bpanel-full"><label class="form-label">Tags <span style="font-weight:400;color:var(--text-muted)">(comma-separated)</span></label><input class="form-input" id="b-tags" placeholder="luxury, residential, sunset..."></div>
               <div class="form-group bpanel-full"><label class="form-label">Rating</label>
@@ -654,14 +654,15 @@
           <div class="preview-panel-title">Live Preview</div>
           <div class="form-label" style="margin-bottom:5px;">Prompt Text</div>
           <div class="preview-prompt" id="preview-output">Select options on the left…</div>
-          <div class="form-label" style="margin-bottom:5px;">Negative Prompt</div>
           <div class="preview-negative" id="preview-negative"></div>
-          <div class="form-label" style="margin-bottom:7px;">Veras Parameters</div>
-          <div class="veras-output-block">
-            <div class="vop-row"><span class="vop-label">Preset</span><span class="vop-val" id="out-preset">—</span></div>
-            <div class="vop-row"><span class="vop-label">Geometry Override</span><div class="vop-bar"><div class="vop-bar-fill" id="bar-geo" style="width:20%"></div></div><span class="vop-val" id="out-geo">20</span></div>
-            <div class="vop-row"><span class="vop-label">Material Override</span><div class="vop-bar"><div class="vop-bar-fill" id="bar-mat" style="width:80%"></div></div><span class="vop-val" id="out-mat">80</span></div>
-            <div class="vop-row"><span class="vop-label">Prompt Strength</span><div class="vop-bar"><div class="vop-bar-fill" id="bar-str" style="width:60%"></div></div><span class="vop-val" id="out-str">60</span></div>
+          <div id="vparams-preview-block">
+            <div class="form-label" style="margin-bottom:7px;margin-top:2px;">Veras Parameters</div>
+            <div class="veras-output-block">
+              <div class="vop-row"><span class="vop-label">Preset</span><span class="vop-val" id="out-preset">—</span></div>
+              <div class="vop-row"><span class="vop-label">Geometry Override</span><div class="vop-bar"><div class="vop-bar-fill" id="bar-geo" style="width:20%"></div></div><span class="vop-val" id="out-geo">20</span></div>
+              <div class="vop-row"><span class="vop-label">Material Override</span><div class="vop-bar"><div class="vop-bar-fill" id="bar-mat" style="width:80%"></div></div><span class="vop-val" id="out-mat">80</span></div>
+              <div class="vop-row"><span class="vop-label">Prompt Strength</span><div class="vop-bar"><div class="vop-bar-fill" id="bar-str" style="width:60%"></div></div><span class="vop-val" id="out-str">60</span></div>
+            </div>
           </div>
           <div class="token-count" id="token-count"></div>
           <div class="copy-row">
@@ -1206,10 +1207,15 @@ function toggleSection(cbId, bodyId){
   document.getElementById(bodyId).classList.toggle('sec-off',!on);
 }
 function secOn(id){return document.getElementById(id).checked;}
-function selectCat(el){
-  document.querySelectorAll('.cat-chip').forEach(c=>c.classList.remove('selected'));
-  el.classList.add('selected');
-  document.getElementById('b-save-category').value=el.dataset.cat;
+function addCat(cat){
+  const inp=document.getElementById('b-save-category');
+  const existing=inp.value.split(',').map(s=>s.trim().toLowerCase()).filter(Boolean);
+  if(!existing.includes(cat)){existing.push(cat);inp.value=existing.join(', ');}
+  syncCatChips();
+}
+function syncCatChips(){
+  const active=new Set(document.getElementById('b-save-category').value.split(',').map(s=>s.trim().toLowerCase()).filter(Boolean));
+  document.querySelectorAll('.cat-chip').forEach(c=>c.classList.toggle('selected',active.has(c.dataset.cat)));
 }
 
 function buildPrompt(){
@@ -1277,9 +1283,12 @@ function buildPrompt(){
   if(neg){negEl.style.display='block';negEl.textContent=neg;}else negEl.style.display='none';
   const geo=document.getElementById('b-geo').value,mat=document.getElementById('b-mat').value,str=document.getElementById('b-strength').value;
   const vpOn=secOn('sec-vparams');
-  document.getElementById('out-preset').textContent=(vpOn&&selectedPreset)||'—';
-  document.getElementById('out-geo').textContent=vpOn?geo:'—';document.getElementById('out-mat').textContent=vpOn?mat:'—';document.getElementById('out-str').textContent=vpOn?str:'—';
-  document.getElementById('bar-geo').style.width=(vpOn?geo:0)+'%';document.getElementById('bar-mat').style.width=(vpOn?mat:0)+'%';document.getElementById('bar-str').style.width=(vpOn?str:0)+'%';
+  document.getElementById('vparams-preview-block').style.display=vpOn?'':'none';
+  if(vpOn){
+    document.getElementById('out-preset').textContent=selectedPreset||'—';
+    document.getElementById('out-geo').textContent=geo;document.getElementById('out-mat').textContent=mat;document.getElementById('out-str').textContent=str;
+    document.getElementById('bar-geo').style.width=geo+'%';document.getElementById('bar-mat').style.width=mat+'%';document.getElementById('bar-str').style.width=str+'%';
+  }
   const words=out.split(/\s+/).filter(Boolean).length;document.getElementById('token-count').textContent=out?`~${words} words`:'';
 }
 function addEmphasis(word){const inp=document.getElementById('b-extra');const emp=`(((${word})))`;inp.value=inp.value?inp.value+', '+emp:emp;buildPrompt();inp.focus();}
@@ -1290,7 +1299,8 @@ function saveBuiltPrompt(){
   if(!title){alert('Give the prompt a title.');document.getElementById('b-title').focus();return;}
   if(!txt||txt.startsWith('Select')){alert('Build a prompt first.');return;}
   const tags=v('b-tags').split(',').map(t=>t.trim().toLowerCase()).filter(Boolean);
-  const cat=document.getElementById('b-save-category').value||v('b-category')||'other';
+  const catRaw=document.getElementById('b-save-category').value||v('b-category')||'other';
+  const cat=catRaw.split(',')[0].trim()||'other';
   prompts.unshift({id:crypto.randomUUID(),title,project:v('b-project'),prompt:txt,negative:v('b-negative'),category:cat.toLowerCase(),preset:selectedPreset,lighting:v('b-lighting')||v('b-lighting-desc'),geoOverride:+document.getElementById('b-geo').value,matOverride:+document.getElementById('b-mat').value,promptStrength:+document.getElementById('b-strength').value,rating:getRadioVal('b-rating'),tags,favorite:false,created:Date.now()});
   save(prompts);alert(`Saved "${title}" to library!`);
 }
@@ -1305,8 +1315,8 @@ function resetBuilder(){
     if(['sec-task','sec-style','sec-components','sec-lighting','sec-constraints'].includes(id))
       toggleSection(id, id.replace('sec-','body-'));
   });
-  document.querySelectorAll('.cat-chip').forEach(c=>c.classList.remove('selected'));
   document.getElementById('b-save-category').value='';
+  syncCatChips();
   setSlider('b-geo','bv-geo',20);setSlider('b-mat','bv-mat',80);setSlider('b-strength','bv-strength',60);
   document.querySelectorAll('.preset-opt').forEach(o=>o.classList.remove('selected'));document.querySelector('.preset-opt[data-preset=""]').classList.add('selected');
   selectedPreset='';setRadioVal('b-rating',0);buildPrompt();
