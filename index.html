@@ -243,8 +243,6 @@
   .preview-panel-title { font-size: 11.5px; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; color: var(--accent); padding-bottom: 7px; border-bottom: 1px solid var(--border); }
 
   .preview-prompt { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 14px; font-size: 13px; font-family: 'Cascadia Code','Fira Mono',monospace; color: var(--text); line-height: 1.7; white-space: pre-wrap; word-break: break-word; min-height: 130px; }
-  .preview-negative { background: #fef2f2; border: 1px solid #fecdd3; border-radius: var(--radius-sm); padding: 9px 13px; font-size: 12.5px; font-family: 'Cascadia Code','Fira Mono',monospace; color: var(--red); line-height: 1.65; white-space: pre-wrap; display: none; margin-top: 6px; }
-  .preview-negative::before { content: 'Negative: '; font-weight: 700; opacity: 0.7; }
 
   .veras-output-block { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 13px; font-size: 13px; display: flex; flex-direction: column; gap: 9px; }
   .vop-row { display: flex; justify-content: space-between; align-items: center; }
@@ -646,7 +644,6 @@
           <div class="preview-panel-title">Live Preview</div>
           <div class="form-label" style="margin-bottom:5px;">Prompt Text</div>
           <div class="preview-prompt" id="preview-output">Select options on the left…</div>
-          <div class="preview-negative" id="preview-negative"></div>
           <div id="vparams-preview-block">
             <div class="form-label" style="margin-bottom:7px;margin-top:2px;">Veras Parameters</div>
             <div class="veras-output-block">
@@ -1148,8 +1145,12 @@ function copyFullVerasCard(id,btn) {
     .then(()=>{btn.textContent='Copied!';setTimeout(()=>btn.textContent='Full Config',1500);});
 }
 function verasConfig(prompt,neg,preset,geo,mat,str){
-  const l=[`Prompt: ${prompt}`]; if(neg) l.push(`Negative: ${neg}`); if(preset) l.push(`Preset: ${preset}`);
-  if(geo!=null) l.push(`Geometry Override: ${geo}`); if(mat!=null) l.push(`Material Override: ${mat}`); if(str!=null) l.push(`Prompt Strength: ${str}`);
+  const l=[`Prompt: ${prompt}`];
+  if(neg) l.push(`Negative: ${neg}`);
+  if(preset!=null && preset!=='') l.push(`Preset: ${preset}`);
+  if(geo!=null) l.push(`Geometry Override: ${geo}`);
+  if(mat!=null) l.push(`Material Override: ${mat}`);
+  if(str!=null) l.push(`Prompt Strength: ${str}`);
   return l.join('\n');
 }
 function toggleFav(id){const p=prompts.find(x=>x.id===id);if(!p)return;p.favorite=!p.favorite;save(prompts);renderCards();}
@@ -1269,11 +1270,9 @@ function buildPrompt(){
   // EMPHASIS extra keywords (appended to prompt)
   if(secOn('sec-emphasis') && extra) lines.push('\n'+extra);
 
-  const out=lines.join('\n');
-  document.getElementById('preview-output').textContent=out||'Fill in the sections on the left…';
-  const negInclude=secOn('sec-emphasis');
-  const neg=negInclude?v('b-negative'):''; const negEl=document.getElementById('preview-negative');
-  if(neg){negEl.style.display='block';negEl.textContent=neg;}else negEl.style.display='none';
+  const neg=secOn('sec-emphasis')?v('b-negative'):'';
+  const outFull=lines.join('\n')+(neg?'\n\nNegative: '+neg:'');
+  document.getElementById('preview-output').textContent=outFull||'Fill in the sections on the left…';
   const geo=document.getElementById('b-geo').value,mat=document.getElementById('b-mat').value,str=document.getElementById('b-strength').value;
   const vpOn=secOn('sec-vparams');
   document.getElementById('vparams-preview-block').style.display=vpOn?'':'none';
@@ -1285,12 +1284,26 @@ function buildPrompt(){
   const words=out.split(/\s+/).filter(Boolean).length;document.getElementById('token-count').textContent=out?`~${words} words`:'';
 }
 function addEmphasis(word){const inp=document.getElementById('b-extra');const emp=`(((${word})))`;inp.value=inp.value?inp.value+', '+emp:emp;buildPrompt();inp.focus();}
-function copyBuiltPrompt(btn){const txt=document.getElementById('preview-output').textContent;if(!txt||txt.startsWith('Select')){alert('Build a prompt first.');return;}navigator.clipboard.writeText(txt).then(()=>{btn.textContent='Copied!';setTimeout(()=>btn.textContent='Copy Prompt',1500);});}
-function copyFullVeras(btn){const prompt=document.getElementById('preview-output').textContent;if(!prompt||prompt.startsWith('Select')){alert('Build a prompt first.');return;}const cfg=verasConfig(prompt,v('b-negative'),selectedPreset,document.getElementById('b-geo').value,document.getElementById('b-mat').value,document.getElementById('b-strength').value);navigator.clipboard.writeText(cfg).then(()=>{btn.textContent='Copied!';setTimeout(()=>btn.textContent='Copy Full Config',1500);});}
+function copyBuiltPrompt(btn){const txt=document.getElementById('preview-output').textContent;if(!txt||txt.startsWith('Fill in')){alert('Build a prompt first.');return;}navigator.clipboard.writeText(txt).then(()=>{btn.textContent='Copied!';setTimeout(()=>btn.textContent='Copy Prompt',1500);});}
+function copyFullVeras(btn){
+  const txt=document.getElementById('preview-output').textContent;
+  if(!txt||txt.startsWith('Fill in')){alert('Build a prompt first.');return;}
+  const vpOn=secOn('sec-vparams');
+  const neg=secOn('sec-emphasis')?v('b-negative'):'';
+  const cfg=verasConfig(
+    txt.replace(neg?'\n\nNegative: '+neg:'','').trimEnd(),
+    neg,
+    vpOn?selectedPreset:null,
+    vpOn?document.getElementById('b-geo').value:null,
+    vpOn?document.getElementById('b-mat').value:null,
+    vpOn?document.getElementById('b-strength').value:null
+  );
+  navigator.clipboard.writeText(cfg).then(()=>{btn.textContent='Copied!';setTimeout(()=>btn.textContent='Copy Full Config',1500);});
+}
 function saveBuiltPrompt(){
   const title=v('b-title'),txt=document.getElementById('preview-output').textContent;
   if(!title){alert('Give the prompt a title.');document.getElementById('b-title').focus();return;}
-  if(!txt||txt.startsWith('Select')){alert('Build a prompt first.');return;}
+  if(!txt||txt.startsWith('Fill in')){alert('Build a prompt first.');return;}
   const tags=v('b-tags').split(',').map(t=>t.trim().toLowerCase()).filter(Boolean);
   const catRaw=document.getElementById('b-save-category').value||v('b-category')||'other';
   const cat=catRaw.split(',')[0].trim()||'other';
