@@ -225,9 +225,18 @@
   .bpanel-toggle-wrap input[type=checkbox] { width: 15px; height: 15px; accent-color: var(--accent); cursor: pointer; }
   .bpanel-body { display: flex; flex-direction: column; gap: 13px; transition: opacity .15s; }
   .bpanel-body.sec-off { opacity: 0.35; pointer-events: none; }
+  .bpanel-body.collapsed { display: none; }
   .bpanel-desc { font-size: 12.5px; color: var(--text-muted); line-height: 1.65; background: var(--surface2); border-left: 3px solid var(--border); padding: 8px 12px; border-radius: 0 var(--radius-sm) var(--radius-sm) 0; }
+  .bpanel-title-left { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; }
+  .bpanel-title-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+  .collapse-btn { background: none; border: none; cursor: pointer; font-size: 13px; color: var(--text-muted); padding: 0 2px; line-height: 1; transition: transform .2s; user-select: none; }
+  .collapse-btn.open { transform: rotate(0deg); }
+  .collapse-btn.closed { transform: rotate(-90deg); }
   .bpanel-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 11px; }
   .bpanel-full { grid-column: 1 / -1; }
+  .cat-chips { display: flex; flex-wrap: wrap; gap: 7px; }
+  .cat-chip { padding: 5px 13px; border-radius: 20px; border: 1.5px solid var(--border); background: var(--surface2); font-size: 13px; font-weight: 500; color: var(--text-dim); cursor: pointer; transition: all .15s; user-select: none; }
+  .cat-chip.selected { background: var(--accent); border-color: var(--accent); color: #fff; }
 
   .preview-col { position: sticky; top: 24px; }
   .preview-panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; display: flex; flex-direction: column; gap: 15px; box-shadow: var(--shadow); }
@@ -383,28 +392,71 @@
       <div class="builder-col">
 
         <div class="bpanel">
-          <div class="bpanel-title">Veras Preset</div>
-          <div class="preset-grid">
-            <div class="preset-opt selected" data-preset="" onclick="selectPreset(this)"><span class="preset-icon">✦</span>None</div>
-            <div class="preset-opt" data-preset="Photorealistic" onclick="selectPreset(this)"><span class="preset-icon">📷</span>Photorealistic</div>
-            <div class="preset-opt" data-preset="Cinematic" onclick="selectPreset(this)"><span class="preset-icon">🎬</span>Cinematic</div>
-            <div class="preset-opt" data-preset="Turbo Nature" onclick="selectPreset(this)"><span class="preset-icon">🌿</span>Turbo Nature</div>
-            <div class="preset-opt" data-preset="Pencil Sketch" onclick="selectPreset(this)"><span class="preset-icon">✏️</span>Pencil Sketch</div>
-            <div class="preset-opt" data-preset="Watercolor" onclick="selectPreset(this)"><span class="preset-icon">🎨</span>Watercolor</div>
-            <div class="preset-opt" data-preset="Oil Painting" onclick="selectPreset(this)"><span class="preset-icon">🖌️</span>Oil Painting</div>
-            <div class="preset-opt" data-preset="Concept Art" onclick="selectPreset(this)"><span class="preset-icon">💡</span>Concept Art</div>
-            <div class="preset-opt" data-preset="Blueprint" onclick="selectPreset(this)"><span class="preset-icon">📐</span>Blueprint</div>
-            <div class="preset-opt" data-preset="Axonometric" onclick="selectPreset(this)"><span class="preset-icon">📦</span>Axonometric</div>
-            <div class="preset-opt" data-preset="Moodboard" onclick="selectPreset(this)"><span class="preset-icon">🗂️</span>Moodboard</div>
-            <div class="preset-opt" data-preset="V-Ray Style" onclick="selectPreset(this)"><span class="preset-icon">⚡</span>V-Ray Style</div>
+          <div class="bpanel-title" style="cursor:pointer;" onclick="collapsePanel('body-preset',this)">
+            <span class="bpanel-title-left">Veras Preset</span>
+            <span class="bpanel-title-right"><button class="collapse-btn closed" tabindex="-1">▼</button></span>
+          </div>
+          <div class="bpanel-body collapsed" id="body-preset">
+            <div class="preset-grid">
+              <div class="preset-opt selected" data-preset="" onclick="selectPreset(this)"><span class="preset-icon">✦</span>None</div>
+              <div class="preset-opt" data-preset="Photorealistic" onclick="selectPreset(this)"><span class="preset-icon">📷</span>Photorealistic</div>
+              <div class="preset-opt" data-preset="Cinematic" onclick="selectPreset(this)"><span class="preset-icon">🎬</span>Cinematic</div>
+              <div class="preset-opt" data-preset="Turbo Nature" onclick="selectPreset(this)"><span class="preset-icon">🌿</span>Turbo Nature</div>
+              <div class="preset-opt" data-preset="Pencil Sketch" onclick="selectPreset(this)"><span class="preset-icon">✏️</span>Pencil Sketch</div>
+              <div class="preset-opt" data-preset="Watercolor" onclick="selectPreset(this)"><span class="preset-icon">🎨</span>Watercolor</div>
+              <div class="preset-opt" data-preset="Oil Painting" onclick="selectPreset(this)"><span class="preset-icon">🖌️</span>Oil Painting</div>
+              <div class="preset-opt" data-preset="Concept Art" onclick="selectPreset(this)"><span class="preset-icon">💡</span>Concept Art</div>
+              <div class="preset-opt" data-preset="Blueprint" onclick="selectPreset(this)"><span class="preset-icon">📐</span>Blueprint</div>
+              <div class="preset-opt" data-preset="Axonometric" onclick="selectPreset(this)"><span class="preset-icon">📦</span>Axonometric</div>
+              <div class="preset-opt" data-preset="Moodboard" onclick="selectPreset(this)"><span class="preset-icon">🗂️</span>Moodboard</div>
+              <div class="preset-opt" data-preset="V-Ray Style" onclick="selectPreset(this)"><span class="preset-icon">⚡</span>V-Ray Style</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── SAVE TO LIBRARY ── -->
+        <div class="bpanel">
+          <div class="bpanel-title" style="cursor:pointer;" onclick="collapsePanel('body-save',this)">
+            <span class="bpanel-title-left">Save to Library</span>
+            <span class="bpanel-title-right"><button class="collapse-btn open" tabindex="-1">▼</button></span>
+          </div>
+          <div class="bpanel-body" id="body-save">
+            <div class="bpanel-grid">
+              <div class="form-group bpanel-full"><label class="form-label">Prompt Title *</label><input class="form-input" id="b-title" placeholder="Name for this prompt..."></div>
+              <div class="form-group bpanel-full">
+                <label class="form-label">Category</label>
+                <div class="cat-chips">
+                  <span class="cat-chip" data-cat="" onclick="selectCat(this)">None</span>
+                  <span class="cat-chip" data-cat="exterior" onclick="selectCat(this)">Exterior</span>
+                  <span class="cat-chip" data-cat="interior" onclick="selectCat(this)">Interior</span>
+                  <span class="cat-chip" data-cat="aerial" onclick="selectCat(this)">Aerial</span>
+                  <span class="cat-chip" data-cat="detail" onclick="selectCat(this)">Detail</span>
+                  <span class="cat-chip" data-cat="landscape" onclick="selectCat(this)">Landscape</span>
+                  <span class="cat-chip" data-cat="concept" onclick="selectCat(this)">Concept</span>
+                </div>
+                <input type="hidden" id="b-save-category" value="">
+              </div>
+              <div class="form-group bpanel-full"><label class="form-label">Tags <span style="font-weight:400;color:var(--text-muted)">(comma-separated)</span></label><input class="form-input" id="b-tags" placeholder="luxury, residential, sunset..."></div>
+              <div class="form-group bpanel-full"><label class="form-label">Rating</label>
+                <div class="star-input">
+                  <input type="radio" name="b-rating" id="bst5" value="5"><label for="bst5">★</label>
+                  <input type="radio" name="b-rating" id="bst4" value="4"><label for="bst4">★</label>
+                  <input type="radio" name="b-rating" id="bst3" value="3"><label for="bst3">★</label>
+                  <input type="radio" name="b-rating" id="bst2" value="2"><label for="bst2">★</label>
+                  <input type="radio" name="b-rating" id="bst1" value="1"><label for="bst1">★</label>
+                </div>
+              </div>
+            </div>
+            <div style="display:flex;gap:9px;"><button class="btn btn-primary" onclick="saveBuiltPrompt()">Save to Library</button><button class="btn btn-secondary" onclick="resetBuilder()">Reset All</button></div>
           </div>
         </div>
 
         <!-- ── TASK ── -->
         <div class="bpanel">
-          <div class="bpanel-title">
-            TASK
-            <label class="bpanel-toggle-wrap"><input type="checkbox" id="sec-task" checked onchange="toggleSection('sec-task','body-task');buildPrompt()"> Include</label>
+          <div class="bpanel-title" style="cursor:pointer;" onclick="collapsePanel('body-task',this)">
+            <span class="bpanel-title-left">TASK</span>
+            <span class="bpanel-title-right" onclick="event.stopPropagation()"><label class="bpanel-toggle-wrap"><input type="checkbox" id="sec-task" checked onchange="toggleSection('sec-task','body-task');buildPrompt()"> Include</label></span>
+            <button class="collapse-btn open" tabindex="-1">▼</button>
           </div>
           <div class="bpanel-body" id="body-task">
             <p class="bpanel-desc">Describe what Veras should do with the design. Write a clear, action-oriented instruction — e.g. "enhance into a photorealistic masterpiece", "visualize as a luxury resort", "transform into a night scene". This is the top-level directive the AI follows.</p>
@@ -425,9 +477,10 @@
 
         <!-- ── STYLE & ART DIRECTION ── -->
         <div class="bpanel">
-          <div class="bpanel-title">
-            STYLE &amp; ART DIRECTION
-            <label class="bpanel-toggle-wrap"><input type="checkbox" id="sec-style" checked onchange="toggleSection('sec-style','body-style');buildPrompt()"> Include</label>
+          <div class="bpanel-title" style="cursor:pointer;" onclick="collapsePanel('body-style',this)">
+            <span class="bpanel-title-left">STYLE &amp; ART DIRECTION</span>
+            <span class="bpanel-title-right" onclick="event.stopPropagation()"><label class="bpanel-toggle-wrap"><input type="checkbox" id="sec-style" checked onchange="toggleSection('sec-style','body-style');buildPrompt()"> Include</label></span>
+            <button class="collapse-btn open" tabindex="-1">▼</button>
           </div>
           <div class="bpanel-body" id="body-style">
             <p class="bpanel-desc">Define the visual language and publication-level quality. Think of how the image should look in a magazine or architecture portfolio — editorial style, rendering quality, overall emotional tone, and any special visual requirements.</p>
@@ -450,9 +503,10 @@
 
         <!-- ── COMPONENTS ── -->
         <div class="bpanel">
-          <div class="bpanel-title">
-            COMPONENTS
-            <label class="bpanel-toggle-wrap"><input type="checkbox" id="sec-components" checked onchange="toggleSection('sec-components','body-components');buildPrompt()"> Include</label>
+          <div class="bpanel-title" style="cursor:pointer;" onclick="collapsePanel('body-components',this)">
+            <span class="bpanel-title-left">COMPONENTS</span>
+            <span class="bpanel-title-right" onclick="event.stopPropagation()"><label class="bpanel-toggle-wrap"><input type="checkbox" id="sec-components" checked onchange="toggleSection('sec-components','body-components');buildPrompt()"> Include</label></span>
+            <button class="collapse-btn open" tabindex="-1">▼</button>
           </div>
           <div class="bpanel-body" id="body-components">
             <p class="bpanel-desc">Break the scene into its physical parts. <strong>Main Subject</strong> — what the building is and its architectural character. <strong>Setting</strong> — where it sits and when (location, time, weather, season). <strong>Details</strong> — surface materials, landscape elements, and micro-texture cues that make the image believable.</p>
@@ -489,9 +543,10 @@
 
         <!-- ── LIGHTING ── -->
         <div class="bpanel">
-          <div class="bpanel-title">
-            LIGHTING
-            <label class="bpanel-toggle-wrap"><input type="checkbox" id="sec-lighting" checked onchange="toggleSection('sec-lighting','body-lighting');buildPrompt()"> Include</label>
+          <div class="bpanel-title" style="cursor:pointer;" onclick="collapsePanel('body-lighting',this)">
+            <span class="bpanel-title-left">LIGHTING</span>
+            <span class="bpanel-title-right" onclick="event.stopPropagation()"><label class="bpanel-toggle-wrap"><input type="checkbox" id="sec-lighting" checked onchange="toggleSection('sec-lighting','body-lighting');buildPrompt()"> Include</label></span>
+            <button class="collapse-btn open" tabindex="-1">▼</button>
           </div>
           <div class="bpanel-body" id="body-lighting">
             <p class="bpanel-desc">Describe how light behaves in the scene. <strong>Lighting</strong> — the primary source and quality (e.g. volumetric sun rays, warm interior glow, HDRI sky). <strong>Color</strong> — the overall color temperature and tonal balance that sets the mood (warm vs. cool, high vs. low contrast).</p>
@@ -518,9 +573,10 @@
 
         <!-- ── CONSTRAINTS ── -->
         <div class="bpanel">
-          <div class="bpanel-title">
-            CONSTRAINTS
-            <label class="bpanel-toggle-wrap"><input type="checkbox" id="sec-constraints" checked onchange="toggleSection('sec-constraints','body-constraints');buildPrompt()"> Include</label>
+          <div class="bpanel-title" style="cursor:pointer;" onclick="collapsePanel('body-constraints',this)">
+            <span class="bpanel-title-left">CONSTRAINTS</span>
+            <span class="bpanel-title-right" onclick="event.stopPropagation()"><label class="bpanel-toggle-wrap"><input type="checkbox" id="sec-constraints" checked onchange="toggleSection('sec-constraints','body-constraints');buildPrompt()"> Include</label></span>
+            <button class="collapse-btn open" tabindex="-1">▼</button>
           </div>
           <div class="bpanel-body" id="body-constraints">
             <p class="bpanel-desc">Set hard rules Veras must not break. Use these to protect geometry integrity, camera accuracy, and texture quality. Check what applies — unchecked rules are excluded from the prompt. Add camera framing and entourage here as well.</p>
@@ -555,46 +611,40 @@
         </div>
 
         <div class="bpanel">
-          <div class="bpanel-title">Veras Parameters</div>
-          <div class="form-group"><label class="form-label">Geometry Override <span class="form-hint">— 0 = preserve geometry · 100 = full AI freedom</span></label><div class="slider-row"><input type="range" min="0" max="100" value="20" id="b-geo" oninput="syncSlider('b-geo','bv-geo');buildPrompt()"><span class="slider-val" id="bv-geo">20</span></div></div>
-          <div class="form-group"><label class="form-label">Material Override <span class="form-hint">— how much AI replaces materials</span></label><div class="slider-row"><input type="range" min="0" max="100" value="80" id="b-mat" oninput="syncSlider('b-mat','bv-mat');buildPrompt()"><span class="slider-val" id="bv-mat">80</span></div></div>
-          <div class="form-group"><label class="form-label">Prompt Strength <span class="form-hint">— how strictly the prompt is followed</span></label><div class="slider-row"><input type="range" min="0" max="100" value="60" id="b-strength" oninput="syncSlider('b-strength','bv-strength');buildPrompt()"><span class="slider-val" id="bv-strength">60</span></div></div>
-        </div>
-
-        <div class="bpanel">
-          <div class="bpanel-title">Emphasis &amp; Extra</div>
-          <div class="form-group"><label class="form-label">Quick emphasis <span class="form-hint">— adds (((word))) weight</span></label>
-            <div class="emphasis-row">
-              <span class="emphasis-chip" onclick="addEmphasis('golden hour')">golden hour</span>
-              <span class="emphasis-chip" onclick="addEmphasis('warm colors')">warm colors</span>
-              <span class="emphasis-chip" onclick="addEmphasis('photorealistic')">photorealistic</span>
-              <span class="emphasis-chip" onclick="addEmphasis('highly detailed')">highly detailed</span>
-              <span class="emphasis-chip" onclick="addEmphasis('lush greenery')">lush greenery</span>
-              <span class="emphasis-chip" onclick="addEmphasis('dramatic lighting')">dramatic lighting</span>
-              <span class="emphasis-chip" onclick="addEmphasis('award winning')">award winning</span>
-              <span class="emphasis-chip" onclick="addEmphasis('8K ultra detail')">8K ultra detail</span>
-            </div>
+          <div class="bpanel-title" style="cursor:pointer;" onclick="collapsePanel('body-vparams',this)">
+            <span class="bpanel-title-left">Veras Parameters</span>
+            <span class="bpanel-title-right" onclick="event.stopPropagation()"><label class="bpanel-toggle-wrap"><input type="checkbox" id="sec-vparams" checked onchange="buildPrompt()"> Include</label></span>
+            <button class="collapse-btn open" tabindex="-1">▼</button>
           </div>
-          <div class="form-group"><label class="form-label">Extra Keywords</label><input class="form-input" id="b-extra" placeholder="custom overrides..." oninput="buildPrompt()"></div>
-          <div class="form-group"><label class="form-label">Negative Prompt</label><textarea class="form-textarea" id="b-negative" rows="2" style="min-height:60px;" placeholder="e.g. blurry, cartoon, bad proportions..." oninput="buildPrompt()"></textarea></div>
+          <div class="bpanel-body" id="body-vparams">
+            <div class="form-group"><label class="form-label">Geometry Override <span class="form-hint">— 0 = preserve geometry · 100 = full AI freedom</span></label><div class="slider-row"><input type="range" min="0" max="100" value="20" id="b-geo" oninput="syncSlider('b-geo','bv-geo');buildPrompt()"><span class="slider-val" id="bv-geo">20</span></div></div>
+            <div class="form-group"><label class="form-label">Material Override <span class="form-hint">— how much AI replaces materials</span></label><div class="slider-row"><input type="range" min="0" max="100" value="80" id="b-mat" oninput="syncSlider('b-mat','bv-mat');buildPrompt()"><span class="slider-val" id="bv-mat">80</span></div></div>
+            <div class="form-group"><label class="form-label">Prompt Strength <span class="form-hint">— how strictly the prompt is followed</span></label><div class="slider-row"><input type="range" min="0" max="100" value="60" id="b-strength" oninput="syncSlider('b-strength','bv-strength');buildPrompt()"><span class="slider-val" id="bv-strength">60</span></div></div>
+          </div>
         </div>
 
         <div class="bpanel">
-          <div class="bpanel-title">Save to Library</div>
-          <div class="bpanel-grid">
-            <div class="form-group bpanel-full"><label class="form-label">Prompt Title *</label><input class="form-input" id="b-title" placeholder="Name for this prompt..."></div>
-            <div class="form-group bpanel-full"><label class="form-label">Tags <span style="font-weight:400;color:var(--text-muted)">(comma-separated)</span></label><input class="form-input" id="b-tags" placeholder="luxury, residential, sunset..."></div>
-            <div class="form-group bpanel-full"><label class="form-label">Rating</label>
-              <div class="star-input">
-                <input type="radio" name="b-rating" id="bst5" value="5"><label for="bst5">★</label>
-                <input type="radio" name="b-rating" id="bst4" value="4"><label for="bst4">★</label>
-                <input type="radio" name="b-rating" id="bst3" value="3"><label for="bst3">★</label>
-                <input type="radio" name="b-rating" id="bst2" value="2"><label for="bst2">★</label>
-                <input type="radio" name="b-rating" id="bst1" value="1"><label for="bst1">★</label>
+          <div class="bpanel-title" style="cursor:pointer;" onclick="collapsePanel('body-emphasis',this)">
+            <span class="bpanel-title-left">Emphasis &amp; Extra</span>
+            <span class="bpanel-title-right" onclick="event.stopPropagation()"><label class="bpanel-toggle-wrap"><input type="checkbox" id="sec-emphasis" checked onchange="buildPrompt()"> Include</label></span>
+            <button class="collapse-btn open" tabindex="-1">▼</button>
+          </div>
+          <div class="bpanel-body" id="body-emphasis">
+            <div class="form-group"><label class="form-label">Quick emphasis <span class="form-hint">— adds (((word))) weight</span></label>
+              <div class="emphasis-row">
+                <span class="emphasis-chip" onclick="addEmphasis('golden hour')">golden hour</span>
+                <span class="emphasis-chip" onclick="addEmphasis('warm colors')">warm colors</span>
+                <span class="emphasis-chip" onclick="addEmphasis('photorealistic')">photorealistic</span>
+                <span class="emphasis-chip" onclick="addEmphasis('highly detailed')">highly detailed</span>
+                <span class="emphasis-chip" onclick="addEmphasis('lush greenery')">lush greenery</span>
+                <span class="emphasis-chip" onclick="addEmphasis('dramatic lighting')">dramatic lighting</span>
+                <span class="emphasis-chip" onclick="addEmphasis('award winning')">award winning</span>
+                <span class="emphasis-chip" onclick="addEmphasis('8K ultra detail')">8K ultra detail</span>
               </div>
             </div>
+            <div class="form-group"><label class="form-label">Extra Keywords</label><input class="form-input" id="b-extra" placeholder="custom overrides..." oninput="buildPrompt()"></div>
+            <div class="form-group"><label class="form-label">Negative Prompt</label><textarea class="form-textarea" id="b-negative" rows="2" style="min-height:60px;" placeholder="e.g. blurry, cartoon, bad proportions..." oninput="buildPrompt()"></textarea></div>
           </div>
-          <div style="display:flex;gap:9px;"><button class="btn btn-primary" onclick="saveBuiltPrompt()">Save to Library</button><button class="btn btn-secondary" onclick="resetBuilder()">Reset All</button></div>
         </div>
 
       </div><!-- /builder-col -->
@@ -1145,11 +1195,22 @@ function savePrompt(){
 let selectedPreset='';
 function selectPreset(el){document.querySelectorAll('.preset-opt').forEach(o=>o.classList.remove('selected'));el.classList.add('selected');selectedPreset=el.dataset.preset||'';buildPrompt();}
 function v(id){return document.getElementById(id)?.value?.trim()||'';}
+function collapsePanel(bodyId, titleEl){
+  const body=document.getElementById(bodyId);
+  const btn=titleEl.querySelector('.collapse-btn');
+  const isCollapsed=body.classList.toggle('collapsed');
+  if(btn){btn.classList.toggle('open',!isCollapsed);btn.classList.toggle('closed',isCollapsed);}
+}
 function toggleSection(cbId, bodyId){
   const on=document.getElementById(cbId).checked;
   document.getElementById(bodyId).classList.toggle('sec-off',!on);
 }
 function secOn(id){return document.getElementById(id).checked;}
+function selectCat(el){
+  document.querySelectorAll('.cat-chip').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('b-save-category').value=el.dataset.cat;
+}
 
 function buildPrompt(){
   const task=v('b-task');
@@ -1203,18 +1264,22 @@ function buildPrompt(){
     const camParts=[shot,lens].filter(Boolean);
     if(camParts.length) cLines.push('Camera: '+camParts.join(', ')+'.');
     if(constraintExtra) cLines.push(constraintExtra);
-    if(extra) cLines.push(extra);
     if(cLines.length) lines.push('\nCONSTRAINTS:\n'+cLines.join('\n'));
   }
 
+  // EMPHASIS extra keywords (appended to prompt)
+  if(secOn('sec-emphasis') && extra) lines.push('\n'+extra);
+
   const out=lines.join('\n');
   document.getElementById('preview-output').textContent=out||'Fill in the sections on the left…';
-  const neg=v('b-negative'); const negEl=document.getElementById('preview-negative');
+  const negInclude=secOn('sec-emphasis');
+  const neg=negInclude?v('b-negative'):''; const negEl=document.getElementById('preview-negative');
   if(neg){negEl.style.display='block';negEl.textContent=neg;}else negEl.style.display='none';
   const geo=document.getElementById('b-geo').value,mat=document.getElementById('b-mat').value,str=document.getElementById('b-strength').value;
-  document.getElementById('out-preset').textContent=selectedPreset||'—';
-  document.getElementById('out-geo').textContent=geo;document.getElementById('out-mat').textContent=mat;document.getElementById('out-str').textContent=str;
-  document.getElementById('bar-geo').style.width=geo+'%';document.getElementById('bar-mat').style.width=mat+'%';document.getElementById('bar-str').style.width=str+'%';
+  const vpOn=secOn('sec-vparams');
+  document.getElementById('out-preset').textContent=(vpOn&&selectedPreset)||'—';
+  document.getElementById('out-geo').textContent=vpOn?geo:'—';document.getElementById('out-mat').textContent=vpOn?mat:'—';document.getElementById('out-str').textContent=vpOn?str:'—';
+  document.getElementById('bar-geo').style.width=(vpOn?geo:0)+'%';document.getElementById('bar-mat').style.width=(vpOn?mat:0)+'%';document.getElementById('bar-str').style.width=(vpOn?str:0)+'%';
   const words=out.split(/\s+/).filter(Boolean).length;document.getElementById('token-count').textContent=out?`~${words} words`:'';
 }
 function addEmphasis(word){const inp=document.getElementById('b-extra');const emp=`(((${word})))`;inp.value=inp.value?inp.value+', '+emp:emp;buildPrompt();inp.focus();}
@@ -1225,7 +1290,8 @@ function saveBuiltPrompt(){
   if(!title){alert('Give the prompt a title.');document.getElementById('b-title').focus();return;}
   if(!txt||txt.startsWith('Select')){alert('Build a prompt first.');return;}
   const tags=v('b-tags').split(',').map(t=>t.trim().toLowerCase()).filter(Boolean);
-  prompts.unshift({id:crypto.randomUUID(),title,project:v('b-project'),prompt:txt,negative:v('b-negative'),category:(v('b-category')||'other').toLowerCase(),preset:selectedPreset,lighting:v('b-lighting')||v('b-lighting-desc'),geoOverride:+document.getElementById('b-geo').value,matOverride:+document.getElementById('b-mat').value,promptStrength:+document.getElementById('b-strength').value,rating:getRadioVal('b-rating'),tags,favorite:false,created:Date.now()});
+  const cat=document.getElementById('b-save-category').value||v('b-category')||'other';
+  prompts.unshift({id:crypto.randomUUID(),title,project:v('b-project'),prompt:txt,negative:v('b-negative'),category:cat.toLowerCase(),preset:selectedPreset,lighting:v('b-lighting')||v('b-lighting-desc'),geoOverride:+document.getElementById('b-geo').value,matOverride:+document.getElementById('b-mat').value,promptStrength:+document.getElementById('b-strength').value,rating:getRadioVal('b-rating'),tags,favorite:false,created:Date.now()});
   save(prompts);alert(`Saved "${title}" to library!`);
 }
 function resetBuilder(){
@@ -1234,10 +1300,13 @@ function resetBuilder(){
   document.getElementById('b-style').value='High-end architectural photography, "ArchDaily" editorial style';
   ['c-silhouette','c-noai','c-lines'].forEach(id=>{document.getElementById(id).checked=true;});
   document.getElementById('c-entourage').checked=false;
-  ['sec-task','sec-style','sec-components','sec-lighting','sec-constraints'].forEach(id=>{
+  ['sec-task','sec-style','sec-components','sec-lighting','sec-constraints','sec-vparams','sec-emphasis'].forEach(id=>{
     document.getElementById(id).checked=true;
-    toggleSection(id, id.replace('sec-','body-'));
+    if(['sec-task','sec-style','sec-components','sec-lighting','sec-constraints'].includes(id))
+      toggleSection(id, id.replace('sec-','body-'));
   });
+  document.querySelectorAll('.cat-chip').forEach(c=>c.classList.remove('selected'));
+  document.getElementById('b-save-category').value='';
   setSlider('b-geo','bv-geo',20);setSlider('b-mat','bv-mat',80);setSlider('b-strength','bv-strength',60);
   document.querySelectorAll('.preset-opt').forEach(o=>o.classList.remove('selected'));document.querySelector('.preset-opt[data-preset=""]').classList.add('selected');
   selectedPreset='';setRadioVal('b-rating',0);buildPrompt();
