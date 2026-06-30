@@ -232,6 +232,11 @@
   .collapse-btn { background: none; border: none; cursor: pointer; font-size: 13px; color: var(--text-muted); padding: 0 2px; line-height: 1; transition: transform .2s; user-select: none; }
   .collapse-btn.open { transform: rotate(0deg); }
   .collapse-btn.closed { transform: rotate(-90deg); }
+  .mode-switcher { display: flex; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); padding: 3px; gap: 3px; }
+  .mode-btn { flex: 1; padding: 7px 0; border: none; border-radius: calc(var(--radius) - 2px); font-size: 13px; font-weight: 600; cursor: pointer; background: none; color: var(--text-muted); transition: all .15s; }
+  .mode-btn.active { background: var(--surface); color: var(--accent); box-shadow: 0 1px 4px rgba(0,0,0,.10); }
+  .sim-view { display: flex; flex-direction: column; gap: 11px; }
+  .adv-view { display: none; flex-direction: column; gap: 11px; }
   .bpanel-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 11px; }
   .bpanel-full { grid-column: 1 / -1; }
   .cat-chips { display: flex; flex-wrap: wrap; gap: 7px; }
@@ -390,6 +395,11 @@
     <div class="builder-layout">
       <div class="builder-col">
 
+        <div class="mode-switcher">
+          <button class="mode-btn active" id="mode-btn-simple" onclick="setBuilderMode('simple')">Simplified</button>
+          <button class="mode-btn" id="mode-btn-advanced" onclick="setBuilderMode('advanced')">Advanced</button>
+        </div>
+
         <div class="bpanel">
           <div class="bpanel-title" style="cursor:pointer;" onclick="collapsePanel('body-preset',this)">
             <span class="bpanel-title-left">Veras Preset</span>
@@ -457,9 +467,10 @@
             <button class="collapse-btn open" tabindex="-1">▼</button>
           </div>
           <div class="bpanel-body" id="body-task">
-            <p class="bpanel-desc">Describe what Veras should do with the design. Write a clear, action-oriented instruction — e.g. "enhance into a photorealistic masterpiece", "visualize as a luxury resort", "transform into a night scene". This is the top-level directive the AI follows.</p>
+            <div class="adv-view">
+              <p class="bpanel-desc">Describe what Veras should do with the design. Write a clear, action-oriented instruction — e.g. "enhance into a photorealistic masterpiece", "visualize as a luxury resort", "transform into a night scene". This is the top-level directive the AI follows.</p>
+            </div>
             <div class="form-group">
-              <label class="form-label">Task Description</label>
               <textarea class="form-textarea" id="b-task" rows="2" style="min-height:62px;" oninput="buildPrompt()">Enhance and embellish the provided building design into a photorealistic architectural masterpiece.</textarea>
             </div>
           </div>
@@ -473,20 +484,25 @@
             <button class="collapse-btn open" tabindex="-1">▼</button>
           </div>
           <div class="bpanel-body" id="body-style">
-            <p class="bpanel-desc">Define the visual language and publication-level quality. Think of how the image should look in a magazine or architecture portfolio — editorial style, rendering quality, overall emotional tone, and any special visual requirements.</p>
-            <div class="bpanel-grid">
-              <div class="form-group bpanel-full"><label class="form-label">Editorial Style</label><input class="form-input" id="b-style" placeholder='High-end architectural photography, "ArchDaily" editorial style' value='High-end architectural photography, "ArchDaily" editorial style' oninput="buildPrompt()"></div>
-              <div class="form-group"><label class="form-label">Resolution / Quality</label>
-                <select class="form-select" id="b-resolution" onchange="buildPrompt()">
-                  <option value="">—</option><option>4K high-resolution, ultra-detailed</option><option>8K ultra-resolution, hyper-detailed</option><option>cinematic 2.39:1 aspect ratio</option><option>medium format film quality</option>
-                </select>
+            <div class="sim-view">
+              <textarea class="form-textarea" id="bs-style" rows="3" placeholder="Describe the visual style, editorial quality, mood and rendering approach — e.g. high-end architectural photography, warm cozy, 4K ultra-detailed..." oninput="buildPrompt()"></textarea>
+            </div>
+            <div class="adv-view">
+              <p class="bpanel-desc">Define the visual language and publication-level quality. Think of how the image should look in a magazine or architecture portfolio — editorial style, rendering quality, overall emotional tone, and any special visual requirements.</p>
+              <div class="bpanel-grid">
+                <div class="form-group bpanel-full"><label class="form-label">Editorial Style</label><input class="form-input" id="b-style" placeholder='High-end architectural photography, "ArchDaily" editorial style' value='High-end architectural photography, "ArchDaily" editorial style' oninput="buildPrompt()"></div>
+                <div class="form-group"><label class="form-label">Resolution / Quality</label>
+                  <select class="form-select" id="b-resolution" onchange="buildPrompt()">
+                    <option value="">—</option><option>4K high-resolution, ultra-detailed</option><option>8K ultra-resolution, hyper-detailed</option><option>cinematic 2.39:1 aspect ratio</option><option>medium format film quality</option>
+                  </select>
+                </div>
+                <div class="form-group"><label class="form-label">Mood</label>
+                  <select class="form-select" id="b-mood" onchange="buildPrompt()">
+                    <option value="">—</option><option>warm cozy</option><option>cool minimal</option><option>dramatic moody</option><option>bright airy</option><option>serene tranquil</option><option>futuristic high-tech</option><option>raw industrial</option><option>lush organic</option>
+                  </select>
+                </div>
+                <div class="form-group bpanel-full"><label class="form-label">Extra Style Notes</label><input class="form-input" id="b-style-extra" placeholder="implementation-feasible, award-winning, hyper-realistic render..." oninput="buildPrompt()"></div>
               </div>
-              <div class="form-group"><label class="form-label">Mood</label>
-                <select class="form-select" id="b-mood" onchange="buildPrompt()">
-                  <option value="">—</option><option>warm cozy</option><option>cool minimal</option><option>dramatic moody</option><option>bright airy</option><option>serene tranquil</option><option>futuristic high-tech</option><option>raw industrial</option><option>lush organic</option>
-                </select>
-              </div>
-              <div class="form-group bpanel-full"><label class="form-label">Extra Style Notes</label><input class="form-input" id="b-style-extra" placeholder="implementation-feasible, award-winning, hyper-realistic render..." oninput="buildPrompt()"></div>
             </div>
           </div>
         </div>
@@ -499,6 +515,10 @@
             <button class="collapse-btn open" tabindex="-1">▼</button>
           </div>
           <div class="bpanel-body" id="body-components">
+            <div class="sim-view">
+              <textarea class="form-textarea" id="bs-components" rows="3" placeholder="Describe the main subject, its setting and material details — e.g. modern villa on coastal cliffs, golden hour sunset, raw concrete and glass, tropical plants..." oninput="buildPrompt()"></textarea>
+            </div>
+            <div class="adv-view">
             <p class="bpanel-desc">Break the scene into its physical parts. <strong>Main Subject</strong> — what the building is and its architectural character. <strong>Setting</strong> — where it sits and when (location, time, weather, season). <strong>Details</strong> — surface materials, landscape elements, and micro-texture cues that make the image believable.</p>
             <div class="bpanel-grid">
               <div class="form-group bpanel-full" style="padding-bottom:4px;border-bottom:1px solid var(--border);margin-bottom:2px;"><span class="form-label" style="color:var(--accent);letter-spacing:.04em;">Main Subject</span></div>
@@ -528,6 +548,7 @@
               <div class="form-group bpanel-full"><label class="form-label">Vegetation / Landscape</label><input class="form-input" id="b-vegetation" placeholder="tropical plants, manicured lawn, street trees..." oninput="buildPrompt()"></div>
               <div class="form-group bpanel-full"><label class="form-label">Material Micro-Details</label><input class="form-input" id="b-microdetails" placeholder="visible wood grain, concrete pores, realistic glass reflections..." oninput="buildPrompt()"></div>
             </div>
+            </div><!-- /adv-view -->
           </div>
         </div>
 
@@ -539,23 +560,28 @@
             <button class="collapse-btn open" tabindex="-1">▼</button>
           </div>
           <div class="bpanel-body" id="body-lighting">
-            <p class="bpanel-desc">Describe how light behaves in the scene. <strong>Lighting</strong> — the primary source and quality (e.g. volumetric sun rays, warm interior glow, HDRI sky). <strong>Color</strong> — the overall color temperature and tonal balance that sets the mood (warm vs. cool, high vs. low contrast).</p>
-            <div class="bpanel-grid">
-              <div class="form-group bpanel-full"><label class="form-label">Lighting Description</label><input class="form-input" id="b-lighting-desc" placeholder="Volumetric sun rays filtering through trees, warm interior ambient lighting visible through windows..." oninput="buildPrompt()"></div>
-              <div class="form-group"><label class="form-label">Light Type</label>
-                <select class="form-select" id="b-lighting" onchange="buildPrompt()">
-                  <option value="">—</option><option>natural sunlight</option><option>diffused soft light</option><option>dramatic side lighting</option><option>backlighting silhouette</option><option>HDRI sky</option><option>interior artificial lighting</option><option>mixed interior exterior</option><option>neon urban glow</option><option>volumetric rays</option>
-                </select>
-              </div>
-              <div class="form-group"><label class="form-label">Shadows</label>
-                <select class="form-select" id="b-shadows" onchange="buildPrompt()">
-                  <option value="">—</option><option>soft shadows</option><option>hard shadows</option><option>long dramatic shadows</option><option>no shadows</option>
-                </select>
-              </div>
-              <div class="form-group bpanel-full"><label class="form-label">Color Balance</label>
-                <select class="form-select" id="b-colorbalance" onchange="buildPrompt()">
-                  <option value="">—</option><option>warm and cold color tone mixture, good contrast</option><option>warm earth tones</option><option>cool blues and grays</option><option>monochromatic white</option><option>vibrant bold colors</option><option>muted desaturated</option><option>high contrast</option><option>soft pastels</option>
-                </select>
+            <div class="sim-view">
+              <textarea class="form-textarea" id="bs-lighting" rows="3" placeholder="Describe the lighting source, quality and color mood — e.g. volumetric golden hour sun rays, warm earth tones, soft shadows..." oninput="buildPrompt()"></textarea>
+            </div>
+            <div class="adv-view">
+              <p class="bpanel-desc">Describe how light behaves in the scene. <strong>Lighting</strong> — the primary source and quality (e.g. volumetric sun rays, warm interior glow, HDRI sky). <strong>Color</strong> — the overall color temperature and tonal balance that sets the mood (warm vs. cool, high vs. low contrast).</p>
+              <div class="bpanel-grid">
+                <div class="form-group bpanel-full"><label class="form-label">Lighting Description</label><input class="form-input" id="b-lighting-desc" placeholder="Volumetric sun rays filtering through trees, warm interior ambient lighting visible through windows..." oninput="buildPrompt()"></div>
+                <div class="form-group"><label class="form-label">Light Type</label>
+                  <select class="form-select" id="b-lighting" onchange="buildPrompt()">
+                    <option value="">—</option><option>natural sunlight</option><option>diffused soft light</option><option>dramatic side lighting</option><option>backlighting silhouette</option><option>HDRI sky</option><option>interior artificial lighting</option><option>mixed interior exterior</option><option>neon urban glow</option><option>volumetric rays</option>
+                  </select>
+                </div>
+                <div class="form-group"><label class="form-label">Shadows</label>
+                  <select class="form-select" id="b-shadows" onchange="buildPrompt()">
+                    <option value="">—</option><option>soft shadows</option><option>hard shadows</option><option>long dramatic shadows</option><option>no shadows</option>
+                  </select>
+                </div>
+                <div class="form-group bpanel-full"><label class="form-label">Color Balance</label>
+                  <select class="form-select" id="b-colorbalance" onchange="buildPrompt()">
+                    <option value="">—</option><option>warm and cold color tone mixture, good contrast</option><option>warm earth tones</option><option>cool blues and grays</option><option>monochromatic white</option><option>vibrant bold colors</option><option>muted desaturated</option><option>high contrast</option><option>soft pastels</option>
+                  </select>
+                </div>
               </div>
             </div>
           </div>
@@ -569,33 +595,41 @@
             <button class="collapse-btn open" tabindex="-1">▼</button>
           </div>
           <div class="bpanel-body" id="body-constraints">
-            <p class="bpanel-desc">Set hard rules Veras must not break. Use these to protect geometry integrity, camera accuracy, and texture quality. Check what applies — unchecked rules are excluded from the prompt. Add camera framing and entourage here as well.</p>
-            <div class="bpanel-grid">
-              <div class="form-group bpanel-full">
-                <label class="form-label">Active Rules</label>
-                <div style="display:flex;flex-direction:column;gap:8px;margin-top:2px;">
-                  <label style="display:flex;align-items:flex-start;gap:9px;font-size:14px;cursor:pointer;line-height:1.5;"><input type="checkbox" id="c-silhouette" checked onchange="buildPrompt()" style="margin-top:2px;"> Maintain the exact structural silhouette of the original design</label>
-                  <label style="display:flex;align-items:flex-start;gap:9px;font-size:14px;cursor:pointer;line-height:1.5;"><input type="checkbox" id="c-noai" checked onchange="buildPrompt()" style="margin-top:2px;"> No over-smoothing or "plastic" AI look — prioritize raw, unretouched texture fidelity</label>
-                  <label style="display:flex;align-items:flex-start;gap:9px;font-size:14px;cursor:pointer;line-height:1.5;"><input type="checkbox" id="c-lines" checked onchange="buildPrompt()" style="margin-top:2px;"> Ensure all structural lines are perfectly vertical and parallel (no lens distortion)</label>
-                  <label style="display:flex;align-items:flex-start;gap:9px;font-size:14px;cursor:pointer;line-height:1.5;"><input type="checkbox" id="c-entourage" onchange="buildPrompt()" style="margin-top:2px;"> Add people and additional entourage to show a lively scene</label>
+            <!-- Active rules: shared in both modes -->
+            <div class="form-group">
+              <label class="form-label">Active Rules</label>
+              <div style="display:flex;flex-direction:column;gap:8px;margin-top:2px;">
+                <label style="display:flex;align-items:flex-start;gap:9px;font-size:14px;cursor:pointer;line-height:1.5;"><input type="checkbox" id="c-silhouette" checked onchange="buildPrompt()" style="margin-top:2px;"> Maintain the exact structural silhouette of the original design</label>
+                <label style="display:flex;align-items:flex-start;gap:9px;font-size:14px;cursor:pointer;line-height:1.5;"><input type="checkbox" id="c-noai" checked onchange="buildPrompt()" style="margin-top:2px;"> No over-smoothing or "plastic" AI look — prioritize raw, unretouched texture fidelity</label>
+                <label style="display:flex;align-items:flex-start;gap:9px;font-size:14px;cursor:pointer;line-height:1.5;"><input type="checkbox" id="c-lines" checked onchange="buildPrompt()" style="margin-top:2px;"> Ensure all structural lines are perfectly vertical and parallel (no lens distortion)</label>
+                <label style="display:flex;align-items:flex-start;gap:9px;font-size:14px;cursor:pointer;line-height:1.5;"><input type="checkbox" id="c-entourage" onchange="buildPrompt()" style="margin-top:2px;"> Add people and additional entourage to show a lively scene</label>
+              </div>
+            </div>
+            <!-- Simplified: free-text textarea -->
+            <div class="sim-view">
+              <textarea class="form-textarea" id="bs-constraints" rows="2" style="min-height:60px;" placeholder="Additional constraints, camera framing, entourage notes — e.g. wide establishing shot, 24mm, blurred pedestrians..." oninput="buildPrompt()"></textarea>
+            </div>
+            <!-- Advanced: full dropdowns -->
+            <div class="adv-view">
+              <p class="bpanel-desc">Set hard rules Veras must not break. Use these to protect geometry integrity, camera accuracy, and texture quality. Check what applies — unchecked rules are excluded from the prompt. Add camera framing and entourage here as well.</p>
+              <div class="bpanel-grid">
+                <div class="form-group"><label class="form-label">Entourage Type</label>
+                  <select class="form-select" id="b-people" onchange="buildPrompt()">
+                    <option value="">—</option><option>silhouetted figures</option><option>blurred pedestrians</option><option>casually dressed people</option><option>families</option><option>no people</option>
+                  </select>
                 </div>
+                <div class="form-group"><label class="form-label">Shot Type</label>
+                  <select class="form-select" id="b-shot" onchange="buildPrompt()">
+                    <option value="">—</option><option>wide establishing shot</option><option>3/4 view</option><option>street-level perspective</option><option>worm's eye view</option><option>bird's eye aerial view</option><option>interior wide angle</option><option>close-up detail</option><option>symmetrical front elevation</option>
+                  </select>
+                </div>
+                <div class="form-group"><label class="form-label">Focal Length</label>
+                  <select class="form-select" id="b-lens" onchange="buildPrompt()">
+                    <option value="">—</option><option>ultra-wide 14mm</option><option>wide 24mm</option><option>standard 35mm</option><option>50mm</option><option>85mm</option>
+                  </select>
+                </div>
+                <div class="form-group bpanel-full"><label class="form-label">Custom Constraint</label><input class="form-input" id="b-constraint-extra" placeholder="e.g. No added floors or structural changes..." oninput="buildPrompt()"></div>
               </div>
-              <div class="form-group"><label class="form-label">Entourage Type</label>
-                <select class="form-select" id="b-people" onchange="buildPrompt()">
-                  <option value="">—</option><option>silhouetted figures</option><option>blurred pedestrians</option><option>casually dressed people</option><option>families</option><option>no people</option>
-                </select>
-              </div>
-              <div class="form-group"><label class="form-label">Shot Type</label>
-                <select class="form-select" id="b-shot" onchange="buildPrompt()">
-                  <option value="">—</option><option>wide establishing shot</option><option>3/4 view</option><option>street-level perspective</option><option>worm's eye view</option><option>bird's eye aerial view</option><option>interior wide angle</option><option>close-up detail</option><option>symmetrical front elevation</option>
-                </select>
-              </div>
-              <div class="form-group"><label class="form-label">Focal Length</label>
-                <select class="form-select" id="b-lens" onchange="buildPrompt()">
-                  <option value="">—</option><option>ultra-wide 14mm</option><option>wide 24mm</option><option>standard 35mm</option><option>50mm</option><option>85mm</option>
-                </select>
-              </div>
-              <div class="form-group bpanel-full"><label class="form-label">Custom Constraint</label><input class="form-input" id="b-constraint-extra" placeholder="e.g. No added floors or structural changes..." oninput="buildPrompt()"></div>
             </div>
           </div>
         </div>
@@ -1188,8 +1222,17 @@ function savePrompt(){
 
 // ── Builder ────────────────────────────────────────
 let selectedPreset='';
+let builderMode='simple';
 function selectPreset(el){document.querySelectorAll('.preset-opt').forEach(o=>o.classList.remove('selected'));el.classList.add('selected');selectedPreset=el.dataset.preset||'';buildPrompt();}
 function v(id){return document.getElementById(id)?.value?.trim()||'';}
+function setBuilderMode(mode){
+  builderMode=mode;
+  document.querySelectorAll('.sim-view').forEach(el=>el.style.display=mode==='simple'?'flex':'none');
+  document.querySelectorAll('.adv-view').forEach(el=>el.style.display=mode==='advanced'?'flex':'none');
+  document.getElementById('mode-btn-simple').classList.toggle('active',mode==='simple');
+  document.getElementById('mode-btn-advanced').classList.toggle('active',mode==='advanced');
+  buildPrompt();
+}
 function collapsePanel(bodyId, titleEl){
   const body=document.getElementById(bodyId);
   const btn=titleEl.querySelector('.collapse-btn');
@@ -1213,63 +1256,67 @@ function syncCatChips(){
 }
 
 function buildPrompt(){
-  const task=v('b-task');
-  const style=v('b-style'),resolution=v('b-resolution'),mood=v('b-mood'),styleExtra=v('b-style-extra');
-  const subject=v('b-subject'),archStyle=v('b-arch-style'),cat=v('b-category');
-  const location=v('b-location'),time=v('b-time'),weather=v('b-weather'),season=v('b-season');
-  const materials=v('b-materials'),vegetation=v('b-vegetation'),microdetails=v('b-microdetails');
-  const lightingDesc=v('b-lighting-desc'),lighting=v('b-lighting'),shadows=v('b-shadows'),colorbalance=v('b-colorbalance');
-  const people=v('b-people'),shot=v('b-shot'),lens=v('b-lens'),constraintExtra=v('b-constraint-extra'),extra=v('b-extra');
-
   const lines=[];
-
-  // TASK
+  const task=v('b-task');
   if(secOn('sec-task') && task) lines.push('TASK: '+task);
 
-  // STYLE & ART DIRECTION
-  if(secOn('sec-style')){
-    const styleParts=[style,resolution,mood,styleExtra].filter(Boolean);
-    if(styleParts.length) lines.push('\nSTYLE & ART DIRECTION: '+styleParts.join(', ')+'.');
+  if(builderMode==='simple'){
+    if(secOn('sec-style')){const s=v('bs-style');if(s) lines.push('\nSTYLE & ART DIRECTION: '+s);}
+    if(secOn('sec-components')){const s=v('bs-components');if(s) lines.push('\nCOMPONENTS: '+s);}
+    if(secOn('sec-lighting')){const s=v('bs-lighting');if(s) lines.push('\nLIGHTING: '+s);}
+    if(secOn('sec-constraints')){
+      const cLines=[];
+      if(document.getElementById('c-silhouette').checked) cLines.push('Maintain the exact structural silhouette of the original design.');
+      if(document.getElementById('c-noai').checked) cLines.push('No over-smoothing or "plastic" AI look; prioritize raw, unretouched texture fidelity.');
+      if(document.getElementById('c-lines').checked) cLines.push('Ensure all structural lines are perfectly vertical and parallel (no lens distortion).');
+      if(document.getElementById('c-entourage').checked) cLines.push('Add people and additional entourage to show a lively scene.');
+      const sc=v('bs-constraints');if(sc) cLines.push(sc);
+      if(cLines.length) lines.push('\nCONSTRAINTS:\n'+cLines.join('\n'));
+    }
+  } else {
+    const style=v('b-style'),resolution=v('b-resolution'),mood=v('b-mood'),styleExtra=v('b-style-extra');
+    const subject=v('b-subject'),archStyle=v('b-arch-style'),cat=v('b-category');
+    const location=v('b-location'),time=v('b-time'),weather=v('b-weather'),season=v('b-season');
+    const materials=v('b-materials'),vegetation=v('b-vegetation'),microdetails=v('b-microdetails');
+    const lightingDesc=v('b-lighting-desc'),lighting=v('b-lighting'),shadows=v('b-shadows'),colorbalance=v('b-colorbalance');
+    const people=v('b-people'),shot=v('b-shot'),lens=v('b-lens'),constraintExtra=v('b-constraint-extra');
+    if(secOn('sec-style')){
+      const styleParts=[style,resolution,mood,styleExtra].filter(Boolean);
+      if(styleParts.length) lines.push('\nSTYLE & ART DIRECTION: '+styleParts.join(', ')+'.');
+    }
+    if(secOn('sec-components')){
+      const compLines=[];
+      const subjectParts=[subject,archStyle,cat?cat.toLowerCase()+' view':null].filter(Boolean);
+      if(subjectParts.length) compLines.push('Main Subject: '+subjectParts.join(', ')+'.');
+      const settingParts=[location,time,weather,season].filter(Boolean);
+      if(settingParts.length) compLines.push('Setting: Situated in a '+settingParts.join(', ')+'.');
+      const detailParts=[materials?'Materials — '+materials:null,vegetation?'Vegetation — '+vegetation:null,microdetails?'Micro-details — '+microdetails:null].filter(Boolean);
+      if(detailParts.length) compLines.push('Details: '+detailParts.join(' | ')+'.');
+      if(compLines.length) lines.push('\nCOMPONENTS:\n'+compLines.join('\n'));
+    }
+    if(secOn('sec-lighting')){
+      const lParts=[];
+      const lightMain=[lightingDesc,lighting,shadows].filter(Boolean);
+      if(lightMain.length) lParts.push('Lighting: '+lightMain.join(', ')+'.');
+      if(colorbalance) lParts.push('Color: '+colorbalance+'.');
+      if(lParts.length) lines.push('\nLIGHTING:\n'+lParts.join('\n'));
+    }
+    if(secOn('sec-constraints')){
+      const cLines=[];
+      if(document.getElementById('c-silhouette').checked) cLines.push('Maintain the exact structural silhouette of the original design.');
+      if(document.getElementById('c-noai').checked) cLines.push('No over-smoothing or "plastic" AI look; prioritize raw, unretouched texture fidelity.');
+      if(document.getElementById('c-lines').checked) cLines.push('Ensure all structural lines are perfectly vertical and parallel (no lens distortion).');
+      if(document.getElementById('c-entourage').checked) cLines.push('Add people and additional entourage to show a lively scene.');
+      if(people&&people!=='no people') cLines.push('Entourage: '+people+'.');
+      const camParts=[shot,lens].filter(Boolean);
+      if(camParts.length) cLines.push('Camera: '+camParts.join(', ')+'.');
+      if(constraintExtra) cLines.push(constraintExtra);
+      if(cLines.length) lines.push('\nCONSTRAINTS:\n'+cLines.join('\n'));
+    }
   }
 
-  // COMPONENTS
-  if(secOn('sec-components')){
-    const compLines=[];
-    const subjectParts=[subject,archStyle,cat?cat.toLowerCase()+' view':null].filter(Boolean);
-    if(subjectParts.length) compLines.push('Main Subject: '+subjectParts.join(', ')+'.');
-    const settingParts=[location,time,weather,season].filter(Boolean);
-    if(settingParts.length) compLines.push('Setting: Situated in a '+settingParts.join(', ')+'.');
-    const detailParts=[materials?'Materials — '+materials:null, vegetation?'Vegetation — '+vegetation:null, microdetails?'Micro-details — '+microdetails:null].filter(Boolean);
-    if(detailParts.length) compLines.push('Details: '+detailParts.join(' | ')+'.');
-    if(compLines.length) lines.push('\nCOMPONENTS:\n'+compLines.join('\n'));
-  }
-
-  // LIGHTING
-  if(secOn('sec-lighting')){
-    const lParts=[];
-    const lightMain=[lightingDesc,lighting,shadows].filter(Boolean);
-    if(lightMain.length) lParts.push('Lighting: '+lightMain.join(', ')+'.');
-    if(colorbalance) lParts.push('Color: '+colorbalance+'.');
-    if(lParts.length) lines.push('\nLIGHTING:\n'+lParts.join('\n'));
-  }
-
-  // CONSTRAINTS
-  if(secOn('sec-constraints')){
-    const cLines=[];
-    if(document.getElementById('c-silhouette').checked) cLines.push('Maintain the exact structural silhouette of the original design.');
-    if(document.getElementById('c-noai').checked) cLines.push('No over-smoothing or "plastic" AI look; prioritize raw, unretouched texture fidelity.');
-    if(document.getElementById('c-lines').checked) cLines.push('Ensure all structural lines are perfectly vertical and parallel (no lens distortion).');
-    if(document.getElementById('c-entourage').checked) cLines.push('Add people and additional entourage to show a lively scene.');
-    if(people&&people!=='no people') cLines.push('Entourage: '+people+'.');
-    const camParts=[shot,lens].filter(Boolean);
-    if(camParts.length) cLines.push('Camera: '+camParts.join(', ')+'.');
-    if(constraintExtra) cLines.push(constraintExtra);
-    if(cLines.length) lines.push('\nCONSTRAINTS:\n'+cLines.join('\n'));
-  }
-
-  // EMPHASIS extra keywords (appended to prompt)
+  const extra=v('b-extra');
   if(secOn('sec-emphasis') && extra) lines.push('\n'+extra);
-
   const neg=secOn('sec-emphasis')?v('b-negative'):'';
   const outFull=lines.join('\n')+(neg?'\n\nNegative: '+neg:'');
   document.getElementById('preview-output').textContent=outFull||'Fill in the sections on the left…';
@@ -1281,7 +1328,8 @@ function buildPrompt(){
     document.getElementById('out-geo').textContent=geo;document.getElementById('out-mat').textContent=mat;document.getElementById('out-str').textContent=str;
     document.getElementById('bar-geo').style.width=geo+'%';document.getElementById('bar-mat').style.width=mat+'%';document.getElementById('bar-str').style.width=str+'%';
   }
-  const words=out.split(/\s+/).filter(Boolean).length;document.getElementById('token-count').textContent=out?`~${words} words`:'';
+  const words=outFull.split(/\s+/).filter(Boolean).length;
+  document.getElementById('token-count').textContent=outFull?`~${words} words`:'';
 }
 function addEmphasis(word){const inp=document.getElementById('b-extra');const emp=`(((${word})))`;inp.value=inp.value?inp.value+', '+emp:emp;buildPrompt();inp.focus();}
 function copyBuiltPrompt(btn){const txt=document.getElementById('preview-output').textContent;if(!txt||txt.startsWith('Fill in')){alert('Build a prompt first.');return;}navigator.clipboard.writeText(txt).then(()=>{btn.textContent='Copied!';setTimeout(()=>btn.textContent='Copy Prompt',1500);});}
@@ -1311,7 +1359,7 @@ function saveBuiltPrompt(){
   save(prompts);alert(`Saved "${title}" to library!`);
 }
 function resetBuilder(){
-  ['b-category','b-subject','b-arch-style','b-location','b-time','b-weather','b-season','b-mood','b-materials','b-vegetation','b-microdetails','b-people','b-lighting','b-lighting-desc','b-shadows','b-colorbalance','b-shot','b-lens','b-extra','b-title','b-tags','b-negative','b-project','b-style-extra','b-resolution','b-constraint-extra'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  ['b-category','b-subject','b-arch-style','b-location','b-time','b-weather','b-season','b-mood','b-materials','b-vegetation','b-microdetails','b-people','b-lighting','b-lighting-desc','b-shadows','b-colorbalance','b-shot','b-lens','b-extra','b-title','b-tags','b-negative','b-project','b-style-extra','b-resolution','b-constraint-extra','bs-style','bs-components','bs-lighting','bs-constraints'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   document.getElementById('b-task').value='Enhance and embellish the provided building design into a photorealistic architectural masterpiece.';
   document.getElementById('b-style').value='High-end architectural photography, "ArchDaily" editorial style';
   ['c-silhouette','c-noai','c-lines'].forEach(id=>{document.getElementById(id).checked=true;});
