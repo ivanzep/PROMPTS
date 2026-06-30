@@ -1630,11 +1630,11 @@ function saveSheetsUrl() {
 
 function openIESheetsTab() {
   document.getElementById('sheets-url').value = getSheetsUrl();
+  sheetsSelectedIds = new Set(prompts.map(p=>p.id)); // default: all selected on open
   renderSheetsChecklist();
 }
 
 function renderSheetsChecklist() {
-  if (!sheetsSelectedIds.size) sheetsSelectedIds = new Set(prompts.map(p=>p.id));
   const el = document.getElementById('sheets-checklist');
   el.innerHTML = getSorted([...prompts]).map(p => `
     <div class="sel-item${sheetsSelectedIds.has(p.id)?' checked':''}" onclick="toggleSheetsSel('${p.id}',this)">
