@@ -439,11 +439,11 @@
               <div class="form-group bpanel-full"><label class="form-label">Tags <span style="font-weight:400;color:var(--text-muted)">(comma-separated)</span></label><input class="form-input" id="b-tags" placeholder="luxury, residential, sunset..."></div>
               <div class="form-group bpanel-full"><label class="form-label">Rating</label>
                 <div class="star-input">
-                  <input type="radio" name="b-rating" id="bst5" value="5"><label for="bst5">★</label>
-                  <input type="radio" name="b-rating" id="bst4" value="4"><label for="bst4">★</label>
-                  <input type="radio" name="b-rating" id="bst3" value="3"><label for="bst3">★</label>
-                  <input type="radio" name="b-rating" id="bst2" value="2"><label for="bst2">★</label>
-                  <input type="radio" name="b-rating" id="bst1" value="1"><label for="bst1">★</label>
+                  <input type="radio" name="b-rating" id="bst5" value="5"><label for="bst5" onclick="starClick('b-rating','bst5')">★</label>
+                  <input type="radio" name="b-rating" id="bst4" value="4"><label for="bst4" onclick="starClick('b-rating','bst4')">★</label>
+                  <input type="radio" name="b-rating" id="bst3" value="3"><label for="bst3" onclick="starClick('b-rating','bst3')">★</label>
+                  <input type="radio" name="b-rating" id="bst2" value="2"><label for="bst2" onclick="starClick('b-rating','bst2')">★</label>
+                  <input type="radio" name="b-rating" id="bst1" value="1"><label for="bst1" onclick="starClick('b-rating','bst1')">★</label>
                 </div>
               </div>
             </div>
@@ -463,14 +463,6 @@
             <div class="form-group">
               <label class="form-label">Task Description</label>
               <textarea class="form-textarea" id="b-task" rows="2" style="min-height:62px;" oninput="buildPrompt()">Enhance and embellish the provided building design into a photorealistic architectural masterpiece.</textarea>
-            </div>
-            <div class="bpanel-grid">
-              <div class="form-group"><label class="form-label">Project Name</label><input class="form-input" id="b-project" placeholder="Project / client name..." oninput="buildPrompt()"></div>
-              <div class="form-group"><label class="form-label">Category</label>
-                <select class="form-select" id="b-category" onchange="buildPrompt()">
-                  <option value="">—</option><option>Exterior</option><option>Interior</option><option>Aerial</option><option>Detail</option><option>Landscape</option><option>Concept</option>
-                </select>
-              </div>
             </div>
           </div>
         </div>
@@ -724,11 +716,11 @@
       <div class="form-group form-full"><label class="form-label">Tags <span style="font-weight:400;color:var(--text-muted)">(comma-separated)</span></label><input class="form-input" id="f-tags" placeholder="luxury, residential, sunset, concrete"></div>
       <div class="form-group form-full"><label class="form-label">Rating</label>
         <div class="star-input">
-          <input type="radio" name="f-rating" id="fst5" value="5"><label for="fst5">★</label>
-          <input type="radio" name="f-rating" id="fst4" value="4"><label for="fst4">★</label>
-          <input type="radio" name="f-rating" id="fst3" value="3"><label for="fst3">★</label>
-          <input type="radio" name="f-rating" id="fst2" value="2"><label for="fst2">★</label>
-          <input type="radio" name="f-rating" id="fst1" value="1"><label for="fst1">★</label>
+          <input type="radio" name="f-rating" id="fst5" value="5"><label for="fst5" onclick="starClick('f-rating','fst5')">★</label>
+          <input type="radio" name="f-rating" id="fst4" value="4"><label for="fst4" onclick="starClick('f-rating','fst4')">★</label>
+          <input type="radio" name="f-rating" id="fst3" value="3"><label for="fst3" onclick="starClick('f-rating','fst3')">★</label>
+          <input type="radio" name="f-rating" id="fst2" value="2"><label for="fst2" onclick="starClick('f-rating','fst2')">★</label>
+          <input type="radio" name="f-rating" id="fst1" value="1"><label for="fst1" onclick="starClick('f-rating','fst1')">★</label>
         </div>
       </div>
       <div class="form-group form-full" style="flex-direction:row;align-items:center;gap:10px;">
@@ -958,6 +950,7 @@ function starsHTML(r) { let h=''; for(let i=1;i<=5;i++) h+=`<span class="s${i<=r
 function starsText(r) { return '★'.repeat(r||0)+'☆'.repeat(5-(r||0)); }
 function getRadioVal(name) { const c=document.querySelector(`input[name="${name}"]:checked`); return c?+c.value:0; }
 function setRadioVal(name, val) { document.querySelectorAll(`input[name="${name}"]`).forEach(r=>r.checked=(+r.value===val)); }
+function starClick(name, id) { if(document.getElementById(id).checked){ event.preventDefault(); setRadioVal(name,0); } }
 
 // ── Library filtering ──────────────────────────────
 function getFiltered() {
