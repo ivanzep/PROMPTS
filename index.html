@@ -214,10 +214,10 @@
   .tab-panel.active { display: flex; }
 
   /* ── Builder ── */
-  #tab-builder { flex: 1; overflow: hidden; }
-  .builder-wrap { display: flex; flex: 1; overflow: hidden; width: 100%; }
-  .builder-layout { display: grid; grid-template-columns: 1fr 400px; gap: 0; flex: 1; overflow: hidden; }
-  .builder-col { display: flex; flex-direction: column; gap: 16px; overflow-y: auto; padding: 24px; }
+  #tab-builder { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
+  .builder-wrap { display: flex; flex: 1; overflow: hidden; width: 100%; min-height: 0; }
+  .builder-layout { display: grid; grid-template-columns: 1fr 400px; gap: 0; flex: 1; overflow: hidden; min-height: 0; }
+  .builder-col { display: flex; flex-direction: column; gap: 16px; overflow-y: auto; padding: 24px; min-height: 0; }
   .builder-col::-webkit-scrollbar { width: 6px; }
   .builder-col::-webkit-scrollbar-track { background: transparent; }
   .builder-col::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
@@ -246,7 +246,7 @@
   .cat-chip { padding: 5px 13px; border-radius: 20px; border: 1.5px solid var(--border); background: var(--surface2); font-size: 13px; font-weight: 500; color: var(--text-dim); cursor: pointer; transition: all .15s; user-select: none; }
   .cat-chip.selected { background: var(--accent); border-color: var(--accent); color: #fff; }
 
-  .preview-col { overflow-y: auto; padding: 24px 24px 24px 22px; }
+  .preview-col { overflow-y: auto; padding: 24px 24px 24px 22px; min-height: 0; }
   .preview-panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; display: flex; flex-direction: column; gap: 15px; box-shadow: var(--shadow); }
   .preview-panel-title { font-size: 11.5px; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; color: var(--accent); padding-bottom: 7px; border-bottom: 1px solid var(--border); }
 
@@ -314,8 +314,6 @@
     <div class="logo-mark">V</div>
     <div class="logo-text"><span>Veras</span> Prompts</div>
   </div>
-  <div class="header-sep"></div>
-  <div class="platform-badge">Chaos Veras</div>
   <div class="nav-tabs">
     <button class="nav-tab active" onclick="showTab('library')">Library</button>
     <button class="nav-tab" onclick="showTab('builder')">Prompt Builder</button>
