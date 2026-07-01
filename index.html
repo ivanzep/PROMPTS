@@ -327,14 +327,8 @@
   <aside class="sidebar">
     <div class="sidebar-section">
       <div class="sidebar-label">Category</div>
-      <button class="filter-btn active" onclick="setCategory('all',this)">All <span class="count" id="count-all">0</span></button>
-      <button class="filter-btn" onclick="setCategory('exterior',this)">Exterior <span class="count" id="count-exterior">0</span></button>
-      <button class="filter-btn" onclick="setCategory('interior',this)">Interior <span class="count" id="count-interior">0</span></button>
-      <button class="filter-btn" onclick="setCategory('aerial',this)">Aerial <span class="count" id="count-aerial">0</span></button>
-      <button class="filter-btn" onclick="setCategory('detail',this)">Detail <span class="count" id="count-detail">0</span></button>
-      <button class="filter-btn" onclick="setCategory('landscape',this)">Landscape <span class="count" id="count-landscape">0</span></button>
-      <button class="filter-btn" onclick="setCategory('concept',this)">Concept / Mood <span class="count" id="count-concept">0</span></button>
-      <button class="filter-btn" onclick="setCategory('other',this)">Other <span class="count" id="count-other">0</span></button>
+      <button class="filter-btn active" id="cat-btn-all" onclick="setCategory('all',this)">All <span class="count" id="count-all">0</span></button>
+      <div id="category-filters"></div>
     </div>
     <div class="sidebar-section">
       <div class="sidebar-label">Rating</div>
@@ -1061,8 +1055,11 @@ function cardHTML(p) {
 }
 
 function updateSidebar() {
-  const cats=['all','exterior','interior','aerial','detail','landscape','concept','other'];
-  cats.forEach(c=>{const el=document.getElementById(`count-${c}`);if(el) el.textContent=c==='all'?prompts.length:prompts.filter(p=>p.category===c).length;});
+  document.getElementById('count-all').textContent = prompts.length;
+  const allCats = [...new Set(prompts.map(p=>p.category).filter(Boolean))].sort();
+  document.getElementById('category-filters').innerHTML = allCats.map(c =>
+    `<button class="filter-btn${activeCategory===c?' active':''}" onclick="setCategory('${esc(c)}',this)">${esc(c.charAt(0).toUpperCase()+c.slice(1))} <span class="count">${prompts.filter(p=>p.category===c).length}</span></button>`
+  ).join('');
   document.getElementById('count-r5').textContent=prompts.filter(p=>(p.rating||0)>=5).length;
   document.getElementById('count-r4').textContent=prompts.filter(p=>(p.rating||0)>=4).length;
   document.getElementById('count-r3').textContent=prompts.filter(p=>(p.rating||0)>=3).length;
@@ -1077,9 +1074,10 @@ function updateSidebar() {
 }
 
 function setCategory(cat,btn) { activeCategory=cat; document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); renderCards(); }
+function resetCategoryActive() { document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active')); document.getElementById('cat-btn-all').classList.add('active'); activeCategory='all'; }
 function setRating(min,btn) {
   if(activeMinRating===min){activeMinRating=0;btn.classList.remove('active');}
-  else{activeMinRating=min;document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));document.querySelector('.filter-btn[onclick^="setCategory(\'all"]').classList.add('active');btn.classList.add('active');activeCategory='all';}
+  else{activeMinRating=min;document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));document.getElementById('cat-btn-all').classList.add('active');btn.classList.add('active');activeCategory='all';}
   renderCards();
 }
 function toggleFilter(type,val,el) { const map={project:activeProjects,preset:activePresets,lighting:activeLightings,tag:activeTags}; const s=map[type]; s.has(val)?s.delete(val):s.add(val); el.classList.toggle('active'); renderCards(); }
