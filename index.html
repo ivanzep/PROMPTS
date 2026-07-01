@@ -432,6 +432,7 @@
           <div class="bpanel-body" id="body-save">
             <div class="bpanel-grid">
               <div class="form-group bpanel-full"><label class="form-label">Prompt Title *</label><input class="form-input" id="b-title" placeholder="Name for this prompt..."></div>
+              <div class="form-group bpanel-full"><label class="form-label">Project Name</label><input class="form-input" id="b-project" placeholder="Client / project name..."></div>
               <div class="form-group bpanel-full">
                 <label class="form-label">Category <span style="font-weight:400;color:var(--text-muted)">(comma-separated, type freely or click to add)</span></label>
                 <input class="form-input" id="b-save-category" placeholder="exterior, interior, concept..." oninput="syncCatChips()">
@@ -1356,7 +1357,7 @@ function saveBuiltPrompt(){
   const catRaw=document.getElementById('b-save-category').value||v('b-category')||'other';
   const cat=catRaw.split(',')[0].trim()||'other';
   prompts.unshift({id:crypto.randomUUID(),title,project:v('b-project'),prompt:txt,negative:v('b-negative'),category:cat.toLowerCase(),preset:selectedPreset,lighting:v('b-lighting')||v('b-lighting-desc'),geoOverride:+document.getElementById('b-geo').value,matOverride:+document.getElementById('b-mat').value,promptStrength:+document.getElementById('b-strength').value,rating:getRadioVal('b-rating'),tags,favorite:false,created:Date.now()});
-  save(prompts);alert(`Saved "${title}" to library!`);
+  save(prompts);renderCards();alert(`Saved "${title}" to library!`);
 }
 function resetBuilder(){
   ['b-category','b-subject','b-arch-style','b-location','b-time','b-weather','b-season','b-mood','b-materials','b-vegetation','b-microdetails','b-people','b-lighting','b-lighting-desc','b-shadows','b-colorbalance','b-shot','b-lens','b-extra','b-title','b-tags','b-negative','b-project','b-style-extra','b-resolution','b-constraint-extra','bs-style','bs-components','bs-lighting','bs-constraints'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
